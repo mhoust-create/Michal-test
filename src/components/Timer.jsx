@@ -57,11 +57,12 @@ export function CircularTimer({ duration, onComplete, autoStart = false, label =
           onComplete?.();
           return 0;
         }
-        // Countdown beeps at 3, 2, 1
-        if (prev <= 4) {
-          audio.playCountdownBeep();
-        }
-        return prev - 1;
+        const next = prev - 1;
+        // Beep every second for last 10 seconds
+        if (next <= 10) audio.playCountdownBeep();
+        // Voice announcement every 10 seconds (e.g. "30", "20", "10")
+        if (next > 0 && next % 10 === 0) audio.speakCountdown(next);
+        return next;
       });
     }, 1000);
 
@@ -201,8 +202,12 @@ export function RestTimer({ duration, onSkip, onComplete, color }) {
           onComplete?.();
           return 0;
         }
-        if (prev <= 4) audio.playCountdownBeep();
-        return prev - 1;
+        const next = prev - 1;
+        // Beep every second for last 10 seconds
+        if (next <= 10) audio.playCountdownBeep();
+        // Voice announcement every 10 seconds
+        if (next > 0 && next % 10 === 0) audio.speakCountdown(next);
+        return next;
       });
     }, 1000);
 

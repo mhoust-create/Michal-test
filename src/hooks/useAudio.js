@@ -37,6 +37,19 @@ export function useAudio() {
     }
   }, [getCtx]);
 
+  // Voice countdown — speaks the number of seconds remaining
+  const speakCountdown = useCallback((seconds) => {
+    try {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(`${seconds}`);
+      utterance.rate = 1.1;
+      utterance.pitch = 1.0;
+      utterance.volume = 1.0;
+      window.speechSynthesis.speak(utterance);
+    } catch (e) {}
+  }, []);
+
   // Countdown beep — short high-pitched
   const playCountdownBeep = useCallback(() => {
     playTone(880, 0.15, 'sine', 0.25);
@@ -113,6 +126,7 @@ export function useAudio() {
   }, [stopRestBeat, stopExerciseBeat]);
 
   return {
+    speakCountdown,
     playCountdownBeep,
     playGoBeep,
     playRestComplete,
