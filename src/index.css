@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: #0d1117;
+  color: #e6edf3;
+  font-family: 'Roboto', 'Segoe UI', sans-serif;
+  overscroll-behavior: none;
+}
+
+#root {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+h1, h2, h3 {
+  font-family: 'Oswald', 'Impact', sans-serif;
+  letter-spacing: 0.05em;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #161b22; }
+::-webkit-scrollbar-thumb { background: #30363d; border-radius: 2px; }
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 10px rgba(232, 197, 71, 0.3); }
+  50% { box-shadow: 0 0 30px rgba(232, 197, 71, 0.8); }
+}
+.timer-glow { animation: pulse-glow 1.5s ease-in-out infinite; }
+
+@keyframes flicker {
+  0%, 100% { transform: scaleY(1) rotate(-2deg); }
+  50% { transform: scaleY(1.05) rotate(2deg); }
+}
+.flame { animation: flicker 0.5s ease-in-out infinite alternate; display: inline-block; }
+
+.exercise-card { transition: all 0.2s ease; }
+.exercise-card:active { transform: scale(0.98); }
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.slide-up { animation: slideUp 0.3s ease-out; }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.fade-in { animation: fadeIn 0.3s ease-out; }
