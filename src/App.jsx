@@ -76,59 +76,60 @@ function App() {
     setUserState({ planId: newPlanId, currentWeek: 1, currentDay: 1 });
   };
 
-  // Full-screen workout session
-  if (activeSession) {
-    return (
-      <div className="flex flex-col h-screen" style={{ background: '#0d1117' }}>
-        <WorkoutSession
-          workout={activeSession.workout}
-          planName={plan?.name || ''}
-          week={activeSession.week}
-          onComplete={handleSessionComplete}
-          onExit={() => setActiveSession(null)}
-        />
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col h-screen" style={{ background: '#0d1117' }}>
-      {/* Main content */}
-      <div className="flex-1 overflow-hidden">
-        {activeTab === 'today' && (
-          <div className="h-full overflow-y-auto">
-            <TodayWorkout
-              userPlan={planId}
-              currentWeek={currentWeek}
-              currentDay={currentDay}
-              workoutLog={workoutLog}
-              streak={streak}
-              onStartWorkout={handleStartWorkout}
-            />
-          </div>
-        )}
-        {activeTab === 'plan' && (
-          <div className="h-full overflow-y-auto">
-            <WeeklyPlan
-              userPlan={planId}
-              currentWeek={currentWeek}
-              currentDay={currentDay}
-              onSelectDay={handleSelectDay}
-              onChangePlan={handleChangePlan}
-            />
-          </div>
-        )}
-        {activeTab === 'exercises' && (
-          <div className="h-full overflow-y-auto">
-            <ExerciseLibrary />
-          </div>
-        )}
-        {activeTab === 'progress' && (
-          <div className="h-full overflow-y-auto">
-            <ProgressTracker
-              workoutLog={workoutLog}
-              currentStreak={streak}
-              totalWorkouts={workoutLog.length}
+      {/* Main content — workout session overlays tabs when active */}
+      <div className="flex-1 overflow-hidden relative">
+        {/* Tab views — always mounted, hidden when session is active */}
+        <div className={`h-full ${activeSession ? 'hidden' : ''}`}>
+          {activeTab === 'today' && (
+            <div className="h-full overflow-y-auto">
+              <TodayWorkout
+                userPlan={planId}
+                currentWeek={currentWeek}
+                currentDay={currentDay}
+                workoutLog={workoutLog}
+                streak={streak}
+                onStartWorkout={handleStartWorkout}
+              />
+            </div>
+          )}
+          {activeTab === 'plan' && (
+            <div className="h-full overflow-y-auto">
+              <WeeklyPlan
+                userPlan={planId}
+                currentWeek={currentWeek}
+                currentDay={currentDay}
+                onSelectDay={handleSelectDay}
+                onChangePlan={handleChangePlan}
+              />
+            </div>
+          )}
+          {activeTab === 'exercises' && (
+            <div className="h-full overflow-y-auto">
+              <ExerciseLibrary />
+            </div>
+          )}
+          {activeTab === 'progress' && (
+            <div className="h-full overflow-y-auto">
+              <ProgressTracker
+                workoutLog={workoutLog}
+                currentStreak={streak}
+                totalWorkouts={workoutLog.length}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Workout session — sits on top when active */}
+        {activeSession && (
+          <div className="absolute inset-0 overflow-y-auto" style={{ background: '#0d1117' }}>
+            <WorkoutSession
+              workout={activeSession.workout}
+              planName={plan?.name || ''}
+              week={activeSession.week}
+              onComplete={handleSessionComplete}
+              onExit={() => setActiveSession(null)}
             />
           </div>
         )}
