@@ -1,5 +1,32 @@
 // ExerciseSVG.jsx — Anatomical exercise illustrations
 // Thick rounded stroke segments give a clear, muscular body silhouette.
+// When a GIF is available from ExerciseDB it is shown instead of the SVG.
+
+import { useState, useEffect } from 'react';
+import { getExerciseById } from '../data/exercises';
+
+const CACHE_PREFIX = 'warfit_gif_';
+
+async function fetchGifUrl(gifQuery) {
+  const cacheKey = CACHE_PREFIX + gifQuery;
+  const cached = localStorage.getItem(cacheKey);
+  if (cached !== null) return cached === 'null' ? null : cached;
+
+  try {
+    const res = await fetch(
+      `https://exercisedb.dev/api/v1/exercises/name/${encodeURIComponent(gifQuery)}?limit=10`
+    );
+    const data = await res.json();
+    if (!Array.isArray(data)) throw new Error('bad response');
+    const best = data.find(e => e.gifUrl && e.equipment === 'body weight') || data.find(e => e.gifUrl);
+    const url = best?.gifUrl || null;
+    localStorage.setItem(cacheKey, url ?? 'null');
+    return url;
+  } catch {
+    localStorage.setItem(cacheKey, 'null');
+    return null;
+  }
+}
 
 const S = 200;
 
@@ -745,8 +772,50 @@ export const EXERCISE_SVGS = {
 };
 
 export function ExerciseSVG({ exerciseId, className = '' }) {
-  const Component = EXERCISE_SVGS[exerciseId];
-  if (!Component) {
+  const [gifUrl, setGifUrl] = useState(undefined); // undefined = loading, null = not found
+  const [gifReady, setGifReady] = useState(false);
+
+  useEffect(() => {
+    const exercise = getExerciseById(exerciseId);
+    if (!exercise?.gifQuery) { setGifUrl(null); return; }
+    let cancelled = false;
+    fetchGifUrl(exercise.gifQuery).then(url => {
+      if (!cancelled) setGifUrl(url);
+    });
+    return () => { cancelled = true; };
+  }, [exerciseId]);
+
+  const SvgComponent = EXERCISE_SVGS[exerciseId];
+
+  // Show GIF once it's resolved and the image has loaded
+  if (gifUrl) {
+    return (
+      <div className={className} style={{ background: '#0d1117', borderRadius: '12px', overflow: 'hidden', position: 'relative', aspectRatio: '1' }}>
+        {/* SVG shown underneath until GIF loads */}
+        {!gifReady && SvgComponent && (
+          <div style={{ position: 'absolute', inset: 0 }}>
+            <SvgComponent />
+          </div>
+        )}
+        <img
+          src={gifUrl}
+          alt={exerciseId}
+          loading="lazy"
+          onLoad={() => setGifReady(true)}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain',
+            opacity: gifReady ? 1 : 0,
+            transition: 'opacity 0.3s',
+          }}
+        />
+      </div>
+    );
+  }
+
+  // GIF unavailable or still loading — show SVG
+  if (!SvgComponent) {
     return (
       <svg viewBox="0 0 200 200" className={className}
         style={{ background: '#161b22', borderRadius: '12px' }}>
@@ -754,5 +823,5 @@ export function ExerciseSVG({ exerciseId, className = '' }) {
       </svg>
     );
   }
-  return <Component className={className} />;
+  return <SvgComponent className={className} />;
 }

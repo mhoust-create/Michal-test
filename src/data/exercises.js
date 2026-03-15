@@ -25,7 +25,8 @@ export const EXERCISES = {
     ],
     beginner: 'Do knee push-ups until you can do 10 full ones',
     advanced: 'Elevate feet or add a weighted vest',
-    svgKey: 'pushup'
+    svgKey: 'pushup',
+    gifQuery: 'push up'
   },
 
   diamond_pushup: {
@@ -49,7 +50,8 @@ export const EXERCISES = {
     ],
     beginner: 'Start with standard push-ups to build base strength',
     advanced: 'Add a clap between reps for explosive power',
-    svgKey: 'diamond_pushup'
+    svgKey: 'diamond_pushup',
+    gifQuery: 'diamond push up'
   },
 
   pike_pushup: {
@@ -73,7 +75,8 @@ export const EXERCISES = {
     ],
     beginner: 'Place hands on elevated surface to reduce angle',
     advanced: 'Elevate feet on a chair for full handstand angle',
-    svgKey: 'pike_pushup'
+    svgKey: 'pike_pushup',
+    gifQuery: 'pike push up'
   },
 
   dip: {
@@ -97,7 +100,8 @@ export const EXERCISES = {
     ],
     beginner: 'Use a resistance band for assistance',
     advanced: 'Add weight using a dip belt or backpack',
-    svgKey: 'dip'
+    svgKey: 'dip',
+    gifQuery: 'dip'
   },
 
   ring_pushup: {
@@ -121,7 +125,8 @@ export const EXERCISES = {
     ],
     beginner: 'Raise rings higher to reduce difficulty',
     advanced: 'Lower rings and add weighted vest',
-    svgKey: 'ring_pushup'
+    svgKey: 'ring_pushup',
+    gifQuery: 'push up'
   },
 
   // ═══════════════════════════════════════════
@@ -148,7 +153,8 @@ export const EXERCISES = {
     ],
     beginner: 'Use resistance bands or do jumping pull-ups (jump to top, lower slowly)',
     advanced: 'Add weight plate in a backpack or dip belt',
-    svgKey: 'pullup'
+    svgKey: 'pullup',
+    gifQuery: 'pull up'
   },
 
   chinup: {
@@ -172,7 +178,8 @@ export const EXERCISES = {
     ],
     beginner: 'Use band assistance or start with negatives only',
     advanced: 'Add weight or increase sets',
-    svgKey: 'chinup'
+    svgKey: 'chinup',
+    gifQuery: 'chin up'
   },
 
   ring_row: {
@@ -196,7 +203,8 @@ export const EXERCISES = {
     ],
     beginner: 'Stand more upright (higher angle)',
     advanced: 'Lower body to near-horizontal, add weight vest',
-    svgKey: 'ring_row'
+    svgKey: 'ring_row',
+    gifQuery: 'inverted row'
   },
 
   muscle_up: {
@@ -220,7 +228,8 @@ export const EXERCISES = {
     ],
     beginner: 'Practice jumping muscle-ups and slow negatives',
     advanced: 'Ring muscle-ups are significantly harder',
-    svgKey: 'muscle_up'
+    svgKey: 'muscle_up',
+    gifQuery: 'muscle up'
   },
 
   commando_pullup: {
@@ -244,7 +253,8 @@ export const EXERCISES = {
     ],
     beginner: 'Master regular pull-ups first',
     advanced: 'Add weight or slow the tempo',
-    svgKey: 'commando_pullup'
+    svgKey: 'commando_pullup',
+    gifQuery: 'commando pull up'
   },
 
   // ═══════════════════════════════════════════
@@ -271,7 +281,8 @@ export const EXERCISES = {
     ],
     beginner: 'Start with 20-second holds',
     advanced: 'Progress to RKC plank (maximum tension), then single-leg plank',
-    svgKey: 'plank'
+    svgKey: 'plank',
+    gifQuery: 'plank'
   },
 
   lsit: {
@@ -295,7 +306,8 @@ export const EXERCISES = {
     ],
     beginner: 'Tuck L-sit: knees to chest instead of straight legs',
     advanced: 'V-sit: legs angled above parallel',
-    svgKey: 'lsit'
+    svgKey: 'lsit',
+    gifQuery: 'l sit'
   },
 
   hollow_body: {
@@ -319,7 +331,8 @@ export const EXERCISES = {
     ],
     beginner: 'Tuck version: knees pulled to chest',
     advanced: 'Rock back and forth (hollow body rocks)',
-    svgKey: 'hollow_body'
+    svgKey: 'hollow_body',
+    gifQuery: 'hollow body'
   },
 
   hanging_leg_raise: {
@@ -343,7 +356,8 @@ export const EXERCISES = {
     ],
     beginner: 'Hanging knee raises with bent knees',
     advanced: 'Toes-to-bar: raise feet all the way to the bar',
-    svgKey: 'hanging_leg_raise'
+    svgKey: 'hanging_leg_raise',
+    gifQuery: 'hanging leg raise'
   },
 
   situp: {
@@ -367,7 +381,8 @@ export const EXERCISES = {
     ],
     beginner: 'Start with crunches (half range)',
     advanced: 'Hold a weight plate on chest',
-    svgKey: 'situp'
+    svgKey: 'situp',
+    gifQuery: 'sit up'
   },
 
   mountain_climber: {
@@ -391,7 +406,8 @@ export const EXERCISES = {
     ],
     beginner: 'Slow pace, focused form',
     advanced: 'Maximum speed or cross-body (knee to opposite elbow)',
-    svgKey: 'mountain_climber'
+    svgKey: 'mountain_climber',
+    gifQuery: 'mountain climber'
   },
 
   // ═══════════════════════════════════════════
@@ -418,7 +434,8 @@ export const EXERCISES = {
     ],
     beginner: 'Use a chair behind you for safety, squat to it',
     advanced: 'Jump squats, single-leg progressions',
-    svgKey: 'squat'
+    svgKey: 'squat',
+    gifQuery: 'bodyweight squat'
   },
 
   jump_squat: {
@@ -442,7 +459,8 @@ export const EXERCISES = {
     ],
     beginner: 'Regular bodyweight squats',
     advanced: 'Add light dumbbells or weighted vest',
-    svgKey: 'jump_squat'
+    svgKey: 'jump_squat',
+    gifQuery: 'jump squat'
   },
 
   lunge: {
@@ -466,7 +484,8 @@ export const EXERCISES = {
     ],
     beginner: 'Stationary lunges — step and return',
     advanced: 'Reverse lunges, or add weight',
-    svgKey: 'lunge'
+    svgKey: 'lunge',
+    gifQuery: 'walking lunge'
   },
 
   pistol_squat: {
@@ -490,7 +509,8 @@ export const EXERCISES = {
     ],
     beginner: 'Assisted pistols using a ring or bar for support',
     advanced: 'Weighted pistol squat',
-    svgKey: 'pistol_squat'
+    svgKey: 'pistol_squat',
+    gifQuery: 'pistol squat'
   },
 
   // ═══════════════════════════════════════════
@@ -517,7 +537,8 @@ export const EXERCISES = {
     ],
     beginner: 'No push-up, step back instead of jump',
     advanced: 'Pull-up at the top, or add weight vest',
-    svgKey: 'burpee'
+    svgKey: 'burpee',
+    gifQuery: 'burpee'
   },
 
   ring_muscle_up: {
@@ -541,7 +562,8 @@ export const EXERCISES = {
     ],
     beginner: 'Bar muscle-ups, ring dips + ring pull-ups separately',
     advanced: 'Slow negatives, typewriter ring muscle-ups',
-    svgKey: 'ring_muscle_up'
+    svgKey: 'ring_muscle_up',
+    gifQuery: 'muscle up'
   },
 
   superman: {
@@ -565,7 +587,8 @@ export const EXERCISES = {
     ],
     beginner: 'Lift only arms, or only legs, alternating',
     advanced: 'Hold peak for 5 seconds each rep',
-    svgKey: 'superman'
+    svgKey: 'superman',
+    gifQuery: 'superman'
   },
 
   jumping_jack: {
@@ -589,7 +612,8 @@ export const EXERCISES = {
     ],
     beginner: 'Slower tempo, step out instead of jump',
     advanced: 'Increase tempo or use a weighted vest',
-    svgKey: 'jumping_jack'
+    svgKey: 'jumping_jack',
+    gifQuery: 'jumping jack'
   }
 };
 
