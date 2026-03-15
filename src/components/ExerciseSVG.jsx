@@ -6,18 +6,24 @@ import { useState, useEffect } from 'react';
 import { getExerciseById } from '../data/exercises';
 
 // v2 — bump version to clear any stale 'null' values cached by old fetches
-const CACHE_PREFIX = 'warfit_gif_v2_';
+const CACHE_PREFIX = 'warfit_gif_v3_';
 
 const API_BASE = 'https://exercisedb.dev/api/v1/exercises/name';
 // CORS proxy fallback for GitHub Pages — used when direct fetch fails
 const PROXY = 'https://corsproxy.io/?';
 
 async function tryFetch(url) {
-  const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const data = await res.json();
-  if (!Array.isArray(data) || data.length === 0) throw new Error('empty');
-  return data;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 8000);
+  try {
+    const res = await fetch(url, { signal: controller.signal });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (!Array.isArray(data) || data.length === 0) throw new Error('empty');
+    return data;
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 async function fetchGifUrl(gifQuery) {
@@ -30,7 +36,7 @@ async function fetchGifUrl(gifQuery) {
   let data = null;
   try { data = await tryFetch(apiUrl); } catch {
     // Direct fetch failed (likely CORS) — try via proxy
-    try { data = await tryFetch(PROXY + encodeURIComponent(apiUrl)); } catch { /* give up */ }
+    try { data = await tryFetch(PROXY + apiUrl); } catch { /* give up */ }
   }
 
   const best = data?.find(e => e.gifUrl && e.equipment === 'body weight') ?? data?.find(e => e.gifUrl);
