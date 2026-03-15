@@ -5,20 +5,18 @@
 import { useState, useEffect } from 'react';
 import { getExerciseById } from '../data/exercises';
 
-// v2 — bump version to clear any stale 'null' values cached by old fetches
-const CACHE_PREFIX = 'warfit_gif_v3_';
+const CACHE_PREFIX = 'warfit_gif_v4_';
 
 const API_BASE = 'https://exercisedb.dev/api/v1/exercises/name';
-// CORS proxy fallback for GitHub Pages — used when direct fetch fails
-const PROXY = 'https://corsproxy.io/?';
 
-async function tryFetch(url) {
+async function tryFetch(url, timeout = 10000) {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 8000);
+  const timer = setTimeout(() => controller.abort(), timeout);
   try {
     const res = await fetch(url, { signal: controller.signal });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+    const text = await res.text();
+    const data = JSON.parse(text);
     if (!Array.isArray(data) || data.length === 0) throw new Error('empty');
     return data;
   } finally {
@@ -31,16 +29,38 @@ async function fetchGifUrl(gifQuery) {
   const cached = localStorage.getItem(cacheKey);
   if (cached !== null) return cached === 'null' ? null : cached;
 
-  const apiUrl = `${API_BASE}/${encodeURIComponent(gifQuery)}?limit=10`;
+  // Build the raw URL (gifQuery unencoded here, encoded separately per proxy needs)
+  const rawApiUrl = `${API_BASE}/${gifQuery}?limit=10`;
+  const encodedApiUrl = `${API_BASE}/${encodeURIComponent(gifQuery)}?limit=10`;
+
+  // Proxies: corsproxy.io requires the full URL encoded as its query string
+  const proxies = [
+    `https://corsproxy.io/?${encodeURIComponent(rawApiUrl)}`,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(rawApiUrl)}`,
+  ];
 
   let data = null;
-  try { data = await tryFetch(apiUrl); } catch {
-    // Direct fetch failed (likely CORS) — try via proxy
-    try { data = await tryFetch(PROXY + apiUrl); } catch { /* give up */ }
+  // 1. Direct fetch
+  try {
+    data = await tryFetch(encodedApiUrl, 8000);
+    console.log('[GIF] direct fetch ok', gifQuery);
+  } catch (e) {
+    console.warn('[GIF] direct failed:', e.message);
+    // 2. Proxy fallbacks
+    for (const proxyUrl of proxies) {
+      try {
+        data = await tryFetch(proxyUrl, 10000);
+        console.log('[GIF] proxy ok:', proxyUrl.slice(0, 60));
+        break;
+      } catch (e2) {
+        console.warn('[GIF] proxy failed:', proxyUrl.slice(0, 60), e2.message);
+      }
+    }
   }
 
   const best = data?.find(e => e.gifUrl && e.equipment === 'body weight') ?? data?.find(e => e.gifUrl);
   const url = best?.gifUrl ?? null;
+  console.log('[GIF] result for', gifQuery, '→', url ? 'found' : 'null');
   localStorage.setItem(cacheKey, url ?? 'null');
   return url;
 }
@@ -791,6 +811,7 @@ export const EXERCISE_SVGS = {
 export function ExerciseSVG({ exerciseId, className = '' }) {
   const [gifUrl, setGifUrl] = useState(undefined); // undefined = loading, null = not found
   const [gifReady, setGifReady] = useState(false);
+  const [gifError, setGifError] = useState(false);
 
   useEffect(() => {
     const exercise = getExerciseById(exerciseId);
@@ -798,6 +819,8 @@ export function ExerciseSVG({ exerciseId, className = '' }) {
     let cancelled = false;
     fetchGifUrl(exercise.gifQuery).then(url => {
       if (!cancelled) setGifUrl(url);
+    }).catch(() => {
+      if (!cancelled) setGifUrl(null);
     });
     return () => { cancelled = true; };
   }, [exerciseId]);
@@ -817,8 +840,10 @@ export function ExerciseSVG({ exerciseId, className = '' }) {
           src={gifUrl}
           alt={exerciseId}
           onLoad={() => setGifReady(true)}
-          style={{ width: '100%', height: '100%', objectFit: 'contain', opacity: gifReady ? 1 : 0, transition: 'opacity 0.4s' }}
+          onError={() => { console.warn('[GIF] img load failed:', gifUrl); setGifError(true); setGifReady(false); }}
+          style={{ width: '100%', height: '100%', objectFit: 'contain', opacity: gifReady && !gifError ? 1 : 0, transition: 'opacity 0.4s' }}
         />
+        {gifError && <div style={{ position: 'absolute', bottom: 4, right: 6, fontSize: 10, color: '#f97316', opacity: 0.7 }}>img err</div>}
       </div>
     );
   }
