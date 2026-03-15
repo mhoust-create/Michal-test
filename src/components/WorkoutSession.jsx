@@ -26,6 +26,9 @@ function CircuitSession({ workout, planName, week, onComplete, onExit }) {
   const [showDetails, setShowDetails] = useState(true);
   const audio = useAudio();
 
+  // Unlock iOS speech synthesis on mount (requires being triggered by user gesture chain)
+  useEffect(() => { audio.unlockSpeech(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const totalRounds = workout.rounds || 3;
   const exercises = workout.exercises;
   const current = exercises[currentExIdx];
@@ -184,6 +187,9 @@ function StraightSession({ workout, planName, week, onComplete, onExit }) {
   const [startTime] = useState(Date.now());
   const [showDetails, setShowDetails] = useState(true);
   const audio = useAudio();
+
+  // Unlock iOS speech synthesis on mount
+  useEffect(() => { audio.unlockSpeech(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const exercises = workout.exercises;
   const current = exercises[currentExIdx];

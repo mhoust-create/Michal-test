@@ -37,10 +37,23 @@ export function useAudio() {
     }
   }, [getCtx]);
 
+  // Unlock speech synthesis on iOS — must be called from a user gesture
+  // iOS silently ignores speechSynthesis calls from timers unless unlocked first
+  const unlockSpeech = useCallback(() => {
+    try {
+      if (!('speechSynthesis' in window)) return;
+      const u = new SpeechSynthesisUtterance('');
+      u.volume = 0;
+      window.speechSynthesis.speak(u);
+    } catch (e) {}
+  }, []);
+
   // Voice countdown — speaks the number of seconds remaining
   const speakCountdown = useCallback((seconds) => {
     try {
       if (!('speechSynthesis' in window)) return;
+      // iOS sometimes pauses synthesis — resume before speaking
+      if (window.speechSynthesis.paused) window.speechSynthesis.resume();
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(`${seconds}`);
       utterance.rate = 1.1;
@@ -126,6 +139,7 @@ export function useAudio() {
   }, [stopRestBeat, stopExerciseBeat]);
 
   return {
+    unlockSpeech,
     speakCountdown,
     playCountdownBeep,
     playGoBeep,

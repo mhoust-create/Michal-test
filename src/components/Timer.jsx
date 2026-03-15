@@ -42,6 +42,17 @@ export function CircularTimer({ duration, onComplete, autoStart = false, label =
     setHasStarted(autoStart);
   }, [duration, autoStart]);
 
+  // iOS keep-alive: Safari pauses speechSynthesis after ~30s of inactivity
+  useEffect(() => {
+    if (!isRunning) return;
+    const keepAlive = setInterval(() => {
+      if ('speechSynthesis' in window && window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+      }
+    }, 5000);
+    return () => clearInterval(keepAlive);
+  }, [isRunning]);
+
   useEffect(() => {
     if (!isRunning) {
       clearInterval(intervalRef.current);
@@ -186,6 +197,17 @@ export function RestTimer({ duration, onSkip, onComplete, color }) {
     }
     return () => audio.stopRestBeat();
   }, [musicOn, audio]);
+
+  // iOS keep-alive: Safari pauses speechSynthesis after ~30s of inactivity
+  useEffect(() => {
+    if (!isRunning) return;
+    const keepAlive = setInterval(() => {
+      if ('speechSynthesis' in window && window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+      }
+    }, 5000);
+    return () => clearInterval(keepAlive);
+  }, [isRunning]);
 
   useEffect(() => {
     if (!isRunning) {
