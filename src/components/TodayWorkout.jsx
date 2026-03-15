@@ -92,13 +92,23 @@ export function TodayWorkout({ userPlan, currentWeek, currentDay, workoutLog, st
                           {exercise.name}
                         </div>
                         <div className="text-xs" style={{ color: cat?.color || '#6b7280', fontSize: '0.6rem' }}>
-                          {ex.sets}×{exercise.type === 'timed' ? `${ex.duration}s` : ex.reps}
+                          {nextWorkout.format === 'circuit'
+                            ? (exercise.type === 'timed' ? `${ex.duration}s` : `${ex.reps}`)
+                            : `${ex.sets}×${exercise.type === 'timed' ? `${ex.duration}s` : ex.reps}`}
                         </div>
                       </div>
                     </div>
                   );
                 })}
               </div>
+
+              {/* Format badge */}
+              {nextWorkout.format === 'circuit' && (
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full mb-3 text-xs font-bold uppercase tracking-wider"
+                  style={{ background: '#f9731622', color: '#f97316', border: '1px solid #f9731644' }}>
+                  🔄 Circuit Training · {nextWorkout.rounds} Rounds
+                </div>
+              )}
 
               {/* Stats row */}
               <div className="flex gap-4 mb-4">
@@ -110,13 +120,15 @@ export function TodayWorkout({ userPlan, currentWeek, currentDay, workoutLog, st
                 </div>
                 <div>
                   <div className="text-lg font-bold" style={{ fontFamily: 'Oswald', color: '#e8c547' }}>
-                    {nextWorkout.exercises.reduce((a, e) => a + e.sets, 0)}
+                    {nextWorkout.format === 'circuit'
+                      ? `${nextWorkout.rounds}×`
+                      : nextWorkout.exercises.reduce((a, e) => a + (e.sets || 1), 0)}
                   </div>
-                  <div className="text-xs" style={{ color: '#6b7280' }}>total sets</div>
+                  <div className="text-xs" style={{ color: '#6b7280' }}>{nextWorkout.format === 'circuit' ? 'rounds' : 'total sets'}</div>
                 </div>
                 <div>
                   <div className="text-lg font-bold" style={{ fontFamily: 'Oswald', color: '#e8c547' }}>
-                    ~{Math.round(nextWorkout.exercises.length * 4)}m
+                    ~{Math.round(nextWorkout.exercises.length * (nextWorkout.rounds || 1) * 1.5)}m
                   </div>
                   <div className="text-xs" style={{ color: '#6b7280' }}>est. time</div>
                 </div>
@@ -188,7 +200,9 @@ export function TodayWorkout({ userPlan, currentWeek, currentDay, workoutLog, st
                     <div className="flex-1">
                       <div className="text-sm font-medium" style={{ fontFamily: 'Oswald', color: '#e6edf3' }}>{exercise.name}</div>
                       <div className="text-xs" style={{ color: cat?.color || '#6b7280' }}>
-                        {ex.sets} sets × {exercise.type === 'timed' ? `${ex.duration}s` : `${ex.reps} reps`}
+                        {nextWorkout.format === 'circuit'
+                          ? `${exercise.type === 'timed' ? `${ex.duration}s` : `${ex.reps} reps`} per round`
+                          : `${ex.sets} sets × ${exercise.type === 'timed' ? `${ex.duration}s` : `${ex.reps} reps`}`}
                         {ex.note && ` (${ex.note})`}
                       </div>
                     </div>

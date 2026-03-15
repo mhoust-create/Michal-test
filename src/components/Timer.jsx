@@ -159,7 +159,7 @@ export function CircularTimer({ duration, onComplete, autoStart = false, label =
 }
 
 // Rest timer with music beats
-export function RestTimer({ duration, onSkip, onComplete }) {
+export function RestTimer({ duration, onSkip, onComplete, color }) {
   const [timeLeft, setTimeLeft] = useState(duration);
   const [isRunning, setIsRunning] = useState(true);
   const [musicOn, setMusicOn] = useState(false);
@@ -213,7 +213,7 @@ export function RestTimer({ duration, onSkip, onComplete }) {
   const circumference = 2 * Math.PI * radius;
   const progress = timeLeft / duration;
   const offset = circumference * (1 - progress);
-  const timerColor = timeLeft <= 5 ? '#f85149' : '#3b82f6';
+  const timerColor = timeLeft <= 5 ? '#f85149' : (color || '#3b82f6');
 
   return (
     <div className="flex flex-col items-center gap-4 py-4">
