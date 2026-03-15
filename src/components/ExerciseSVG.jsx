@@ -5,27 +5,38 @@
 import { useState, useEffect } from 'react';
 import { getExerciseById } from '../data/exercises';
 
-const CACHE_PREFIX = 'warfit_gif_';
+// v2 — bump version to clear any stale 'null' values cached by old fetches
+const CACHE_PREFIX = 'warfit_gif_v2_';
+
+const API_BASE = 'https://exercisedb.dev/api/v1/exercises/name';
+// CORS proxy fallback for GitHub Pages — used when direct fetch fails
+const PROXY = 'https://corsproxy.io/?';
+
+async function tryFetch(url) {
+  const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const data = await res.json();
+  if (!Array.isArray(data) || data.length === 0) throw new Error('empty');
+  return data;
+}
 
 async function fetchGifUrl(gifQuery) {
   const cacheKey = CACHE_PREFIX + gifQuery;
   const cached = localStorage.getItem(cacheKey);
   if (cached !== null) return cached === 'null' ? null : cached;
 
-  try {
-    const res = await fetch(
-      `https://exercisedb.dev/api/v1/exercises/name/${encodeURIComponent(gifQuery)}?limit=10`
-    );
-    const data = await res.json();
-    if (!Array.isArray(data)) throw new Error('bad response');
-    const best = data.find(e => e.gifUrl && e.equipment === 'body weight') || data.find(e => e.gifUrl);
-    const url = best?.gifUrl || null;
-    localStorage.setItem(cacheKey, url ?? 'null');
-    return url;
-  } catch {
-    localStorage.setItem(cacheKey, 'null');
-    return null;
+  const apiUrl = `${API_BASE}/${encodeURIComponent(gifQuery)}?limit=10`;
+
+  let data = null;
+  try { data = await tryFetch(apiUrl); } catch {
+    // Direct fetch failed (likely CORS) — try via proxy
+    try { data = await tryFetch(PROXY + encodeURIComponent(apiUrl)); } catch { /* give up */ }
   }
+
+  const best = data?.find(e => e.gifUrl && e.equipment === 'body weight') ?? data?.find(e => e.gifUrl);
+  const url = best?.gifUrl ?? null;
+  localStorage.setItem(cacheKey, url ?? 'null');
+  return url;
 }
 
 const S = 200;
@@ -787,11 +798,10 @@ export function ExerciseSVG({ exerciseId, className = '' }) {
 
   const SvgComponent = EXERCISE_SVGS[exerciseId];
 
-  // Show GIF once it's resolved and the image has loaded
+  // GIF resolved and available — show it, with SVG as placeholder until image loads
   if (gifUrl) {
     return (
       <div className={className} style={{ background: '#0d1117', borderRadius: '12px', overflow: 'hidden', position: 'relative', aspectRatio: '1' }}>
-        {/* SVG shown underneath until GIF loads */}
         {!gifReady && SvgComponent && (
           <div style={{ position: 'absolute', inset: 0 }}>
             <SvgComponent />
@@ -800,21 +810,24 @@ export function ExerciseSVG({ exerciseId, className = '' }) {
         <img
           src={gifUrl}
           alt={exerciseId}
-          loading="lazy"
           onLoad={() => setGifReady(true)}
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'contain',
-            opacity: gifReady ? 1 : 0,
-            transition: 'opacity 0.3s',
-          }}
+          style={{ width: '100%', height: '100%', objectFit: 'contain', opacity: gifReady ? 1 : 0, transition: 'opacity 0.4s' }}
         />
       </div>
     );
   }
 
-  // GIF unavailable or still loading — show SVG
+  // Still fetching — show SVG with a subtle pulse border to indicate loading
+  if (gifUrl === undefined && SvgComponent) {
+    return (
+      <div className={className} style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden' }}>
+        <SvgComponent />
+        <div style={{ position: 'absolute', inset: 0, border: '2px solid rgba(232,197,71,0.25)', borderRadius: '12px', animation: 'pulse 2s infinite', pointerEvents: 'none' }} />
+      </div>
+    );
+  }
+
+  // No GIF found and no SVG component
   if (!SvgComponent) {
     return (
       <svg viewBox="0 0 200 200" className={className}
