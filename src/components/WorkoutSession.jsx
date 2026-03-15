@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { getExerciseById, CATEGORIES } from '../data/exercises';
 import { ExerciseSVG } from './ExerciseSVG';
 import { RestTimer, CircularTimer, ExerciseBeatPlayer } from './Timer';
@@ -21,6 +21,7 @@ function CircuitSession({ workout, planName, week, onComplete, onExit }) {
   const [currentExIdx, setCurrentExIdx] = useState(0);
   const [phase, setPhase] = useState('exercise'); // 'exercise' | 'rest-between' | 'rest-round' | 'done'
   const [completed, setCompleted] = useState([]);
+  const completedRef = useRef([]); // ref always has latest value — avoids stale closure bug
   const [startTime] = useState(Date.now());
   const [showDetails, setShowDetails] = useState(true);
   const audio = useAudio();
@@ -35,17 +36,16 @@ function CircuitSession({ workout, planName, week, onComplete, onExit }) {
   const overallProgress = totalSteps > 0 ? doneSteps / totalSteps : 0;
 
   const markExerciseComplete = () => {
-    setCompleted(prev => {
-      const existing = prev.find(c => c.exerciseId === current.exerciseId);
-      if (existing) {
-        return prev.map(c =>
-          c.exerciseId === current.exerciseId
-            ? { ...c, sets: [...c.sets, { completed: true, reps: current.reps, duration: current.duration }] }
-            : c
-        );
-      }
-      return [...prev, { exerciseId: current.exerciseId, sets: [{ completed: true, reps: current.reps, duration: current.duration }] }];
-    });
+    const newEntry = { completed: true, reps: current.reps, duration: current.duration };
+    const prev = completedRef.current;
+    const existing = prev.find(c => c.exerciseId === current.exerciseId);
+    const updated = existing
+      ? prev.map(c => c.exerciseId === current.exerciseId
+          ? { ...c, sets: [...c.sets, newEntry] } : c)
+      : [...prev, { exerciseId: current.exerciseId, sets: [newEntry] }];
+
+    completedRef.current = updated;
+    setCompleted(updated);
 
     const isLastExercise = currentExIdx >= exercises.length - 1;
     const isLastRound = currentRound >= totalRounds;
@@ -57,9 +57,9 @@ function CircuitSession({ workout, planName, week, onComplete, onExit }) {
     }
 
     if (isLastExercise) {
-      setPhase('rest-round'); // longer rest between rounds
+      setPhase('rest-round');
     } else {
-      setPhase('rest-between'); // short rest between exercises
+      setPhase('rest-between');
     }
   };
 
@@ -74,9 +74,10 @@ function CircuitSession({ workout, planName, week, onComplete, onExit }) {
     setPhase('exercise');
   };
 
+  // Uses ref — always has the latest completed list, no stale closure
   const handleComplete = () => {
     const duration = Math.round((Date.now() - startTime) / 60000);
-    onComplete({ exercises: completed, duration, date: new Date().toISOString() });
+    onComplete({ exercises: completedRef.current, duration, date: new Date().toISOString() });
   };
 
   if (phase === 'done') {
@@ -179,6 +180,7 @@ function StraightSession({ workout, planName, week, onComplete, onExit }) {
   const [currentSet, setCurrentSet] = useState(1);
   const [phase, setPhase] = useState('exercise');
   const [completed, setCompleted] = useState([]);
+  const completedRef = useRef([]);
   const [startTime] = useState(Date.now());
   const [showDetails, setShowDetails] = useState(true);
   const audio = useAudio();
@@ -190,17 +192,16 @@ function StraightSession({ workout, planName, week, onComplete, onExit }) {
   const doneSetCount = completed.reduce((acc, c) => acc + c.sets.filter(s => s.completed).length, 0);
 
   const markSetComplete = () => {
-    setCompleted(prev => {
-      const existing = prev.find(c => c.exerciseId === current.exerciseId);
-      if (existing) {
-        return prev.map(c =>
-          c.exerciseId === current.exerciseId
-            ? { ...c, sets: [...c.sets, { completed: true, reps: current.reps, duration: current.duration }] }
-            : c
-        );
-      }
-      return [...prev, { exerciseId: current.exerciseId, sets: [{ completed: true, reps: current.reps, duration: current.duration }] }];
-    });
+    const newEntry = { completed: true, reps: current.reps, duration: current.duration };
+    const prev = completedRef.current;
+    const existing = prev.find(c => c.exerciseId === current.exerciseId);
+    const updated = existing
+      ? prev.map(c => c.exerciseId === current.exerciseId
+          ? { ...c, sets: [...c.sets, newEntry] } : c)
+      : [...prev, { exerciseId: current.exerciseId, sets: [newEntry] }];
+
+    completedRef.current = updated;
+    setCompleted(updated);
 
     const isLastSet = currentSet >= (current.sets || 1);
     const isLastExercise = currentExIdx >= exercises.length - 1;
@@ -221,7 +222,7 @@ function StraightSession({ workout, planName, week, onComplete, onExit }) {
 
   const handleComplete = () => {
     const duration = Math.round((Date.now() - startTime) / 60000);
-    onComplete({ exercises: completed, duration, date: new Date().toISOString() });
+    onComplete({ exercises: completedRef.current, duration, date: new Date().toISOString() });
   };
 
   if (phase === 'done') {

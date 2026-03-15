@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { TodayWorkout } from './components/TodayWorkout';
 import { WeeklyPlan } from './components/WeeklyPlan';
@@ -18,7 +18,15 @@ function App() {
   const [activeTab, setActiveTab] = useState('today');
   const [userState, setUserState] = useLocalStorage('warfit_user', DEFAULT_STATE);
   const [workoutLog, setWorkoutLog] = useLocalStorage('warfit_log', []);
-  const [activeSession, setActiveSession] = useState(null); // { workout, week }
+  const [activeSession, setActiveSession] = useState(null);
+  const [toast, setToast] = useState(null);
+
+  // Auto-dismiss toast after 3 seconds
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 3000);
+    return () => clearTimeout(t);
+  }, [toast]);
 
   const { planId, currentWeek, currentDay } = userState;
   const plan = getPlan(planId);
@@ -44,6 +52,7 @@ function App() {
       duration: result.duration,
     };
     setWorkoutLog(prev => [...prev, logEntry]);
+    setToast(`✓ Workout saved — ${logEntry.exercises.length} exercises · ${logEntry.duration}m`);
 
     // Advance to next day
     const planDays = planData?.weeks[0]?.days.length || 3;
@@ -124,6 +133,16 @@ function App() {
           </div>
         )}
       </div>
+
+      {/* Save toast */}
+      {toast && (
+        <div
+          className="fixed bottom-20 left-1/2 -translate-x-1/2 px-4 py-2.5 rounded-full text-sm font-medium z-50 fade-in"
+          style={{ background: '#39d353', color: '#0d1117', boxShadow: '0 4px 20px rgba(57,211,83,0.4)', whiteSpace: 'nowrap' }}
+        >
+          {toast}
+        </div>
+      )}
 
       {/* Bottom Navigation */}
       <nav
