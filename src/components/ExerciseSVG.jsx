@@ -749,28 +749,59 @@ export const EXERCISE_SVGS = {
   ring_muscle_up:   RingMuscleUpSVG,
 };
 
+const FRAME_ANIM_STYLE = `
+@keyframes ex-frame-0 {
+  0%, 45%  { opacity: 1; }
+  50%, 95% { opacity: 0; }
+  100%     { opacity: 1; }
+}
+@keyframes ex-frame-1 {
+  0%, 45%  { opacity: 0; }
+  50%, 95% { opacity: 1; }
+  100%     { opacity: 0; }
+}
+`;
+
 export function ExerciseSVG({ exerciseId, className = '' }) {
-  const [gifReady, setGifReady] = useState(false);
-  const [gifError, setGifError] = useState(false);
+  const [frame0Ready, setFrame0Ready] = useState(false);
+  const [frame1Ready, setFrame1Ready] = useState(false);
+  const [frameError, setFrameError] = useState(false);
 
-  const gifUrl = EXERCISE_GIFS[exerciseId] ?? null;
+  const baseUrl = EXERCISE_GIFS[exerciseId] ?? null;
   const SvgComponent = EXERCISE_SVGS[exerciseId];
+  const bothReady = frame0Ready && frame1Ready && !frameError;
 
-  // GIF available — show it, with SVG as placeholder until image loads
-  if (gifUrl) {
+  // Image frames available — animate between frame 0 and frame 1
+  if (baseUrl) {
     return (
       <div className={className} style={{ background: '#0d1117', borderRadius: '12px', overflow: 'hidden', position: 'relative', aspectRatio: '1' }}>
-        {!gifReady && SvgComponent && (
+        <style>{FRAME_ANIM_STYLE}</style>
+        {!bothReady && SvgComponent && (
           <div style={{ position: 'absolute', inset: 0 }}>
             <SvgComponent />
           </div>
         )}
         <img
-          src={gifUrl}
+          src={`${baseUrl}/0.jpg`}
           alt={exerciseId}
-          onLoad={() => setGifReady(true)}
-          onError={() => { setGifError(true); setGifReady(false); }}
-          style={{ width: '100%', height: '100%', objectFit: 'contain', opacity: gifReady && !gifError ? 1 : 0, transition: 'opacity 0.4s' }}
+          onLoad={() => setFrame0Ready(true)}
+          onError={() => setFrameError(true)}
+          style={{
+            position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain',
+            opacity: bothReady ? undefined : 0,
+            animation: bothReady ? 'ex-frame-0 2s steps(1, end) infinite' : undefined,
+          }}
+        />
+        <img
+          src={`${baseUrl}/1.jpg`}
+          alt=""
+          onLoad={() => setFrame1Ready(true)}
+          onError={() => setFrameError(true)}
+          style={{
+            position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain',
+            opacity: 0,
+            animation: bothReady ? 'ex-frame-1 2s steps(1, end) infinite' : undefined,
+          }}
         />
       </div>
     );
