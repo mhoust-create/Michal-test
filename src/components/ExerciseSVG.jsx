@@ -1,17 +1,22 @@
 // ExerciseSVG.jsx — Anatomical exercise illustrations
 // Thick rounded stroke segments give a clear, muscular body silhouette.
-// When a GIF is available (pre-fetched into exerciseGifs.json) it is shown instead of the SVG.
-// To populate GIF URLs: node scripts/fetch-exercise-gifs.mjs
-
-import { useState } from 'react';
-import EXERCISE_GIFS from '../data/exerciseGifs.json';
 
 const S = 200;
 
-const StickFigure = ({ children }) => (
+const ANIM_STYLES = `
+  @keyframes fig-up    { 0%,100%{transform:translateY(0)}   50%{transform:translateY(-7px)} }
+  @keyframes fig-down  { 0%,100%{transform:translateY(0)}   50%{transform:translateY(7px)}  }
+  @keyframes fig-pulse { 0%,100%{transform:scale(1)}        50%{transform:scale(1.025)}     }
+  .fig-up    { animation: fig-up    1.8s ease-in-out infinite; transform-box:fill-box; transform-origin:center; }
+  .fig-down  { animation: fig-down  1.8s ease-in-out infinite; transform-box:fill-box; transform-origin:center; }
+  .fig-pulse { animation: fig-pulse 2.2s ease-in-out infinite; transform-box:fill-box; transform-origin:center; }
+`;
+
+const StickFigure = ({ children, animDir }) => (
   <svg viewBox={`0 0 ${S} ${S}`} className="exercise-svg w-full h-full"
     style={{ background: '#161b22', borderRadius: '12px' }} xmlns="http://www.w3.org/2000/svg">
-    {children}
+    <style>{ANIM_STYLES}</style>
+    {animDir ? <g className={`fig-${animDir}`}>{children}</g> : children}
   </svg>
 );
 
@@ -75,7 +80,7 @@ const Label = ({ x, y, text }) => (
 // PUSH-UP — side view, down position. Body forms plank ~14° from horizontal.
 export function PushupSVG() {
   return (
-    <StickFigure>
+    <StickFigure animDir="up">
       <Ground />
       {/* Far arm (ghost, slightly right) */}
       <Limb x1={88} y1={128} x2={84} y2={150} w={11} c={DM} />
@@ -101,7 +106,7 @@ export function PushupSVG() {
 // DIAMOND PUSH-UP — same plank, narrow diamond hand position under chest.
 export function DiamondPushupSVG() {
   return (
-    <StickFigure>
+    <StickFigure animDir="up">
       <Ground />
       <Limb x1={178} y1={162} x2={164} y2={155} w={11} />
       <Limb x1={164} y1={155} x2={148} y2={147} w={13} />
@@ -125,7 +130,7 @@ export function DiamondPushupSVG() {
 // PIKE PUSH-UP — inverted-V, hands & feet on ground, hips high.
 export function PikePushupSVG() {
   return (
-    <StickFigure>
+    <StickFigure animDir="down">
       <Ground y={168} />
       {/* Legs from high hips down to feet */}
       <Limb x1={100} y1={62} x2={132} y2={115} w={14} />
@@ -149,7 +154,7 @@ export function PikePushupSVG() {
 // DIP — parallel bars, front view. Body lowered to upper arms parallel.
 export function DipSVG() {
   return (
-    <StickFigure>
+    <StickFigure animDir="down">
       {/* Bar uprights */}
       <line x1={55} y1={18} x2={55} y2={82} stroke={E} strokeWidth={4} />
       <line x1={145} y1={18} x2={145} y2={82} stroke={E} strokeWidth={4} />
@@ -181,7 +186,7 @@ export function DipSVG() {
 // RING PUSH-UP — same plank as push-up, rings under hands.
 export function RingPushupSVG() {
   return (
-    <StickFigure>
+    <StickFigure animDir="up">
       <Ground />
       <Rings lx={72} rx={128} y={163} rope={40} />
       <Limb x1={178} y1={162} x2={164} y2={155} w={11} />
@@ -206,7 +211,7 @@ export function RingPushupSVG() {
 // PULL-UP — front view, dead hang. Wide overhand grip.
 export function PullupSVG() {
   return (
-    <StickFigure>
+    <StickFigure animDir="up">
       <PullBar />
       {/* Hands on bar */}
       <Dot cx={55} cy={28} r={6} /><Dot cx={145} cy={28} r={6} />
@@ -232,7 +237,7 @@ export function PullupSVG() {
 // CHIN-UP — front view, underhand (supinated) grip, shoulder-width.
 export function ChinupSVG() {
   return (
-    <StickFigure>
+    <StickFigure animDir="up">
       <PullBar y={28} x1={50} x2={150} />
       <Dot cx={70} cy={28} r={6} /><Dot cx={130} cy={28} r={6} />
       {/* Narrower underhand — biceps pop */}
@@ -256,7 +261,7 @@ export function ChinupSVG() {
 // RING ROW — side view, body ~40° incline, heels on ground, pulling to chest.
 export function RingRowSVG() {
   return (
-    <StickFigure>
+    <StickFigure animDir="up">
       <Ground y={175} />
       <Rings lx={88} rx={120} y={100} rope={55} />
       {/* Legs (heels on ground, body inclined) */}
@@ -280,7 +285,7 @@ export function RingRowSVG() {
 // MUSCLE-UP — side view, body at bar level, chest transitioning over bar.
 export function MuscleUpSVG() {
   return (
-    <StickFigure>
+    <StickFigure animDir="up">
       <PullBar y={75} x1={30} x2={170} />
       {/* Body at bar height — transition moment */}
       <Dot cx={78} cy={75} r={6} /><Dot cx={122} cy={75} r={6} />
@@ -307,7 +312,7 @@ export function MuscleUpSVG() {
 // COMMANDO PULL-UP — neutral grip, pulling to alternate sides.
 export function CommandoPullupSVG() {
   return (
-    <StickFigure>
+    <StickFigure animDir="up">
       {/* Bar running front-to-back (seen from 3/4) */}
       <line x1={70} y1={28} x2={130} y2={28} stroke={E} strokeWidth={5} strokeLinecap="round" />
       <line x1={70} y1={18} x2={70} y2={28} stroke={E} strokeWidth={3} strokeDasharray="4,3" />
@@ -338,7 +343,7 @@ export function CommandoPullupSVG() {
 // PLANK — side view, forearms on ground, perfect horizontal body.
 export function PlankSVG() {
   return (
-    <StickFigure>
+    <StickFigure animDir="pulse">
       <Ground />
       {/* Legs */}
       <Limb x1={178} y1={162} x2={164} y2={155} w={11} />
@@ -360,7 +365,7 @@ export function PlankSVG() {
 // L-SIT — side view. Body upright on parallettes, legs horizontal.
 export function LsitSVG() {
   return (
-    <StickFigure>
+    <StickFigure animDir="pulse">
       {/* Parallettes */}
       <line x1={50} y1={148} x2={76} y2={148} stroke={E} strokeWidth={5} strokeLinecap="round" />
       <line x1={124} y1={148} x2={150} y2={148} stroke={E} strokeWidth={5} strokeLinecap="round" />
@@ -388,7 +393,7 @@ export function LsitSVG() {
 // HOLLOW BODY HOLD — lying on back, arms overhead, legs/shoulders raised.
 export function HollowBodySVG() {
   return (
-    <StickFigure>
+    <StickFigure animDir="pulse">
       <Ground y={162} />
       {/* Lower back barely touching ground — banana arc */}
       {/* Feet raised (left side) */}
@@ -414,7 +419,7 @@ export function HollowBodySVG() {
 // HANGING LEG RAISE — front view, bar at top, legs raised to 90°.
 export function HangingLegRaiseSVG() {
   return (
-    <StickFigure>
+    <StickFigure animDir="up">
       <PullBar />
       <Dot cx={72} cy={28} r={6} /><Dot cx={128} cy={28} r={6} />
       {/* Arms */}
@@ -440,7 +445,7 @@ export function HangingLegRaiseSVG() {
 // MILITARY SIT-UP — side view, coming up ~45°.
 export function SitupSVG() {
   return (
-    <StickFigure>
+    <StickFigure animDir="up">
       <Ground y={172} />
       {/* Legs flat on ground */}
       <Limb x1={28} y1={168} x2={58} y2={165} w={11} />
@@ -464,7 +469,7 @@ export function SitupSVG() {
 // MOUNTAIN CLIMBER — side view, plank with one knee driven forward.
 export function MountainClimberSVG() {
   return (
-    <StickFigure>
+    <StickFigure animDir="pulse">
       <Ground />
       {/* Back leg straight */}
       <Limb x1={178} y1={162} x2={162} y2={153} w={11} />
@@ -494,7 +499,7 @@ export function MountainClimberSVG() {
 // BODYWEIGHT SQUAT — side view, parallel depth, knees track over toes.
 export function SquatSVG() {
   return (
-    <StickFigure>
+    <StickFigure animDir="down">
       <Ground />
       {/* Feet flat */}
       <Limb x1={112} y1={165} x2={128} y2={164} w={11} />
@@ -524,7 +529,7 @@ export function SquatSVG() {
 // JUMP SQUAT — side view, airborne, arms back ready to swing.
 export function JumpSquatSVG() {
   return (
-    <StickFigure>
+    <StickFigure animDir="up">
       <Ground />
       {/* Feet off ground */}
       <Limb x1={114} y1={155} x2={128} y2={158} w={11} />
@@ -551,7 +556,7 @@ export function JumpSquatSVG() {
 // WALKING LUNGE — side view, front knee 90°, back knee near ground.
 export function LungeSVG() {
   return (
-    <StickFigure>
+    <StickFigure animDir="down">
       <Ground />
       {/* Back foot */}
       <Limb x1={170} y1={162} x2={158} y2={158} w={11} />
@@ -583,7 +588,7 @@ export function LungeSVG() {
 // PISTOL SQUAT — side view, single-leg deep squat, free leg extended.
 export function PistolSquatSVG() {
   return (
-    <StickFigure>
+    <StickFigure animDir="down">
       <Ground />
       {/* Foot on ground */}
       <Limb x1={105} y1={165} x2={120} y2={163} w={11} />
@@ -615,7 +620,7 @@ export function PistolSquatSVG() {
 // BURPEE — shown at the top (jump with arms overhead).
 export function BurpeeSVG() {
   return (
-    <StickFigure>
+    <StickFigure animDir="up">
       <Ground />
       {/* Feet off ground (jumping) */}
       <Limb x1={94} y1={148} x2={82} y2={155} w={11} c={M} />
@@ -643,7 +648,7 @@ export function BurpeeSVG() {
 // SUPERMAN / BACK EXTENSION — prone, arms & legs lifted off ground.
 export function SupermanSVG() {
   return (
-    <StickFigure>
+    <StickFigure animDir="up">
       <Ground y={125} />
       {/* Hips/waist as the contact point */}
       {/* Legs lifted (left side = feet) */}
@@ -668,7 +673,7 @@ export function SupermanSVG() {
 // JUMPING JACKS — front view, star position (mid-rep).
 export function JumpingJackSVG() {
   return (
-    <StickFigure>
+    <StickFigure animDir="up">
       {/* Feet spread wide */}
       <Limb x1={32} y1={175} x2={50} y2={170} w={11} c={M} />
       <Limb x1={168} y1={175} x2={150} y2={170} w={11} c={M} />
@@ -696,7 +701,7 @@ export function JumpingJackSVG() {
 // RING MUSCLE-UP — on rings, body transitioning above rings.
 export function RingMuscleUpSVG() {
   return (
-    <StickFigure>
+    <StickFigure animDir="up">
       <Rings lx={75} rx={125} y={78} rope={55} />
       {/* Hands on rings */}
       <Dot cx={75} cy={78} r={6} /><Dot cx={125} cy={78} r={6} />
@@ -749,65 +754,8 @@ export const EXERCISE_SVGS = {
   ring_muscle_up:   RingMuscleUpSVG,
 };
 
-const FRAME_ANIM_STYLE = `
-@keyframes ex-frame-0 {
-  0%, 45%  { opacity: 1; }
-  50%, 95% { opacity: 0; }
-  100%     { opacity: 1; }
-}
-@keyframes ex-frame-1 {
-  0%, 45%  { opacity: 0; }
-  50%, 95% { opacity: 1; }
-  100%     { opacity: 0; }
-}
-`;
-
 export function ExerciseSVG({ exerciseId, className = '' }) {
-  const [frame0Ready, setFrame0Ready] = useState(false);
-  const [frame1Ready, setFrame1Ready] = useState(false);
-  const [frameError, setFrameError] = useState(false);
-
-  const baseUrl = EXERCISE_GIFS[exerciseId] ?? null;
   const SvgComponent = EXERCISE_SVGS[exerciseId];
-  const bothReady = frame0Ready && frame1Ready && !frameError;
-
-  // Image frames available — animate between frame 0 and frame 1
-  if (baseUrl) {
-    return (
-      <div className={className} style={{ background: '#0d1117', borderRadius: '12px', overflow: 'hidden', position: 'relative', aspectRatio: '1' }}>
-        <style>{FRAME_ANIM_STYLE}</style>
-        {!bothReady && SvgComponent && (
-          <div style={{ position: 'absolute', inset: 0 }}>
-            <SvgComponent />
-          </div>
-        )}
-        <img
-          src={`${baseUrl}/0.jpg`}
-          alt={exerciseId}
-          onLoad={() => setFrame0Ready(true)}
-          onError={() => setFrameError(true)}
-          style={{
-            position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain',
-            opacity: bothReady ? undefined : 0,
-            animation: bothReady ? 'ex-frame-0 2s steps(1, end) infinite' : undefined,
-          }}
-        />
-        <img
-          src={`${baseUrl}/1.jpg`}
-          alt=""
-          onLoad={() => setFrame1Ready(true)}
-          onError={() => setFrameError(true)}
-          style={{
-            position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain',
-            opacity: 0,
-            animation: bothReady ? 'ex-frame-1 2s steps(1, end) infinite' : undefined,
-          }}
-        />
-      </div>
-    );
-  }
-
-  // No GIF — show SVG illustration
   if (!SvgComponent) {
     return (
       <svg viewBox="0 0 200 200" className={className}
