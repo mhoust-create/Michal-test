@@ -1,69 +1,10 @@
 // ExerciseSVG.jsx — Anatomical exercise illustrations
 // Thick rounded stroke segments give a clear, muscular body silhouette.
-// When a GIF is available from ExerciseDB it is shown instead of the SVG.
+// When a GIF is available (pre-fetched into exerciseGifs.json) it is shown instead of the SVG.
+// To populate GIF URLs: node scripts/fetch-exercise-gifs.mjs
 
-import { useState, useEffect } from 'react';
-import { getExerciseById } from '../data/exercises';
-
-const CACHE_PREFIX = 'warfit_gif_v4_';
-
-const API_BASE = 'https://exercisedb.dev/api/v1/exercises/name';
-
-async function tryFetch(url, timeout = 10000) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeout);
-  try {
-    const res = await fetch(url, { signal: controller.signal });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const text = await res.text();
-    const data = JSON.parse(text);
-    if (!Array.isArray(data) || data.length === 0) throw new Error('empty');
-    return data;
-  } finally {
-    clearTimeout(timer);
-  }
-}
-
-async function fetchGifUrl(gifQuery) {
-  const cacheKey = CACHE_PREFIX + gifQuery;
-  const cached = localStorage.getItem(cacheKey);
-  if (cached !== null) return cached === 'null' ? null : cached;
-
-  // Build the raw URL (gifQuery unencoded here, encoded separately per proxy needs)
-  const rawApiUrl = `${API_BASE}/${gifQuery}?limit=10`;
-  const encodedApiUrl = `${API_BASE}/${encodeURIComponent(gifQuery)}?limit=10`;
-
-  // Proxies: corsproxy.io requires the full URL encoded as its query string
-  const proxies = [
-    `https://corsproxy.io/?${encodeURIComponent(rawApiUrl)}`,
-    `https://api.allorigins.win/raw?url=${encodeURIComponent(rawApiUrl)}`,
-  ];
-
-  let data = null;
-  // 1. Direct fetch
-  try {
-    data = await tryFetch(encodedApiUrl, 8000);
-    console.log('[GIF] direct fetch ok', gifQuery);
-  } catch (e) {
-    console.warn('[GIF] direct failed:', e.message);
-    // 2. Proxy fallbacks
-    for (const proxyUrl of proxies) {
-      try {
-        data = await tryFetch(proxyUrl, 10000);
-        console.log('[GIF] proxy ok:', proxyUrl.slice(0, 60));
-        break;
-      } catch (e2) {
-        console.warn('[GIF] proxy failed:', proxyUrl.slice(0, 60), e2.message);
-      }
-    }
-  }
-
-  const best = data?.find(e => e.gifUrl && e.equipment === 'body weight') ?? data?.find(e => e.gifUrl);
-  const url = best?.gifUrl ?? null;
-  console.log('[GIF] result for', gifQuery, '→', url ? 'found' : 'null');
-  localStorage.setItem(cacheKey, url ?? 'null');
-  return url;
-}
+import { useState } from 'react';
+import EXERCISE_GIFS from '../data/exerciseGifs.json';
 
 const S = 200;
 
@@ -809,25 +750,13 @@ export const EXERCISE_SVGS = {
 };
 
 export function ExerciseSVG({ exerciseId, className = '' }) {
-  const [gifUrl, setGifUrl] = useState(undefined); // undefined = loading, null = not found
   const [gifReady, setGifReady] = useState(false);
   const [gifError, setGifError] = useState(false);
 
-  useEffect(() => {
-    const exercise = getExerciseById(exerciseId);
-    if (!exercise?.gifQuery) { setGifUrl(null); return; }
-    let cancelled = false;
-    fetchGifUrl(exercise.gifQuery).then(url => {
-      if (!cancelled) setGifUrl(url);
-    }).catch(() => {
-      if (!cancelled) setGifUrl(null);
-    });
-    return () => { cancelled = true; };
-  }, [exerciseId]);
-
+  const gifUrl = EXERCISE_GIFS[exerciseId] ?? null;
   const SvgComponent = EXERCISE_SVGS[exerciseId];
 
-  // GIF resolved and available — show it, with SVG as placeholder until image loads
+  // GIF available — show it, with SVG as placeholder until image loads
   if (gifUrl) {
     return (
       <div className={className} style={{ background: '#0d1117', borderRadius: '12px', overflow: 'hidden', position: 'relative', aspectRatio: '1' }}>
@@ -840,25 +769,14 @@ export function ExerciseSVG({ exerciseId, className = '' }) {
           src={gifUrl}
           alt={exerciseId}
           onLoad={() => setGifReady(true)}
-          onError={() => { console.warn('[GIF] img load failed:', gifUrl); setGifError(true); setGifReady(false); }}
+          onError={() => { setGifError(true); setGifReady(false); }}
           style={{ width: '100%', height: '100%', objectFit: 'contain', opacity: gifReady && !gifError ? 1 : 0, transition: 'opacity 0.4s' }}
         />
-        {gifError && <div style={{ position: 'absolute', bottom: 4, right: 6, fontSize: 10, color: '#f97316', opacity: 0.7 }}>img err</div>}
       </div>
     );
   }
 
-  // Still fetching — show SVG with a subtle pulse border to indicate loading
-  if (gifUrl === undefined && SvgComponent) {
-    return (
-      <div className={className} style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden' }}>
-        <SvgComponent />
-        <div style={{ position: 'absolute', inset: 0, border: '2px solid rgba(232,197,71,0.25)', borderRadius: '12px', animation: 'pulse 2s infinite', pointerEvents: 'none' }} />
-      </div>
-    );
-  }
-
-  // No GIF found and no SVG component
+  // No GIF — show SVG illustration
   if (!SvgComponent) {
     return (
       <svg viewBox="0 0 200 200" className={className}
