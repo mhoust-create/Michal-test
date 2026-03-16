@@ -3,22 +3,29 @@
 
 const S = 200;
 
-const ANIM_STYLES = `
-  @keyframes fig-up    { 0%,100%{transform:translateY(0)}   50%{transform:translateY(-7px)} }
-  @keyframes fig-down  { 0%,100%{transform:translateY(0)}   50%{transform:translateY(7px)}  }
-  @keyframes fig-pulse { 0%,100%{transform:scale(1)}        50%{transform:scale(1.025)}     }
-  .fig-up    { animation: fig-up    1.8s ease-in-out infinite; transform-box:fill-box; transform-origin:center; }
-  .fig-down  { animation: fig-down  1.8s ease-in-out infinite; transform-box:fill-box; transform-origin:center; }
-  .fig-pulse { animation: fig-pulse 2.2s ease-in-out infinite; transform-box:fill-box; transform-origin:center; }
-`;
+const ANIM = {
+  up:    { values: '0,0; 0,-8; 0,0', dur: '1.8s' },
+  down:  { values: '0,0; 0,8;  0,0', dur: '1.8s' },
+  pulse: { values: '0,0; 0,-3; 0,0', dur: '2.2s' },
+};
 
-const StickFigure = ({ children, animDir }) => (
-  <svg viewBox={`0 0 ${S} ${S}`} className="exercise-svg w-full h-full"
-    style={{ background: '#161b22', borderRadius: '12px' }} xmlns="http://www.w3.org/2000/svg">
-    <style>{ANIM_STYLES}</style>
-    {animDir ? <g className={`fig-${animDir}`}>{children}</g> : children}
-  </svg>
-);
+const StickFigure = ({ children, animDir }) => {
+  const a = ANIM[animDir];
+  return (
+    <svg viewBox={`0 0 ${S} ${S}`} className="exercise-svg w-full h-full"
+      style={{ background: '#161b22', borderRadius: '12px' }} xmlns="http://www.w3.org/2000/svg">
+      {a ? (
+        <g>
+          <animateTransform attributeName="transform" type="translate"
+            values={a.values} dur={a.dur} repeatCount="indefinite"
+            calcMode="spline" keyTimes="0;0.5;1"
+            keySplines="0.45 0.05 0.55 0.95;0.45 0.05 0.55 0.95" />
+          {children}
+        </g>
+      ) : children}
+    </svg>
+  );
+};
 
 // ── Palette ───────────────────────────────────────────────────────────────────
 const B  = '#c8a832';  // body gold
