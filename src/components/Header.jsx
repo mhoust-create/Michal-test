@@ -187,18 +187,20 @@ export function Header() {
   );
 }
 
-/* Replicates the EMMA logo mark: red square with curved cutout + EMMA initial */
+/* EMMA Capital logo mark — red rectangle with white geometric E */
 function LogoMark() {
   return (
-    <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-      {/* Red square block */}
-      <rect x="1" y="1" width="16" height="34" rx="1.5" fill={EMMA_RED} />
-      {/* White curved cutout — comma/quote shape */}
-      <path d="M8 8 Q5 14 8 20 Q11 14 14 8 Z" fill="white" opacity="0.9" />
-      {/* Navy E letterform suggestion */}
-      <rect x="20" y="8" width="15" height="2.5" rx="0.5" fill="#1A3068" />
-      <rect x="20" y="16.75" width="12" height="2.5" rx="0.5" fill="#1A3068" />
-      <rect x="20" y="25.5" width="15" height="2.5" rx="0.5" fill="#1A3068" />
+    <svg width="34" height="38" viewBox="0 0 22 26" fill="none">
+      {/* Red background rectangle */}
+      <rect x="0" y="0" width="22" height="26" rx="1.5" fill={EMMA_RED} />
+      {/* White E letterform — left vertical bar */}
+      <rect x="4" y="5"  width="2.5" height="16" fill="white" />
+      {/* Top horizontal bar */}
+      <rect x="4" y="5"  width="13" height="2.5" fill="white" />
+      {/* Middle horizontal bar (shorter) */}
+      <rect x="4" y="11.75" width="9"  height="2.5" fill="white" />
+      {/* Bottom horizontal bar */}
+      <rect x="4" y="18.5" width="13" height="2.5" fill="white" />
     </svg>
   );
 }

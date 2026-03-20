@@ -153,12 +153,12 @@ export function Footer() {
 
 function LogoMark() {
   return (
-    <svg width="28" height="28" viewBox="0 0 36 36" fill="none">
-      <rect x="1" y="1" width="16" height="34" rx="1.5" fill={EMMA_RED} />
-      <path d="M8 8 Q5 14 8 20 Q11 14 14 8 Z" fill="white" opacity="0.9" />
-      <rect x="20" y="8" width="15" height="2.5" rx="0.5" fill={EMMA_NAVY} />
-      <rect x="20" y="16.75" width="12" height="2.5" rx="0.5" fill={EMMA_NAVY} />
-      <rect x="20" y="25.5" width="15" height="2.5" rx="0.5" fill={EMMA_NAVY} />
+    <svg width="24" height="27" viewBox="0 0 22 26" fill="none">
+      <rect x="0" y="0" width="22" height="26" rx="1.5" fill={EMMA_RED} />
+      <rect x="4" y="5"   width="2.5" height="16" fill="white" />
+      <rect x="4" y="5"   width="13"  height="2.5" fill="white" />
+      <rect x="4" y="11.75" width="9" height="2.5" fill="white" />
+      <rect x="4" y="18.5" width="13" height="2.5" fill="white" />
     </svg>
   );
 }
