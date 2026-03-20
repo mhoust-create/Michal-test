@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: [main, "claude/redesign-corporate-website-k5FNs"]
   workflow_dispatch:
 
 permissions:
