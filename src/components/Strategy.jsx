@@ -48,9 +48,10 @@ export function Strategy() {
               color: '#6a6258',
               marginBottom: '1.5rem',
             }}>
-              EMMA Capital serves as a primary platform for long-term value-creating
-              investing across service-driven, highly cash generative businesses in
-              Central and Eastern Europe.
+              EMMA Capital is a primary platform for long-term value-creating investing
+              across customer-oriented, highly cash-generative businesses in Central and
+              Eastern Europe. Founded in 2012 by Jiří Šmejc, the group has completed
+              58 investments and 14 exits since inception.
             </p>
 
             <p style={{
@@ -62,9 +63,9 @@ export function Strategy() {
               marginBottom: '1.5rem',
             }}>
               We target companies with strong market positions, durable cash flows, and
-              significant potential for operational improvement. Our long holding periods —
-              typically 7–15 years — allow us to compound value in ways that short-term
-              capital cannot.
+              significant potential for operational improvement through active, hands-on
+              ownership. Our approach combines deep sector expertise with established
+              networks built over more than a decade of investing in the region.
             </p>
 
             <p style={{
@@ -74,9 +75,9 @@ export function Strategy() {
               lineHeight: 1.9,
               color: '#6a6258',
             }}>
-              We invest across multiple sectors where we have deep expertise and
-              established relationships, including gaming &amp; lotteries, logistics,
-              energy &amp; utilities, and pharmaceutical distribution.
+              We invest across six core sectors — gaming &amp; betting, logistics &amp;
+              e-commerce, energy, healthcare, insurance &amp; fintech, and marinas —
+              where we have deep expertise and proven operational capability.
             </p>
           </div>
 
@@ -229,32 +230,32 @@ const PILLARS = [
 const SECTORS = [
   {
     icon: '🎰',
-    name: 'Gaming & Lotteries',
-    description: 'State-licensed lottery operators and gaming businesses with durable regulatory moats.',
+    name: 'Gaming & Betting',
+    description: 'State-licensed lottery and gaming operators with durable regulatory positions. Portfolio includes Entain CEE (STS, SuperSport), OPAP, Casinos Austria and Österreichische Lotterien.',
   },
   {
-    icon: '🚚',
-    name: 'Logistics',
-    description: 'Last-mile delivery and supply chain infrastructure serving growing e-commerce markets.',
+    icon: '📦',
+    name: 'Logistics & E-commerce',
+    description: 'Out-of-home parcel delivery and e-commerce fulfilment infrastructure. Portfolio includes Packeta Group (BoxNow, FoxPost) and Mailstep across the CEE region.',
   },
   {
     icon: '⚡',
-    name: 'Energy & Utilities',
-    description: 'Regulated utility assets and energy services with predictable, inflation-linked cash flows.',
+    name: 'Energy',
+    description: 'Energy distribution and utility services with predictable, regulated cash flows. Premier Energy Group operates across Romania and Moldova, listed at ~€525 million.',
   },
   {
-    icon: '💊',
-    name: 'Pharma Distribution',
-    description: 'Pharmaceutical wholesale and retail networks serving densely populated urban markets.',
+    icon: '🏥',
+    name: 'Healthcare',
+    description: 'Medical supplies, devices and pharmaceutical distribution through EMMA ZETA. Active in Romania and Montenegro with further expansion planned across the Balkans.',
   },
   {
-    icon: '🏗️',
-    name: 'Real Estate',
-    description: 'Commercial and mixed-use real estate in capital cities across the CEE region.',
+    icon: '🛡️',
+    name: 'Insurance & Fintech',
+    description: 'Digital-first insurance and financial technology services. RIXO.cz provides online insurance products to Czech customers, reflecting the group\'s fintech ambitions.',
   },
   {
-    icon: '📡',
-    name: 'Telecoms & Media',
-    description: 'Broadband, cable and digital media businesses benefiting from data consumption growth.',
+    icon: '⚓',
+    name: 'Marinas',
+    description: 'Premium marina and waterfront infrastructure assets through Marina 21, targeting high-growth leisure and tourism destinations across Southern Europe.',
   },
 ];

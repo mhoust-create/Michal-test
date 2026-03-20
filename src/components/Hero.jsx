@@ -238,7 +238,7 @@ export function Hero() {
 
 const STATS = [
   { value: '2012', label: 'Founded' },
-  { value: '14+', label: 'Portfolio exits' },
-  { value: '5', label: 'Active sectors' },
+  { value: '58', label: 'Total investments' },
+  { value: '14', label: 'Successful exits' },
   { value: 'CEE', label: 'Primary focus' },
 ];
