@@ -185,7 +185,7 @@ export function Team() {
         </div>
 
         {/* Partner grid — 4 columns */}
-        <div style={{
+        <div className="cards-carousel" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
           gap: '1px',

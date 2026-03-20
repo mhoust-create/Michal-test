@@ -41,7 +41,7 @@ export function CaseStudies() {
         </div>
 
         {/* Three case study cards */}
-        <div style={{
+        <div className="cards-carousel" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
           gap: '1px',

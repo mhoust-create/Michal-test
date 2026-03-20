@@ -37,7 +37,7 @@ export function Portfolio() {
         </div>
 
         {/* 4 sector cards */}
-        <div style={{
+        <div className="cards-carousel" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
           gap: '1.5rem',
