@@ -134,22 +134,30 @@ export function Footer() {
   );
 }
 
-function EmmLogo({ textColor = '#1A3068' }) {
+function EmmLogo({ textColor = '#F0EBE0' }) {
   return (
-    <svg height="30" viewBox="0 0 120 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="0" y="0" width="34" height="36" fill={EMMA_RED} />
-      <rect x="18" y="0" width="16" height="36" fill="white" />
-      <rect x="18" y="18" width="16" height="18" fill={EMMA_RED} />
+    <svg height="44" viewBox="0 0 148 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="40" height="40" fill={EMMA_RED} />
+      <path d="M 18,0 A 22,22 0 0,1 40,22 L 40,0 Z" fill="white" />
       <text
-        x="42"
-        y="27"
+        x="50" y="27"
         fontFamily="'DM Sans', Arial, sans-serif"
         fontWeight="800"
-        fontSize="22"
+        fontSize="26"
         fill={textColor}
-        letterSpacing="1"
+        letterSpacing="0.5"
       >
         EMMA
+      </text>
+      <text
+        x="51" y="40"
+        fontFamily="'DM Sans', Arial, sans-serif"
+        fontWeight="400"
+        fontSize="9.5"
+        fill="#5A6A7A"
+        letterSpacing="4"
+      >
+        CAPITAL
       </text>
     </svg>
   );

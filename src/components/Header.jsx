@@ -170,28 +170,36 @@ export function Header() {
   );
 }
 
-/* EMMA logo — red icon + bold EMMA wordmark */
+/* EMMA Capital logo — red square with quarter-circle notch + wordmark */
 function EmmLogo({ textColor = EMMA_NAVY }) {
   return (
-    <svg height="36" viewBox="0 0 120 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Red rectangle icon */}
-      <rect x="0" y="0" width="34" height="36" fill={EMMA_RED} />
-      {/* White vertical stripe on the right half */}
-      <rect x="18" y="0" width="16" height="36" fill="white" />
-      {/* Red square block on bottom-left of the white stripe — forms the flag shape */}
-      <rect x="18" y="18" width="16" height="18" fill={EMMA_RED} />
+    <svg height="44" viewBox="0 0 148 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Red square icon */}
+      <rect x="0" y="0" width="40" height="40" fill={EMMA_RED} />
+      {/* White quarter-circle notch cut from top-right corner */}
+      <path d="M 18,0 A 22,22 0 0,1 40,22 L 40,0 Z" fill="white" />
 
-      {/* EMMA wordmark in bold navy */}
+      {/* EMMA bold navy wordmark */}
       <text
-        x="42"
-        y="27"
+        x="50" y="27"
         fontFamily="'DM Sans', Arial, sans-serif"
         fontWeight="800"
-        fontSize="22"
+        fontSize="26"
         fill={textColor}
-        letterSpacing="1"
+        letterSpacing="0.5"
       >
         EMMA
+      </text>
+      {/* CAPITAL spaced subtitle */}
+      <text
+        x="51" y="40"
+        fontFamily="'DM Sans', Arial, sans-serif"
+        fontWeight="400"
+        fontSize="9.5"
+        fill="#7A8A9A"
+        letterSpacing="4"
+      >
+        CAPITAL
       </text>
     </svg>
   );
