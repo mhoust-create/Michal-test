@@ -2,6 +2,128 @@ const GOLD = '#D4A853';
 const DARK = '#0A1628';
 const CREAM = '#F0EBE0';
 
+// Each milestone: position on the SVG canvas, dot radius, and label placement
+const MILESTONES = [
+  {
+    year: '2012', cx: 90, cy: 472, r: 10,
+    above: false, major: true, label: '€31m',
+    lines: ['Founded'],
+  },
+  {
+    year: '2013', cx: 215, cy: 468, r: 13,
+    above: true,
+    lines: ['Premier Energy acquisition &', 'privatization of OPAP'],
+  },
+  {
+    year: '2014', cx: 347, cy: 454, r: 14,
+    above: false,
+    lines: ['Management control', 'of Eldorado'],
+  },
+  {
+    year: '2015', cx: 480, cy: 433, r: 16,
+    above: true,
+    lines: ['11% stake acquired in', 'Casinos Austria'],
+  },
+  {
+    year: '2016', cx: 614, cy: 407, r: 18,
+    above: false,
+    lines: ['Eldorado exit; Allwyn', '(SAZKA) established;', 'LOTTOITALIA investment'],
+  },
+  {
+    year: '2018', cx: 888, cy: 344, r: 22,
+    above: true,
+    lines: ['Initial 37% stake in', 'Stoiximan (Betano)'],
+  },
+  {
+    year: '2019', cx: 1025, cy: 311, r: 26,
+    above: false,
+    lines: ['Allwyn / SAZKA exit', '10.3× MOIC — retained', 'SuperSport'],
+  },
+  {
+    year: '2019–22', cx: 1145, cy: 286, r: 20,
+    above: true,
+    lines: ['Rixo, Profarm,', 'Box Now, FAVI,', 'Marina 21 & more'],
+  },
+  {
+    year: '2022', cx: 1295, cy: 252, r: 30,
+    above: false,
+    lines: ['75% of SuperSport', 'exited to Entain PLC'],
+  },
+  {
+    year: '2024', cx: 1640, cy: 206, r: 42,
+    above: true, major: true, label: '€1.34bn',
+    lines: ['JV with CVC: Packeta &', 'Foxpost; IPO Premier', 'Energy; Magna Pharmacia'],
+  },
+];
+
+// Band shape: swept ribbon from bottom-left to upper-right with arrowhead
+// Center axis: M 90,472 through to (1640,206)
+// Band is ~20px tall at start, ~60px tall at end
+const BAND_PATH =
+  'M 80,462 C 560,460 1185,190 1635,176 L 1790,206 L 1635,236 C 1185,252 560,484 80,482 Z';
+
+function MilestoneLabel({ cx, cy, r, above, year, label, lines, major }) {
+  const LINE_H = 15;
+  const YEAR_SIZE = major ? 18 : 14;
+  const LABEL_SIZE = major ? 22 : 15;
+  const DESC_SIZE = 11;
+  const GAP = 14;
+
+  if (above) {
+    // Text block ends just above the dot edge
+    const bottomBaseline = cy - r - GAP;
+    const subLines = (label ? 1 : 0) + lines.length;
+    const yearY = bottomBaseline - subLines * LINE_H;
+
+    return (
+      <g>
+        <text x={cx} y={yearY} textAnchor="middle"
+          fontFamily="'Instrument Serif', serif" fontSize={YEAR_SIZE} fill={GOLD}>
+          {year}
+        </text>
+        {label && (
+          <text x={cx} y={yearY + LINE_H} textAnchor="middle"
+            fontFamily="'Instrument Serif', serif" fontSize={LABEL_SIZE} fill={CREAM}>
+            {label}
+          </text>
+        )}
+        {lines.map((line, i) => (
+          <text key={i} x={cx} y={yearY + (label ? i + 2 : i + 1) * LINE_H}
+            textAnchor="middle" fontFamily="'DM Sans', sans-serif"
+            fontSize={DESC_SIZE} fill="#8C9198" fontWeight="300">
+            {line}
+          </text>
+        ))}
+      </g>
+    );
+  } else {
+    // Text block starts just below the dot edge
+    const yearY = cy + r + GAP + LINE_H;
+
+    return (
+      <g>
+        <text x={cx} y={yearY} textAnchor="middle"
+          fontFamily="'Instrument Serif', serif" fontSize={YEAR_SIZE} fill={GOLD}>
+          {year}
+        </text>
+        {label && (
+          <text x={cx} y={yearY + LINE_H} textAnchor="middle"
+            fontFamily="'Instrument Serif', serif" fontSize={LABEL_SIZE} fill={CREAM}>
+            {label}
+          </text>
+        )}
+        {lines.map((line, i) => (
+          <text key={i} x={cx} y={yearY + (label ? i + 2 : i + 1) * LINE_H}
+            textAnchor="middle" fontFamily="'DM Sans', sans-serif"
+            fontSize={DESC_SIZE} fill="#8C9198" fontWeight="300">
+            {line}
+          </text>
+        ))}
+      </g>
+    );
+  }
+}
+
 export function TrackRecord() {
   return (
     <section
@@ -13,7 +135,6 @@ export function TrackRecord() {
         overflow: 'hidden',
       }}
     >
-      {/* Background glow */}
       <div style={{
         position: 'absolute', inset: 0, pointerEvents: 'none',
         background: 'radial-gradient(ellipse at 30% 50%, rgba(212,168,83,0.04) 0%, transparent 60%)',
@@ -22,68 +143,91 @@ export function TrackRecord() {
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 2rem', position: 'relative' }}>
         <SectionLabel text="Track Record" />
 
-        <div style={{ marginTop: '1.5rem', marginBottom: '4rem', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '2rem' }}>
+        <div style={{
+          marginTop: '1.5rem', marginBottom: '4rem',
+          display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between',
+          flexWrap: 'wrap', gap: '2rem',
+        }}>
           <h2 style={{
             fontFamily: "'Instrument Serif', serif",
-            fontSize: 'clamp(2rem, 4vw, 3rem)',
+            fontSize: 'clamp(1.8rem, 3.5vw, 2.8rem)',
             fontWeight: 400, lineHeight: 1.15,
             color: CREAM, margin: 0,
           }}>
-            €31m invested in 2012 →{' '}
-            <em style={{ color: GOLD, fontStyle: 'italic' }}>€1.45bn today</em>
+            Growing EMMA's portfolio from{' '}
+            <em style={{ color: GOLD, fontStyle: 'italic' }}>€31m to €1.34bn</em>
+            <br />
+            <span style={{
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: 'clamp(1rem, 1.5vw, 1.15rem)',
+              fontWeight: 300, color: '#8C9198',
+            }}>
+              including €78m cash out to shareholders
+            </span>
           </h2>
-          <p style={{
-            fontFamily: "'DM Sans', sans-serif",
-            fontSize: '0.9rem', fontWeight: 300, lineHeight: 1.8,
-            color: '#8C9198', maxWidth: 380, margin: 0,
-          }}>
-            Thirteen years of consistent value creation across 65+ acquisitions
-            and 14 successful exits — a 51x MOIC since inception.
-          </p>
+
+          {/* Bullet callouts */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxWidth: 340 }}>
+            {[
+              { strong: '60+ new or add-on acquisitions', rest: ' and several exits since inception' },
+              { strong: 'NAV grew to €1.34 billion', rest: ' — plus €78m paid to shareholders' },
+            ].map(({ strong, rest }, i) => (
+              <div key={i} style={{ display: 'flex', gap: '0.6rem', alignItems: 'flex-start' }}>
+                <div style={{
+                  width: 6, height: 6, borderRadius: 1,
+                  background: '#C8102E', flexShrink: 0, marginTop: '0.35rem',
+                }} />
+                <p style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: '0.83rem', fontWeight: 300, lineHeight: 1.7,
+                  color: '#8C9198', margin: 0,
+                }}>
+                  <strong style={{ fontWeight: 600, color: CREAM }}>{strong}</strong>{rest}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Key stats row */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
           gap: '0',
           border: `1px solid rgba(212,168,83,0.15)`,
           marginBottom: '5rem',
         }}>
           {KEY_STATS.map(({ value, unit, label, sub }, i) => (
             <div key={i} style={{
-              padding: '2rem 1.75rem',
+              padding: '2rem 1.5rem',
               borderRight: i < KEY_STATS.length - 1 ? `1px solid rgba(212,168,83,0.15)` : 'none',
               textAlign: 'center',
             }}>
-              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: '0.15rem', marginBottom: '0.4rem' }}>
+              <div style={{
+                display: 'flex', alignItems: 'baseline', justifyContent: 'center',
+                gap: '0.15rem', marginBottom: '0.4rem',
+              }}>
                 <span style={{
                   fontFamily: "'Instrument Serif', serif",
-                  fontSize: '2.4rem', fontWeight: 400, color: GOLD, lineHeight: 1,
+                  fontSize: '2.2rem', fontWeight: 400, color: GOLD, lineHeight: 1,
                 }}>
                   {value}
                 </span>
                 {unit && (
-                  <span style={{
-                    fontFamily: "'DM Sans', sans-serif",
-                    fontSize: '1rem', color: GOLD, fontWeight: 400,
-                  }}>
+                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '1rem', color: GOLD }}>
                     {unit}
                   </span>
                 )}
               </div>
               <div style={{
                 fontFamily: "'DM Sans', sans-serif",
-                fontSize: '0.68rem', fontWeight: 500,
+                fontSize: '0.65rem', fontWeight: 500,
                 letterSpacing: '0.12em', textTransform: 'uppercase', color: '#4A5568',
               }}>
                 {label}
               </div>
               {sub && (
-                <div style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: '0.72rem', color: '#5A6A7A', marginTop: '0.25rem',
-                }}>
+                <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.7rem', color: '#5A6A7A', marginTop: '0.2rem' }}>
                   {sub}
                 </div>
               )}
@@ -91,49 +235,72 @@ export function TrackRecord() {
           ))}
         </div>
 
-        {/* Timeline */}
+        {/* Graphical arrow timeline */}
         <div style={{ marginBottom: '1.5rem' }}>
-          <SectionLabel text="Investment Timeline 2012–2025" />
+          <SectionLabel text="Portfolio Growth Timeline 2012 – 2024" />
         </div>
 
         <div className="timeline-scroll" style={{ paddingBottom: '1rem' }}>
-          <div style={{
-            display: 'flex',
-            gap: '0',
-            minWidth: 'max-content',
-            borderTop: `1px solid rgba(212,168,83,0.2)`,
-            paddingTop: '1.5rem',
-          }}>
-            {TIMELINE.map(({ year, events }, i) => (
-              <div key={i} style={{ minWidth: 200, paddingRight: '2rem', position: 'relative' }}>
-                {/* Year marker */}
-                <div style={{
-                  position: 'absolute', top: -26, left: 0,
-                  width: 8, height: 8, borderRadius: '50%',
-                  background: GOLD, border: `2px solid ${DARK}`,
-                  outline: `1px solid rgba(212,168,83,0.4)`,
-                }} />
-                <div style={{
-                  fontFamily: "'Instrument Serif', serif",
-                  fontSize: '1.6rem', fontWeight: 400, color: GOLD,
-                  marginBottom: '0.75rem',
-                }}>
-                  {year}
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  {events.map((ev, j) => (
-                    <div key={j} style={{
-                      fontFamily: "'DM Sans', sans-serif",
-                      fontSize: '0.78rem', fontWeight: 300,
-                      lineHeight: 1.5, color: '#8C9198',
-                    }}>
-                      {ev}
-                    </div>
-                  ))}
-                </div>
-              </div>
+          <svg
+            viewBox="0 0 1860 600"
+            width="1860"
+            height="600"
+            style={{ display: 'block', overflow: 'visible' }}
+            aria-label="EMMA Capital portfolio growth timeline 2012 to 2024"
+          >
+            <defs>
+              <linearGradient id="bandGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#1A2E42" />
+                <stop offset="55%" stopColor="#223650" />
+                <stop offset="100%" stopColor="#2B4566" />
+              </linearGradient>
+              <linearGradient id="dotGlow" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#152234" />
+                <stop offset="100%" stopColor="#0D1A28" />
+              </linearGradient>
+            </defs>
+
+            {/* Ribbon band */}
+            <path d={BAND_PATH} fill="url(#bandGrad)" opacity="0.88" />
+
+            {/* Subtle highlight along top edge of band */}
+            <path
+              d="M 80,462 C 560,460 1185,190 1635,176 L 1790,206"
+              fill="none"
+              stroke="rgba(255,255,255,0.07)"
+              strokeWidth="1.5"
+            />
+
+            {/* Milestone dots */}
+            {MILESTONES.map(({ year, cx, cy, r, major }) => (
+              <g key={`dot-${year}`}>
+                {/* Outer ring / halo */}
+                <circle
+                  cx={cx} cy={cy} r={r + 5}
+                  fill="none"
+                  stroke={major ? `rgba(212,168,83,0.45)` : `rgba(212,168,83,0.2)`}
+                  strokeWidth="1"
+                />
+                {/* Main dot */}
+                <circle
+                  cx={cx} cy={cy} r={r}
+                  fill="url(#dotGlow)"
+                  stroke={GOLD}
+                  strokeWidth={major ? 2 : 1.5}
+                />
+                {/* Inner highlight */}
+                <circle
+                  cx={cx - r * 0.25} cy={cy - r * 0.25} r={r * 0.28}
+                  fill="rgba(255,255,255,0.08)"
+                />
+              </g>
             ))}
-          </div>
+
+            {/* Labels */}
+            {MILESTONES.map((m) => (
+              <MilestoneLabel key={`label-${m.year}`} {...m} />
+            ))}
+          </svg>
         </div>
       </div>
     </section>
@@ -156,27 +323,10 @@ function SectionLabel({ text }) {
 }
 
 const KEY_STATS = [
-  { value: '€31m', unit: '', label: 'Initial Capital', sub: '→ €1.45bn today' },
+  { value: '€31m', label: 'Initial Capital', sub: '→ €1.34bn NAV' },
   { value: '51', unit: 'x', label: 'MOIC' },
   { value: '39.2', unit: '%', label: 'IRR' },
-  { value: '€146', unit: 'm', label: 'Cash Distributed' },
+  { value: '€78', unit: 'm', label: 'Cash to Shareholders' },
   { value: '65', unit: '+', label: 'Acquisitions' },
-  { value: '14', unit: '', label: 'Successful Exits' },
-];
-
-const TIMELINE = [
-  { year: '2012', events: ['Founded with €31m', 'Principal investment model established'] },
-  { year: '2013', events: ['OPAP privatization — €650m deal', 'Premier Energy (GAZ SUD) acquired'] },
-  { year: '2014', events: ['Allwyn/SAZKA Group co-founded', 'Casinos Austria stake acquired'] },
-  { year: '2015', events: ['LOTTOITALIA stake acquired', 'Österreichische Lotterien position'] },
-  { year: '2016', events: ['SAZKA Group pan-European expansion', 'Stoiximan (Greece) investment'] },
-  { year: '2017', events: ['Platform consolidation across CEE', 'Healthcare vertical initiated'] },
-  { year: '2018', events: ['Premier Energy growth milestones', '5,417%+ revenue growth achieved'] },
-  { year: '2019', events: ['Allwyn exit at 10.3x MOIC, 53% IRR', '€630m proceeds — landmark exit'] },
-  { year: '2020', events: ['Portfolio resilience through COVID', 'Digital acceleration across holdings'] },
-  { year: '2021', events: ['Box Now founded — greenfield launch', 'CEE logistics thesis initiated'] },
-  { year: '2022', events: ['Entain CEE JV formed (22.5%)', 'Box Now scales to 4 countries'] },
-  { year: '2023', events: ['STS (Poland) acquired via Entain JV', 'Box Now reaches 5m parcels/mo'] },
-  { year: '2024', events: ['Premier Energy BSE IPO (~€900m cap)', 'Packeta/CVC JV for last-mile scale'] },
-  { year: '2025', events: ['NAV reaches €1.45bn', 'Magna MedTech SEE expansion', 'Profarm #1 in Greece'] },
+  { value: '14', label: 'Exits' },
 ];
