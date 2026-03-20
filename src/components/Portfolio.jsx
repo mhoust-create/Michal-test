@@ -224,14 +224,14 @@ const SECTORS = [
     icon: '🛒',
     companies: [
       {
-        name: 'RIXO.cz',
-        tag: 'Czech Digital',
-        desc: 'Czech digital insurance aggregator — comparison and distribution platform for insurance products online.',
-      },
-      {
         name: 'FAVI',
         tag: 'Furniture E-com',
         desc: 'European leader in furniture and home decor search engines.',
+      },
+      {
+        name: 'RIXO.cz',
+        tag: 'Czech Digital',
+        desc: 'Czech digital insurance aggregator — comparison and distribution platform for insurance products online.',
       },
     ],
   },
