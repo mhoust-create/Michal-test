@@ -59,7 +59,7 @@ export function Footer() {
               onClick={e => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
               style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none', marginBottom: '1.25rem' }}
             >
-              <img src={`${BASE}/images/emma logo.jpg`} alt="EMMA Capital" style={{ height: 44, display: 'block' }} />
+              <img src={`${BASE}/images/emma-logo.png`} alt="EMMA Capital" style={{ height: 44, display: 'block' }} />
             </a>
             <p style={{
               fontFamily: "'DM Sans', sans-serif",
