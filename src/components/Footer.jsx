@@ -58,24 +58,7 @@ export function Footer() {
               onClick={e => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
               style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none', marginBottom: '1.25rem' }}
             >
-              <LogoMark />
-              <div style={{ lineHeight: 1 }}>
-                <div style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: '0.9rem', fontWeight: 600,
-                  color: '#F0EBE0', letterSpacing: '0.18em',
-                }}>
-                  EMMA
-                </div>
-                <div style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: '0.52rem', fontWeight: 400,
-                  color: '#8C9198', letterSpacing: '0.3em',
-                  textTransform: 'uppercase', marginTop: '1px',
-                }}>
-                  Capital
-                </div>
-              </div>
+              <EmmLogo textColor="#F0EBE0" />
             </a>
             <p style={{
               fontFamily: "'DM Sans', sans-serif",
@@ -151,14 +134,23 @@ export function Footer() {
   );
 }
 
-function LogoMark() {
+function EmmLogo({ textColor = '#1A3068' }) {
   return (
-    <svg width="24" height="27" viewBox="0 0 22 26" fill="none">
-      <rect x="0" y="0" width="22" height="26" rx="1.5" fill={EMMA_RED} />
-      <rect x="4" y="5"   width="2.5" height="16" fill="white" />
-      <rect x="4" y="5"   width="13"  height="2.5" fill="white" />
-      <rect x="4" y="11.75" width="9" height="2.5" fill="white" />
-      <rect x="4" y="18.5" width="13" height="2.5" fill="white" />
+    <svg height="30" viewBox="0 0 120 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="34" height="36" fill={EMMA_RED} />
+      <rect x="18" y="0" width="16" height="36" fill="white" />
+      <rect x="18" y="18" width="16" height="18" fill={EMMA_RED} />
+      <text
+        x="42"
+        y="27"
+        fontFamily="'DM Sans', Arial, sans-serif"
+        fontWeight="800"
+        fontSize="22"
+        fill={textColor}
+        letterSpacing="1"
+      >
+        EMMA
+      </text>
     </svg>
   );
 }

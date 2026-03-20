@@ -48,24 +48,7 @@ export function Header() {
             onClick={e => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
             style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', textDecoration: 'none' }}
           >
-            <LogoMark />
-            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
-              <span style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: '1.1rem', fontWeight: 600,
-                color: '#F0EBE0', letterSpacing: '0.18em',
-              }}>
-                EMMA
-              </span>
-              <span style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: '0.6rem', fontWeight: 400,
-                color: '#8C9198', letterSpacing: '0.3em',
-                textTransform: 'uppercase', marginTop: '1px',
-              }}>
-                Capital
-              </span>
-            </div>
+            <EmmLogo textColor="#F0EBE0" />
           </a>
 
           {/* Desktop nav */}
@@ -187,20 +170,29 @@ export function Header() {
   );
 }
 
-/* EMMA Capital logo mark — red rectangle with white geometric E */
-function LogoMark() {
+/* EMMA logo — red icon + bold EMMA wordmark */
+function EmmLogo({ textColor = EMMA_NAVY }) {
   return (
-    <svg width="34" height="38" viewBox="0 0 22 26" fill="none">
-      {/* Red background rectangle */}
-      <rect x="0" y="0" width="22" height="26" rx="1.5" fill={EMMA_RED} />
-      {/* White E letterform — left vertical bar */}
-      <rect x="4" y="5"  width="2.5" height="16" fill="white" />
-      {/* Top horizontal bar */}
-      <rect x="4" y="5"  width="13" height="2.5" fill="white" />
-      {/* Middle horizontal bar (shorter) */}
-      <rect x="4" y="11.75" width="9"  height="2.5" fill="white" />
-      {/* Bottom horizontal bar */}
-      <rect x="4" y="18.5" width="13" height="2.5" fill="white" />
+    <svg height="36" viewBox="0 0 120 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Red rectangle icon */}
+      <rect x="0" y="0" width="34" height="36" fill={EMMA_RED} />
+      {/* White vertical stripe on the right half */}
+      <rect x="18" y="0" width="16" height="36" fill="white" />
+      {/* Red square block on bottom-left of the white stripe — forms the flag shape */}
+      <rect x="18" y="18" width="16" height="18" fill={EMMA_RED} />
+
+      {/* EMMA wordmark in bold navy */}
+      <text
+        x="42"
+        y="27"
+        fontFamily="'DM Sans', Arial, sans-serif"
+        fontWeight="800"
+        fontSize="22"
+        fill={textColor}
+        letterSpacing="1"
+      >
+        EMMA
+      </text>
     </svg>
   );
 }
