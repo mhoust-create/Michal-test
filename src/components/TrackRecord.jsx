@@ -2,127 +2,85 @@ const GOLD = '#D4A853';
 const DARK = '#0A1628';
 const CREAM = '#F0EBE0';
 
-// Each milestone: position on the SVG canvas, dot radius, and label placement
-const MILESTONES = [
+// accentH: height of the gold top-bar in px — grows with NAV to give a visual growth cue
+const CARDS = [
   {
-    year: '2012', cx: 90, cy: 472, r: 10,
-    above: false, major: true, label: '€31m',
-    lines: ['Founded'],
+    year: '2012',
+    nav: '€31m',
+    accentH: 3,
+    entries: [
+      { label: null, text: 'Founded with €31m of principal capital.' },
+    ],
   },
   {
-    year: '2013', cx: 215, cy: 468, r: 13,
-    above: true,
-    lines: ['Premier Energy acquisition &', 'privatization of OPAP'],
+    year: '2013',
+    accentH: 4,
+    entries: [
+      { label: null, text: 'Premier Energy acquisition & privatization of OPAP.' },
+    ],
   },
   {
-    year: '2014', cx: 347, cy: 454, r: 14,
-    above: false,
-    lines: ['Management control', 'of Eldorado'],
+    year: '2014',
+    accentH: 5,
+    entries: [
+      { label: null, text: 'Management control of Eldorado.' },
+    ],
   },
   {
-    year: '2015', cx: 480, cy: 433, r: 16,
-    above: true,
-    lines: ['11% stake acquired in', 'Casinos Austria'],
+    year: '2015–2018',
+    accentH: 7,
+    entries: [
+      { label: null, text: 'Multiple Allwyn (SAZKA Group) add-ons including Casinos Austria (Austrian Lotteries), LOTTOITALIA and Stoiximan (Betano).' },
+    ],
   },
   {
-    year: '2016', cx: 614, cy: 407, r: 18,
-    above: false,
-    lines: ['Eldorado exit; Allwyn', '(SAZKA) established;', 'LOTTOITALIA investment'],
+    year: '2016',
+    accentH: 7,
+    entries: [
+      { label: null, text: 'Eldorado exit.' },
+    ],
   },
   {
-    year: '2018', cx: 888, cy: 344, r: 22,
-    above: true,
-    lines: ['Initial 37% stake in', 'Stoiximan (Betano)'],
+    year: '2019',
+    accentH: 10,
+    entries: [
+      { label: null, text: 'Allwyn (SAZKA Group) exit — retained SuperSport.' },
+    ],
   },
   {
-    year: '2019', cx: 1025, cy: 311, r: 26,
-    above: false,
-    lines: ['Allwyn / SAZKA exit', '10.3× MOIC — retained', 'SuperSport'],
+    year: '2019–2022',
+    accentH: 11,
+    entries: [
+      { label: null, text: 'Smaller investments: Rixo, Profarm, Kuchen Quelle, Europe IVF, Mailstep, FAVI, Box Now etc.' },
+      { label: null, text: 'Setting up Marina 21 through acquisitions of 6 marinas across Croatia and Greece.' },
+    ],
   },
   {
-    year: '2019–22', cx: 1145, cy: 286, r: 20,
-    above: true,
-    lines: ['Rixo, Profarm,', 'Box Now, FAVI,', 'Marina 21 & more'],
+    year: '2022',
+    accentH: 13,
+    entries: [
+      { label: null, text: '75% of SuperSport exited to FTSE100 listed Entain PLC.' },
+    ],
   },
   {
-    year: '2022', cx: 1295, cy: 252, r: 30,
-    above: false,
-    lines: ['75% of SuperSport', 'exited to Entain PLC'],
+    year: '2024',
+    accentH: 16,
+    entries: [
+      { label: null, text: 'Setting up JV with CVC to acquire last mile logistic companies Packeta Group and Foxpost.' },
+      { label: null, text: 'Acquiring medtech distribution platform Magna Pharmacia.' },
+      { label: null, text: 'IPO of Premier Energy.' },
+    ],
   },
   {
-    year: '2024', cx: 1640, cy: 206, r: 42,
-    above: true, major: true, label: '€1.34bn',
-    lines: ['JV with CVC: Packeta &', 'Foxpost; IPO Premier', 'Energy; Magna Pharmacia'],
+    year: '2025',
+    nav: '€1.45bn',
+    accentH: 20,
+    entries: [
+      { label: null, text: 'Acquisition of Diamedix Diagnostica along with 65% stake in Urion (Montenegro) through Magna MedTech Group.' },
+      { label: null, text: 'Premier Energy acquired 51% stake in Iberdrola Renovables Magyarország KFT with installed renewable capacity of 158MW.' },
+    ],
   },
 ];
-
-// Band shape: swept ribbon from bottom-left to upper-right with arrowhead
-// Center axis: M 90,472 through to (1640,206)
-// Band is ~20px tall at start, ~60px tall at end
-const BAND_PATH =
-  'M 80,462 C 560,460 1185,190 1635,176 L 1790,206 L 1635,236 C 1185,252 560,484 80,482 Z';
-
-function MilestoneLabel({ cx, cy, r, above, year, label, lines, major }) {
-  const LINE_H = 15;
-  const YEAR_SIZE = major ? 18 : 14;
-  const LABEL_SIZE = major ? 22 : 15;
-  const DESC_SIZE = 11;
-  const GAP = 14;
-
-  if (above) {
-    // Text block ends just above the dot edge
-    const bottomBaseline = cy - r - GAP;
-    const subLines = (label ? 1 : 0) + lines.length;
-    const yearY = bottomBaseline - subLines * LINE_H;
-
-    return (
-      <g>
-        <text x={cx} y={yearY} textAnchor="middle"
-          fontFamily="'Instrument Serif', serif" fontSize={YEAR_SIZE} fill={GOLD}>
-          {year}
-        </text>
-        {label && (
-          <text x={cx} y={yearY + LINE_H} textAnchor="middle"
-            fontFamily="'Instrument Serif', serif" fontSize={LABEL_SIZE} fill={CREAM}>
-            {label}
-          </text>
-        )}
-        {lines.map((line, i) => (
-          <text key={i} x={cx} y={yearY + (label ? i + 2 : i + 1) * LINE_H}
-            textAnchor="middle" fontFamily="'DM Sans', sans-serif"
-            fontSize={DESC_SIZE} fill="#8C9198" fontWeight="300">
-            {line}
-          </text>
-        ))}
-      </g>
-    );
-  } else {
-    // Text block starts just below the dot edge
-    const yearY = cy + r + GAP + LINE_H;
-
-    return (
-      <g>
-        <text x={cx} y={yearY} textAnchor="middle"
-          fontFamily="'Instrument Serif', serif" fontSize={YEAR_SIZE} fill={GOLD}>
-          {year}
-        </text>
-        {label && (
-          <text x={cx} y={yearY + LINE_H} textAnchor="middle"
-            fontFamily="'Instrument Serif', serif" fontSize={LABEL_SIZE} fill={CREAM}>
-            {label}
-          </text>
-        )}
-        {lines.map((line, i) => (
-          <text key={i} x={cx} y={yearY + (label ? i + 2 : i + 1) * LINE_H}
-            textAnchor="middle" fontFamily="'DM Sans', sans-serif"
-            fontSize={DESC_SIZE} fill="#8C9198" fontWeight="300">
-            {line}
-          </text>
-        ))}
-      </g>
-    );
-  }
-}
 
 export function TrackRecord() {
   return (
@@ -143,39 +101,33 @@ export function TrackRecord() {
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 2rem', position: 'relative' }}>
         <SectionLabel text="Track Record" />
 
+        {/* Heading + bullet callouts */}
         <div style={{
           marginTop: '1.5rem', marginBottom: '4rem',
-          display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between',
+          display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
           flexWrap: 'wrap', gap: '2rem',
         }}>
           <h2 style={{
             fontFamily: "'Instrument Serif', serif",
-            fontSize: 'clamp(1.8rem, 3.5vw, 2.8rem)',
-            fontWeight: 400, lineHeight: 1.15,
-            color: CREAM, margin: 0,
+            fontSize: 'clamp(1.8rem, 3.2vw, 2.7rem)',
+            fontWeight: 400, lineHeight: 1.2,
+            color: CREAM, margin: 0, maxWidth: 560,
           }}>
-            Growing EMMA's portfolio from{' '}
-            <em style={{ color: GOLD, fontStyle: 'italic' }}>€31m to €1.34bn</em>
-            <br />
-            <span style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: 'clamp(1rem, 1.5vw, 1.15rem)',
-              fontWeight: 300, color: '#8C9198',
-            }}>
-              including €78m cash out to shareholders
-            </span>
+            NAV grown from €31m to{' '}
+            <em style={{ color: GOLD, fontStyle: 'italic' }}>€1.45bn</em>
+            {' '}in 13 years —{' '}
+            paying €146m to shareholders on top
           </h2>
 
-          {/* Bullet callouts */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxWidth: 340 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxWidth: 320 }}>
             {[
-              { strong: '60+ new or add-on acquisitions', rest: ' and several exits since inception' },
-              { strong: 'NAV grew to €1.34 billion', rest: ' — plus €78m paid to shareholders' },
+              { strong: 'More than 65 new or add-on acquisitions', rest: ' and several exits since inception.' },
+              { strong: 'NAV grew to €1.45 billion', rest: ' — and on top of it €146 million was paid to shareholders.' },
             ].map(({ strong, rest }, i) => (
               <div key={i} style={{ display: 'flex', gap: '0.6rem', alignItems: 'flex-start' }}>
                 <div style={{
                   width: 6, height: 6, borderRadius: 1,
-                  background: '#C8102E', flexShrink: 0, marginTop: '0.35rem',
+                  background: '#C8102E', flexShrink: 0, marginTop: '0.4rem',
                 }} />
                 <p style={{
                   fontFamily: "'DM Sans', sans-serif",
@@ -192,42 +144,41 @@ export function TrackRecord() {
         {/* Key stats row */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-          gap: '0',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
           border: `1px solid rgba(212,168,83,0.15)`,
           marginBottom: '5rem',
         }}>
           {KEY_STATS.map(({ value, unit, label, sub }, i) => (
             <div key={i} style={{
-              padding: '2rem 1.5rem',
+              padding: '1.75rem 1.25rem',
               borderRight: i < KEY_STATS.length - 1 ? `1px solid rgba(212,168,83,0.15)` : 'none',
               textAlign: 'center',
             }}>
               <div style={{
                 display: 'flex', alignItems: 'baseline', justifyContent: 'center',
-                gap: '0.15rem', marginBottom: '0.4rem',
+                gap: '0.1rem', marginBottom: '0.35rem',
               }}>
                 <span style={{
                   fontFamily: "'Instrument Serif', serif",
-                  fontSize: '2.2rem', fontWeight: 400, color: GOLD, lineHeight: 1,
+                  fontSize: '2.1rem', fontWeight: 400, color: GOLD, lineHeight: 1,
                 }}>
                   {value}
                 </span>
                 {unit && (
-                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '1rem', color: GOLD }}>
+                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.95rem', color: GOLD }}>
                     {unit}
                   </span>
                 )}
               </div>
               <div style={{
                 fontFamily: "'DM Sans', sans-serif",
-                fontSize: '0.65rem', fontWeight: 500,
+                fontSize: '0.63rem', fontWeight: 500,
                 letterSpacing: '0.12em', textTransform: 'uppercase', color: '#4A5568',
               }}>
                 {label}
               </div>
               {sub && (
-                <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.7rem', color: '#5A6A7A', marginTop: '0.2rem' }}>
+                <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.68rem', color: '#5A6A7A', marginTop: '0.2rem' }}>
                   {sub}
                 </div>
               )}
@@ -235,72 +186,78 @@ export function TrackRecord() {
           ))}
         </div>
 
-        {/* Graphical arrow timeline */}
-        <div style={{ marginBottom: '1.5rem' }}>
-          <SectionLabel text="Portfolio Growth Timeline 2012 – 2024" />
+        {/* Timeline carousel label */}
+        <div style={{ marginBottom: '2rem' }}>
+          <SectionLabel text="Portfolio Growth Timeline 2012 – 2025" />
         </div>
 
-        <div className="timeline-scroll" style={{ paddingBottom: '1rem' }}>
-          <svg
-            viewBox="0 0 1860 600"
-            width="1860"
-            height="600"
-            style={{ display: 'block', overflow: 'visible' }}
-            aria-label="EMMA Capital portfolio growth timeline 2012 to 2024"
-          >
-            <defs>
-              <linearGradient id="bandGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#1A2E42" />
-                <stop offset="55%" stopColor="#223650" />
-                <stop offset="100%" stopColor="#2B4566" />
-              </linearGradient>
-              <linearGradient id="dotGlow" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#152234" />
-                <stop offset="100%" stopColor="#0D1A28" />
-              </linearGradient>
-            </defs>
+        {/* Year-card carousel */}
+        <div className="timeline-scroll" style={{ paddingBottom: '1.25rem' }}>
+          <div style={{
+            display: 'flex',
+            gap: '0',
+            minWidth: 'max-content',
+          }}>
+            {CARDS.map(({ year, nav, accentH, entries }, i) => (
+              <div
+                key={year}
+                style={{
+                  width: 240,
+                  flexShrink: 0,
+                  borderLeft: `1px solid rgba(212,168,83,0.12)`,
+                  borderRight: i === CARDS.length - 1 ? `1px solid rgba(212,168,83,0.12)` : 'none',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  position: 'relative',
+                  background: i % 2 === 0 ? 'rgba(255,255,255,0.015)' : 'transparent',
+                }}
+              >
+                {/* Gold accent bar — grows taller each card */}
+                <div style={{
+                  height: accentH,
+                  background: `linear-gradient(90deg, ${GOLD}, rgba(212,168,83,0.4))`,
+                  width: '100%',
+                  flexShrink: 0,
+                }} />
 
-            {/* Ribbon band */}
-            <path d={BAND_PATH} fill="url(#bandGrad)" opacity="0.88" />
+                <div style={{ padding: '1.5rem 1.5rem 2rem' }}>
+                  {/* Year */}
+                  <div style={{
+                    fontFamily: "'Instrument Serif', serif",
+                    fontSize: '1.5rem', fontWeight: 400, color: GOLD,
+                    marginBottom: nav ? '0.2rem' : '1rem',
+                    lineHeight: 1.1,
+                  }}>
+                    {year}
+                  </div>
 
-            {/* Subtle highlight along top edge of band */}
-            <path
-              d="M 80,462 C 560,460 1185,190 1635,176 L 1790,206"
-              fill="none"
-              stroke="rgba(255,255,255,0.07)"
-              strokeWidth="1.5"
-            />
+                  {/* NAV value (for 2012 and 2025) */}
+                  {nav && (
+                    <div style={{
+                      fontFamily: "'Instrument Serif', serif",
+                      fontSize: '1.15rem', fontWeight: 400, color: CREAM,
+                      marginBottom: '1rem',
+                    }}>
+                      {nav}
+                    </div>
+                  )}
 
-            {/* Milestone dots */}
-            {MILESTONES.map(({ year, cx, cy, r, major }) => (
-              <g key={`dot-${year}`}>
-                {/* Outer ring / halo */}
-                <circle
-                  cx={cx} cy={cy} r={r + 5}
-                  fill="none"
-                  stroke={major ? `rgba(212,168,83,0.45)` : `rgba(212,168,83,0.2)`}
-                  strokeWidth="1"
-                />
-                {/* Main dot */}
-                <circle
-                  cx={cx} cy={cy} r={r}
-                  fill="url(#dotGlow)"
-                  stroke={GOLD}
-                  strokeWidth={major ? 2 : 1.5}
-                />
-                {/* Inner highlight */}
-                <circle
-                  cx={cx - r * 0.25} cy={cy - r * 0.25} r={r * 0.28}
-                  fill="rgba(255,255,255,0.08)"
-                />
-              </g>
+                  {/* Entry lines */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    {entries.map(({ text }, j) => (
+                      <p key={j} style={{
+                        fontFamily: "'DM Sans', sans-serif",
+                        fontSize: '0.8rem', fontWeight: 300,
+                        lineHeight: 1.65, color: '#8C9198', margin: 0,
+                      }}>
+                        {text}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              </div>
             ))}
-
-            {/* Labels */}
-            {MILESTONES.map((m) => (
-              <MilestoneLabel key={`label-${m.year}`} {...m} />
-            ))}
-          </svg>
+          </div>
         </div>
       </div>
     </section>
@@ -323,10 +280,10 @@ function SectionLabel({ text }) {
 }
 
 const KEY_STATS = [
-  { value: '€31m', label: 'Initial Capital', sub: '→ €1.34bn NAV' },
+  { value: '€31m', label: 'Initial Capital', sub: '→ €1.45bn NAV' },
   { value: '51', unit: 'x', label: 'MOIC' },
   { value: '39.2', unit: '%', label: 'IRR' },
-  { value: '€78', unit: 'm', label: 'Cash to Shareholders' },
+  { value: '€146', unit: 'm', label: 'Cash to Shareholders' },
   { value: '65', unit: '+', label: 'Acquisitions' },
   { value: '14', label: 'Exits' },
 ];
