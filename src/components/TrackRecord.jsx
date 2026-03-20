@@ -87,7 +87,7 @@ export function TrackRecord() {
     <section
       id="track-record"
       style={{
-        background: DARK,
+        background: '#F8F9FC',
         padding: '8rem 0',
         position: 'relative',
         overflow: 'hidden',
@@ -111,7 +111,7 @@ export function TrackRecord() {
             fontFamily: "'Instrument Serif', serif",
             fontSize: 'clamp(1.8rem, 3.2vw, 2.7rem)',
             fontWeight: 400, lineHeight: 1.2,
-            color: CREAM, margin: 0, maxWidth: 560,
+            color: '#0A1628', margin: 0, maxWidth: 560,
           }}>
             NAV grown from €31m to{' '}
             <em style={{ color: GOLD, fontStyle: 'italic' }}>€1.45bn</em>
@@ -132,9 +132,9 @@ export function TrackRecord() {
                 <p style={{
                   fontFamily: "'DM Sans', sans-serif",
                   fontSize: '0.83rem', fontWeight: 300, lineHeight: 1.7,
-                  color: '#8C9198', margin: 0,
+                  color: '#5A6A7A', margin: 0,
                 }}>
-                  <strong style={{ fontWeight: 600, color: CREAM }}>{strong}</strong>{rest}
+                  <strong style={{ fontWeight: 600, color: '#0A1628' }}>{strong}</strong>{rest}
                 </p>
               </div>
             ))}
@@ -173,7 +173,7 @@ export function TrackRecord() {
               <div style={{
                 fontFamily: "'DM Sans', sans-serif",
                 fontSize: '0.63rem', fontWeight: 500,
-                letterSpacing: '0.12em', textTransform: 'uppercase', color: '#4A5568',
+                letterSpacing: '0.12em', textTransform: 'uppercase', color: '#3A4A5A',
               }}>
                 {label}
               </div>
@@ -209,7 +209,7 @@ export function TrackRecord() {
                   display: 'flex',
                   flexDirection: 'column',
                   position: 'relative',
-                  background: i % 2 === 0 ? 'rgba(255,255,255,0.015)' : 'transparent',
+                  background: i % 2 === 0 ? 'rgba(0,0,0,0.02)' : 'transparent',
                 }}
               >
                 {/* Gold accent bar — grows taller each card */}
@@ -235,7 +235,7 @@ export function TrackRecord() {
                   {nav && (
                     <div style={{
                       fontFamily: "'Instrument Serif', serif",
-                      fontSize: '1.15rem', fontWeight: 400, color: CREAM,
+                      fontSize: '1.15rem', fontWeight: 400, color: '#0A1628',
                       marginBottom: '1rem',
                     }}>
                       {nav}
@@ -248,7 +248,7 @@ export function TrackRecord() {
                       <p key={j} style={{
                         fontFamily: "'DM Sans', sans-serif",
                         fontSize: '0.8rem', fontWeight: 300,
-                        lineHeight: 1.65, color: '#8C9198', margin: 0,
+                        lineHeight: 1.65, color: '#5A6A7A', margin: 0,
                       }}>
                         {text}
                       </p>

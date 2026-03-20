@@ -7,7 +7,7 @@ export function Portfolio() {
     <section
       id="portfolio"
       style={{
-        background: '#0A1628',
+        background: '#F8F9FC',
         padding: '8rem 0',
         position: 'relative',
         overflow: 'hidden',
@@ -21,7 +21,7 @@ export function Portfolio() {
             fontFamily: "'Instrument Serif', serif",
             fontSize: 'clamp(2rem, 4vw, 3rem)',
             fontWeight: 400, lineHeight: 1.15,
-            color: '#F0EBE0', margin: '0 0 1rem',
+            color: '#0A1628', margin: '0 0 1rem',
           }}>
             Market-leading businesses{' '}
             <em style={{ color: GOLD, fontStyle: 'italic' }}>across CEE</em>
@@ -29,7 +29,7 @@ export function Portfolio() {
           <p style={{
             fontFamily: "'DM Sans', sans-serif",
             fontSize: '0.95rem', fontWeight: 300, lineHeight: 1.8,
-            color: '#8C9198', maxWidth: 520, margin: 0,
+            color: '#5A6A7A', maxWidth: 520, margin: 0,
           }}>
             Four core sectors where EMMA has built category-defining companies
             through deep operational expertise and M&A agility.
@@ -47,8 +47,8 @@ export function Portfolio() {
             <div
               key={i}
               style={{
-                background: '#0d1a2e',
-                border: `1px solid rgba(212,168,83,0.12)`,
+                background: '#FFFFFF',
+                border: `1px solid rgba(26,48,104,0.08)`,
                 padding: '2.5rem',
                 transition: 'border-color 0.3s, box-shadow 0.3s',
                 cursor: 'default',
@@ -58,7 +58,7 @@ export function Portfolio() {
                 e.currentTarget.style.boxShadow = '0 4px 20px rgba(212,168,83,0.1)';
               }}
               onMouseLeave={e => {
-                e.currentTarget.style.borderColor = 'rgba(212,168,83,0.12)';
+                e.currentTarget.style.borderColor = 'rgba(26,48,104,0.08)';
                 e.currentTarget.style.boxShadow = 'none';
               }}
             >
@@ -83,12 +83,12 @@ export function Portfolio() {
                 {companies.map(({ name, desc, tag }, j) => (
                   <div key={j} style={{
                     paddingBottom: j < companies.length - 1 ? '1rem' : 0,
-                    borderBottom: j < companies.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none',
+                    borderBottom: j < companies.length - 1 ? '1px solid rgba(26,48,104,0.08)' : 'none',
                   }}>
                     <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '0.5rem', marginBottom: '0.3rem' }}>
                       <span style={{
                         fontFamily: "'Instrument Serif', serif",
-                        fontSize: '1.1rem', fontWeight: 400, color: '#F0EBE0',
+                        fontSize: '1.1rem', fontWeight: 400, color: '#0A1628',
                       }}>
                         {name}
                       </span>
@@ -107,7 +107,7 @@ export function Portfolio() {
                     <p style={{
                       fontFamily: "'DM Sans', sans-serif",
                       fontSize: '0.78rem', fontWeight: 300,
-                      lineHeight: 1.6, color: '#8C9198', margin: 0,
+                      lineHeight: 1.6, color: '#5A6A7A', margin: 0,
                     }}>
                       {desc}
                     </p>
@@ -121,12 +121,12 @@ export function Portfolio() {
         {/* Footer note */}
         <div style={{
           padding: '1rem 1.5rem',
-          border: '1px solid rgba(212,168,83,0.12)',
-          background: '#0d1a2e',
+          border: '1px solid rgba(26,48,104,0.08)',
+          background: '#FFFFFF',
           fontFamily: "'DM Sans', sans-serif",
-          fontSize: '0.78rem', fontWeight: 300, color: '#8C9198',
+          fontSize: '0.78rem', fontWeight: 300, color: '#5A6A7A',
         }}>
-          <span style={{ fontWeight: 500, color: '#8C9198', marginRight: '0.5rem' }}>Also:</span>
+          <span style={{ fontWeight: 500, color: '#5A6A7A', marginRight: '0.5rem' }}>Also:</span>
           RIXO.cz (Czech digital insurance) · Marina 21 (premium marinas) · FAVI (furniture e-commerce) · Bazzar · Europe IVF
         </div>
       </div>

@@ -36,9 +36,9 @@ export function Header() {
       style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
         transition: 'all 0.4s ease',
-        background: scrolled ? `rgba(10,22,40,0.96)` : 'transparent',
+        background: scrolled ? `rgba(255,255,255,0.97)` : 'transparent',
         backdropFilter: scrolled ? 'blur(16px)' : 'none',
-        borderBottom: scrolled ? `1px solid rgba(212,168,83,0.12)` : '1px solid transparent',
+        borderBottom: scrolled ? `1px solid rgba(10,22,40,0.1)` : '1px solid transparent',
       }}
     >
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 2rem' }}>
@@ -49,7 +49,7 @@ export function Header() {
             onClick={e => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
             style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', textDecoration: 'none' }}
           >
-            <img src={`${BASE}/images/emma-logo.png`} alt="EMMA Capital" style={{ height: 44, display: 'block' }} />
+            <img src={`${BASE}/images/emma logo.jpg`} alt="EMMA Capital" style={{ height: 44, display: 'block' }} />
           </a>
 
           {/* Desktop nav */}
@@ -63,10 +63,10 @@ export function Header() {
                   fontFamily: "'DM Sans', sans-serif",
                   fontSize: '0.75rem', fontWeight: 500,
                   letterSpacing: '0.1em', textTransform: 'uppercase',
-                  color: '#8C9198', textDecoration: 'none', transition: 'color 0.2s',
+                  color: '#3A4A5A', textDecoration: 'none', transition: 'color 0.2s',
                 }}
                 onMouseEnter={e => (e.target.style.color = GOLD)}
-                onMouseLeave={e => (e.target.style.color = '#8C9198')}
+                onMouseLeave={e => (e.target.style.color = '#3A4A5A')}
               >
                 {label}
               </a>
@@ -120,8 +120,8 @@ export function Header() {
             style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0.5rem', display: 'none' }}
             aria-label="Toggle menu"
           >
-            <div style={{ width: 24, height: 2, background: GOLD, marginBottom: 5, transition: 'all 0.3s', transform: menuOpen ? 'rotate(45deg) translate(5px,5px)' : 'none' }} />
-            <div style={{ width: 24, height: 2, background: GOLD, marginBottom: 5, opacity: menuOpen ? 0 : 1, transition: 'opacity 0.3s' }} />
+            <div style={{ width: 24, height: 2, background: DARK, marginBottom: 5, transition: 'all 0.3s', transform: menuOpen ? 'rotate(45deg) translate(5px,5px)' : 'none' }} />
+            <div style={{ width: 24, height: 2, background: DARK, marginBottom: 5, opacity: menuOpen ? 0 : 1, transition: 'opacity 0.3s' }} />
             <div style={{ width: 24, height: 2, background: GOLD, transition: 'all 0.3s', transform: menuOpen ? 'rotate(-45deg) translate(5px,-5px)' : 'none' }} />
           </button>
         </div>
@@ -130,9 +130,9 @@ export function Header() {
       {/* Mobile menu */}
       {menuOpen && (
         <div style={{
-          background: 'rgba(10,22,40,0.98)',
+          background: 'rgba(255,255,255,0.98)',
           backdropFilter: 'blur(16px)',
-          borderTop: `1px solid rgba(212,168,83,0.12)`,
+          borderTop: `1px solid rgba(10,22,40,0.08)`,
           padding: '1.5rem 2rem',
         }}>
           {NAV_LINKS.map(({ label, href }) => (
@@ -145,8 +145,8 @@ export function Header() {
                 fontFamily: "'DM Sans', sans-serif",
                 fontSize: '0.8rem', fontWeight: 500,
                 letterSpacing: '0.1em', textTransform: 'uppercase',
-                color: '#8C9198', textDecoration: 'none',
-                borderBottom: '1px solid rgba(255,255,255,0.05)',
+                color: '#3A4A5A', textDecoration: 'none',
+                borderBottom: '1px solid rgba(0,0,0,0.06)',
               }}
             >
               {label}

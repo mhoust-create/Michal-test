@@ -17,7 +17,7 @@ export function Contact() {
     <section
       id="contact"
       style={{
-        background: '#F8F9FC',
+        background: '#0A1628',
         padding: '8rem 0',
         position: 'relative',
         overflow: 'hidden',
@@ -38,7 +38,7 @@ export function Contact() {
               fontFamily: "'Instrument Serif', serif",
               fontSize: 'clamp(1.8rem, 3.5vw, 2.6rem)',
               fontWeight: 400, lineHeight: 1.2,
-              color: NAVY, margin: '1.5rem 0 1rem',
+              color: '#F0EBE0', margin: '1.5rem 0 1rem',
             }}>
               Investor{' '}
               <em style={{ color: GOLD, fontStyle: 'italic' }}>Relations</em>
@@ -49,7 +49,7 @@ export function Contact() {
             <p style={{
               fontFamily: "'DM Sans', sans-serif",
               fontSize: '0.9rem', fontWeight: 300, lineHeight: 1.9,
-              color: '#5A6A7A', marginBottom: '2rem',
+              color: '#8C9198', marginBottom: '2rem',
             }}>
               EMMA Capital maintains transparent reporting for investors,
               lenders and counterparties. Access our latest disclosures
@@ -65,14 +65,14 @@ export function Contact() {
                   style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     padding: '0.9rem 0',
-                    borderBottom: `1px solid rgba(26,48,104,0.08)`,
+                    borderBottom: `1px solid rgba(212,168,83,0.08)`,
                     fontFamily: "'DM Sans', sans-serif",
                     fontSize: '0.88rem', fontWeight: 400,
-                    color: NAVY_MID, textDecoration: 'none',
+                    color: '#8C9198', textDecoration: 'none',
                     transition: 'color 0.2s',
                   }}
                   onMouseEnter={e => { e.currentTarget.style.color = GOLD; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = NAVY_MID; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = '#8C9198'; }}
                 >
                   {link}
                   <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
@@ -91,7 +91,7 @@ export function Contact() {
               fontFamily: "'Instrument Serif', serif",
               fontSize: 'clamp(1.8rem, 3.5vw, 2.6rem)',
               fontWeight: 400, lineHeight: 1.2,
-              color: NAVY, margin: '1.5rem 0 1rem',
+              color: '#F0EBE0', margin: '1.5rem 0 1rem',
             }}>
               Let's start a{' '}
               <em style={{ color: GOLD, fontStyle: 'italic' }}>conversation</em>
@@ -102,7 +102,7 @@ export function Contact() {
             <p style={{
               fontFamily: "'DM Sans', sans-serif",
               fontSize: '0.9rem', fontWeight: 300, lineHeight: 1.9,
-              color: '#5A6A7A', marginBottom: '3rem',
+              color: '#8C9198', marginBottom: '3rem',
             }}>
               Whether you are exploring a potential investment partnership,
               a business sale, or simply want to learn more about EMMA Capital,
@@ -123,7 +123,7 @@ export function Contact() {
                 <div style={{
                   fontFamily: "'DM Sans', sans-serif",
                   fontSize: '0.88rem', fontWeight: 300,
-                  lineHeight: 1.8, color: '#5A6A7A',
+                  lineHeight: 1.8, color: '#8C9198',
                 }}>
                   Na Příkopě 19<br />
                   110 00 Prague 1<br />
@@ -134,13 +134,13 @@ export function Contact() {
                   style={{
                     fontFamily: "'DM Sans', sans-serif",
                     fontSize: '0.88rem', fontWeight: 400,
-                    color: NAVY_MID, textDecoration: 'none',
+                    color: '#8C9198', textDecoration: 'none',
                     display: 'inline-block', marginTop: '0.5rem',
-                    borderBottom: `1px solid rgba(26,48,104,0.25)`,
+                    borderBottom: `1px solid rgba(140,145,152,0.3)`,
                     paddingBottom: '1px', transition: 'all 0.2s',
                   }}
                   onMouseEnter={e => { e.currentTarget.style.color = GOLD; e.currentTarget.style.borderColor = GOLD; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = NAVY_MID; e.currentTarget.style.borderColor = 'rgba(26,48,104,0.25)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = '#8C9198'; e.currentTarget.style.borderColor = 'rgba(140,145,152,0.3)'; }}
                 >
                   info@emmacapital.cz
                 </a>
@@ -158,7 +158,7 @@ export function Contact() {
                 <div style={{
                   fontFamily: "'DM Sans', sans-serif",
                   fontSize: '0.88rem', fontWeight: 300,
-                  lineHeight: 1.8, color: '#5A6A7A',
+                  lineHeight: 1.8, color: '#8C9198',
                   marginBottom: '0.5rem',
                 }}>
                   For investment partnership and deal flow enquiries.
@@ -168,12 +168,12 @@ export function Contact() {
                   style={{
                     fontFamily: "'DM Sans', sans-serif",
                     fontSize: '0.88rem', fontWeight: 400,
-                    color: NAVY_MID, textDecoration: 'none',
-                    borderBottom: `1px solid rgba(26,48,104,0.25)`,
+                    color: '#8C9198', textDecoration: 'none',
+                    borderBottom: `1px solid rgba(140,145,152,0.3)`,
                     paddingBottom: '1px', transition: 'all 0.2s',
                   }}
                   onMouseEnter={e => { e.currentTarget.style.color = GOLD; e.currentTarget.style.borderColor = GOLD; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = NAVY_MID; e.currentTarget.style.borderColor = 'rgba(26,48,104,0.25)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = '#8C9198'; e.currentTarget.style.borderColor = 'rgba(140,145,152,0.3)'; }}
                 >
                   investments@emmacapital.cz
                 </a>
@@ -182,15 +182,15 @@ export function Contact() {
               {/* Entity note */}
               <div style={{
                 padding: '1.25rem',
-                border: `1px solid rgba(26,48,104,0.1)`,
-                background: '#FFFFFF',
+                border: `1px solid rgba(212,168,83,0.1)`,
+                background: '#0d1a2e',
               }}>
                 <div style={{
                   fontFamily: "'DM Sans', sans-serif",
                   fontSize: '0.72rem', fontWeight: 300,
                   lineHeight: 1.7, color: '#8C9198',
                 }}>
-                  <strong style={{ color: '#5A6A7A', fontWeight: 500 }}>Legal entity:</strong>{' '}
+                  <strong style={{ color: '#8C9198', fontWeight: 500 }}>Legal entity:</strong>{' '}
                   EMMA Capital s.r.o., registered in the Czech Republic.
                   Group structure available upon request.
                 </div>

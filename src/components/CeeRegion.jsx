@@ -14,7 +14,7 @@ export function CeeRegion() {
     <section
       id="cee-region"
       style={{
-        background: '#F8F9FC',
+        background: '#0A1628',
         padding: '8rem 0',
         position: 'relative',
         overflow: 'hidden',
@@ -39,7 +39,7 @@ export function CeeRegion() {
               fontFamily: "'Instrument Serif', serif",
               fontSize: 'clamp(2rem, 4vw, 3rem)',
               fontWeight: 400, lineHeight: 1.15,
-              color: NAVY, margin: '0 0 1.5rem',
+              color: '#F0EBE0', margin: '0 0 1.5rem',
             }}>
               The world's most{' '}
               <em style={{ color: GOLD, fontStyle: 'italic' }}>compelling</em>
@@ -51,7 +51,7 @@ export function CeeRegion() {
             <p style={{
               fontFamily: "'DM Sans', sans-serif",
               fontSize: '0.95rem', fontWeight: 300, lineHeight: 1.9,
-              color: '#5A6A7A', marginBottom: '1.5rem',
+              color: '#8C9198', marginBottom: '1.5rem',
             }}>
               CEE is home to 126 million people, 79% of whom are below the age of 64.
               The region's GDP is growing at 2.3% CAGR — 53% faster than the EU average
@@ -61,7 +61,7 @@ export function CeeRegion() {
             <p style={{
               fontFamily: "'DM Sans', sans-serif",
               fontSize: '0.95rem', fontWeight: 300, lineHeight: 1.9,
-              color: '#5A6A7A', marginBottom: '2.5rem',
+              color: '#8C9198', marginBottom: '2.5rem',
             }}>
               Underpenetrated markets, fragmented competitive landscapes and structural
               tailwinds create consolidation opportunities unavailable in Western Europe.
@@ -76,7 +76,7 @@ export function CeeRegion() {
                   fontSize: '0.72rem', fontWeight: 500,
                   padding: '0.3rem 0.75rem',
                   border: `1px solid rgba(212,168,83,${i < 6 ? '0.4' : '0.15'})`,
-                  color: i < 6 ? GOLD : '#5A6A7A',
+                  color: i < 6 ? GOLD : '#8C9198',
                   background: i < 6 ? 'rgba(212,168,83,0.06)' : 'transparent',
                   letterSpacing: '0.05em',
                 }}>
@@ -96,7 +96,7 @@ export function CeeRegion() {
               <div key={i} style={{
                 padding: '2rem 1.5rem',
                 border: `1px solid rgba(212,168,83,0.12)`,
-                background: '#FFFFFF',
+                background: '#0d1a2e',
               }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.15rem', marginBottom: '0.5rem' }}>
                   <span style={{
@@ -118,14 +118,14 @@ export function CeeRegion() {
                   fontFamily: "'DM Sans', sans-serif",
                   fontSize: '0.72rem', fontWeight: 600,
                   letterSpacing: '0.1em', textTransform: 'uppercase',
-                  color: NAVY, marginBottom: '0.4rem',
+                  color: '#F0EBE0', marginBottom: '0.4rem',
                 }}>
                   {label}
                 </div>
                 <p style={{
                   fontFamily: "'DM Sans', sans-serif",
                   fontSize: '0.78rem', fontWeight: 300,
-                  lineHeight: 1.6, color: '#5A6A7A', margin: 0,
+                  lineHeight: 1.6, color: '#8C9198', margin: 0,
                 }}>
                   {desc}
                 </p>

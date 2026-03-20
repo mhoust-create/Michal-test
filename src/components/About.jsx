@@ -7,7 +7,7 @@ export function About() {
     <section
       id="about"
       style={{
-        background: '#F8F9FC',
+        background: '#0A1628',
         padding: '8rem 0',
         position: 'relative',
         overflow: 'hidden',
@@ -29,7 +29,7 @@ export function About() {
               fontFamily: "'Instrument Serif', serif",
               fontSize: 'clamp(2rem, 4vw, 3rem)',
               fontWeight: 400, lineHeight: 1.15,
-              color: NAVY, margin: '0 0 1.5rem',
+              color: '#F0EBE0', margin: '0 0 1.5rem',
             }}>
               A different kind of{' '}
               <em style={{ color: GOLD, fontStyle: 'italic' }}>investment firm</em>
@@ -40,7 +40,7 @@ export function About() {
             <p style={{
               fontFamily: "'DM Sans', sans-serif",
               fontSize: '0.95rem', fontWeight: 300, lineHeight: 1.9,
-              color: '#3A4A5A', marginBottom: '1.5rem',
+              color: '#8C9198', marginBottom: '1.5rem',
             }}>
               Founded in 2012 and headquartered in Prague, EMMA Capital is a
               €1.45bn investment management group with a long-term perspective.
@@ -51,7 +51,7 @@ export function About() {
             <p style={{
               fontFamily: "'DM Sans', sans-serif",
               fontSize: '0.95rem', fontWeight: 300, lineHeight: 1.9,
-              color: '#3A4A5A', marginBottom: '1.5rem',
+              color: '#8C9198', marginBottom: '1.5rem',
             }}>
               Our team combines deep sector expertise with an established network
               across Central and Eastern Europe, built over 13+ years of hands-on
@@ -61,7 +61,7 @@ export function About() {
             <p style={{
               fontFamily: "'DM Sans', sans-serif",
               fontSize: '0.95rem', fontWeight: 300, lineHeight: 1.9,
-              color: '#3A4A5A',
+              color: '#8C9198',
             }}>
               From founding OPAP's privatization to building Allwyn into Europe's
               #1 lottery group, from growing Premier Energy into a BSE-listed utility
@@ -78,12 +78,12 @@ export function About() {
                   fontFamily: "'DM Sans', sans-serif",
                   fontSize: '0.72rem', fontWeight: 500,
                   letterSpacing: '0.15em', textTransform: 'uppercase',
-                  color: NAVY_MID, textDecoration: 'none',
-                  borderBottom: `1px solid rgba(26,48,104,0.3)`,
+                  color: '#8C9198', textDecoration: 'none',
+                  borderBottom: `1px solid rgba(212,168,83,0.3)`,
                   paddingBottom: '2px', transition: 'all 0.2s',
                 }}
                 onMouseEnter={e => { e.currentTarget.style.color = GOLD; e.currentTarget.style.borderColor = GOLD; }}
-                onMouseLeave={e => { e.currentTarget.style.color = NAVY_MID; e.currentTarget.style.borderColor = 'rgba(26,48,104,0.3)'; }}
+                onMouseLeave={e => { e.currentTarget.style.color = '#8C9198'; e.currentTarget.style.borderColor = 'rgba(212,168,83,0.3)'; }}
               >
                 Get in touch
                 <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
@@ -104,9 +104,9 @@ export function About() {
                 key={i}
                 style={{
                   padding: '1.75rem',
-                  background: '#FFFFFF',
-                  border: '1px solid rgba(26,48,104,0.08)',
-                  boxShadow: '0 1px 4px rgba(10,22,40,0.04)',
+                  background: '#0d1a2e',
+                  border: '1px solid rgba(212,168,83,0.12)',
+                  boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
                   transition: 'border-color 0.3s, box-shadow 0.3s',
                   cursor: 'default',
                 }}
@@ -115,22 +115,22 @@ export function About() {
                   e.currentTarget.style.boxShadow = '0 4px 16px rgba(212,168,83,0.12)';
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.borderColor = 'rgba(26,48,104,0.08)';
-                  e.currentTarget.style.boxShadow = '0 1px 4px rgba(10,22,40,0.04)';
+                  e.currentTarget.style.borderColor = 'rgba(212,168,83,0.12)';
+                  e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.2)';
                 }}
               >
                 <div style={{ fontSize: '1.4rem', marginBottom: '0.75rem' }}>{icon}</div>
                 <h3 style={{
                   fontFamily: "'Instrument Serif', serif",
                   fontSize: '1.05rem', fontWeight: 400,
-                  color: NAVY, margin: '0 0 0.5rem', lineHeight: 1.3,
+                  color: '#F0EBE0', margin: '0 0 0.5rem', lineHeight: 1.3,
                 }}>
                   {title}
                 </h3>
                 <p style={{
                   fontFamily: "'DM Sans', sans-serif",
                   fontSize: '0.82rem', fontWeight: 300,
-                  lineHeight: 1.65, color: '#5A6A7A', margin: 0,
+                  lineHeight: 1.65, color: '#8C9198', margin: 0,
                 }}>
                   {description}
                 </p>

@@ -25,7 +25,7 @@ export function Hero() {
         flexDirection: 'column',
         justifyContent: 'center',
         overflow: 'hidden',
-        background: DARK,
+        background: '#F8F9FC',
       }}
     >
       {/* Background geometric grid */}
@@ -56,7 +56,7 @@ export function Hero() {
         {/* Bottom fade */}
         <div style={{
           position: 'absolute', bottom: 0, left: 0, right: 0, height: 180,
-          background: `linear-gradient(to bottom, transparent, ${DARK})`,
+          background: 'linear-gradient(to bottom, transparent, #F8F9FC)',
         }} />
       </div>
 
@@ -80,7 +80,7 @@ export function Hero() {
             fontFamily: "'Instrument Serif', serif",
             fontSize: 'clamp(2.8rem, 6.5vw, 5.2rem)',
             fontWeight: 400, lineHeight: 1.1,
-            color: CREAM, margin: '0 0 1.5rem', letterSpacing: '-0.01em',
+            color: DARK, margin: '0 0 1.5rem', letterSpacing: '-0.01em',
           }}>
             Building{' '}
             <em style={{ color: GOLD, fontStyle: 'italic' }}>long-term value</em>
@@ -99,7 +99,7 @@ export function Hero() {
           <p style={{
             fontFamily: "'DM Sans', sans-serif",
             fontSize: '1.05rem', fontWeight: 300, lineHeight: 1.8,
-            color: MUTED, maxWidth: 560, margin: '0 0 3rem',
+            color: '#5A6A7A', maxWidth: 560, margin: '0 0 3rem',
           }}>
             Founded in 2012 by Jiří Šmejc, EMMA Capital actively manages a €1.45bn
             portfolio of market-leading businesses — from gaming and energy to
@@ -158,7 +158,7 @@ export function Hero() {
               <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.2rem', lineHeight: 1, marginBottom: '0.5rem' }}>
                 <span style={{
                   fontFamily: "'Instrument Serif', serif",
-                  fontSize: '2.6rem', fontWeight: 400, color: CREAM,
+                  fontSize: '2.6rem', fontWeight: 400, color: DARK,
                 }}>
                   {value}
                 </span>

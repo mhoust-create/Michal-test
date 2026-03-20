@@ -108,7 +108,7 @@ export function Team() {
     <section
       id="team"
       style={{
-        background: '#0A1628',
+        background: '#F8F9FC',
         padding: '8rem 0',
         position: 'relative',
         overflow: 'hidden',
@@ -122,7 +122,7 @@ export function Team() {
             fontFamily: "'Instrument Serif', serif",
             fontSize: 'clamp(2rem, 4vw, 3rem)',
             fontWeight: 400, lineHeight: 1.15,
-            color: '#F0EBE0', margin: '0 0 0.75rem',
+            color: '#0A1628', margin: '0 0 0.75rem',
           }}>
             Experienced investors,{' '}
             <em style={{ color: GOLD, fontStyle: 'italic' }}>proven operators</em>
@@ -130,7 +130,7 @@ export function Team() {
           <p style={{
             fontFamily: "'DM Sans', sans-serif",
             fontSize: '0.9rem', fontWeight: 300, lineHeight: 1.8,
-            color: '#8C9198', maxWidth: 500, margin: 0,
+            color: '#5A6A7A', maxWidth: 500, margin: 0,
           }}>
             Supported by an in-house team of 30+ professionals across Prague and portfolio companies.
           </p>
@@ -138,16 +138,16 @@ export function Team() {
 
         {/* Featured founder card */}
         <div style={{
-          background: '#0d1a2e',
+          background: '#FFFFFF',
           padding: '3rem',
           marginBottom: '2rem',
           display: 'grid',
           gridTemplateColumns: 'auto 1fr',
           gap: '2.5rem',
           alignItems: 'start',
-          border: `1px solid rgba(212,168,83,0.15)`,
+          border: `1px solid rgba(26,48,104,0.08)`,
         }}>
-          <Avatar photo={FOUNDER.photo} initials={FOUNDER.initials} size={96} dark />
+          <Avatar photo={FOUNDER.photo} initials={FOUNDER.initials} size={96} />
 
           <div>
             <div style={{
@@ -161,7 +161,7 @@ export function Team() {
             <h3 style={{
               fontFamily: "'Instrument Serif', serif",
               fontSize: '1.8rem', fontWeight: 400,
-              color: '#F0EBE0', margin: '0 0 0.3rem',
+              color: '#0A1628', margin: '0 0 0.3rem',
             }}>
               {FOUNDER.name}
             </h3>
@@ -176,7 +176,7 @@ export function Team() {
             <p style={{
               fontFamily: "'DM Sans', sans-serif",
               fontSize: '0.9rem', fontWeight: 300,
-              lineHeight: 1.8, color: '#8C9198', margin: 0,
+              lineHeight: 1.8, color: '#5A6A7A', margin: 0,
               maxWidth: 700,
             }}>
               {FOUNDER.bio}
@@ -189,19 +189,19 @@ export function Team() {
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
           gap: '1px',
-          background: 'rgba(212,168,83,0.08)',
+          background: 'rgba(26,48,104,0.06)',
         }}>
           {PARTNERS.map(({ name, title, focus, initials, photo, bio }, i) => (
             <div
               key={i}
               style={{
-                background: '#0d1a2e',
+                background: '#FFFFFF',
                 padding: '2rem',
                 transition: 'background 0.3s',
                 cursor: 'default',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#112238'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#0d1a2e'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#F0F2F5'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
             >
               <Avatar photo={photo} initials={initials} size={64} />
 
@@ -209,7 +209,7 @@ export function Team() {
                 <h3 style={{
                   fontFamily: "'Instrument Serif', serif",
                   fontSize: '1.2rem', fontWeight: 400,
-                  color: '#F0EBE0', margin: '0 0 0.2rem',
+                  color: '#0A1628', margin: '0 0 0.2rem',
                 }}>
                   {name}
                 </h3>
@@ -226,7 +226,7 @@ export function Team() {
                 <div style={{
                   fontFamily: "'DM Sans', sans-serif",
                   fontSize: '0.72rem', fontWeight: 300,
-                  color: '#8C9198', marginBottom: '1rem',
+                  color: '#5A6A7A', marginBottom: '1rem',
                 }}>
                   {focus}
                 </div>
@@ -234,7 +234,7 @@ export function Team() {
                 <p style={{
                   fontFamily: "'DM Sans', sans-serif",
                   fontSize: '0.8rem', fontWeight: 300,
-                  lineHeight: 1.7, color: '#8C9198', margin: 0,
+                  lineHeight: 1.7, color: '#5A6A7A', margin: 0,
                 }}>
                   {bio}
                 </p>
