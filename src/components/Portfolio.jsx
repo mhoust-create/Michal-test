@@ -231,7 +231,7 @@ const SECTORS = [
       {
         name: 'FAVI',
         tag: 'Furniture E-com',
-        desc: 'Leading furniture and home decor e-commerce aggregator operating across multiple CEE markets.',
+        desc: 'European leader in furniture and home decor search engines.',
       },
     ],
   },
