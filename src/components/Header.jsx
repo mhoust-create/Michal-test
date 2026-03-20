@@ -48,7 +48,7 @@ export function Header() {
             onClick={e => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
             style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', textDecoration: 'none' }}
           >
-            <EmmLogo textColor="#F0EBE0" />
+            <img src="/images/emma logo.jpg" alt="EMMA Capital" style={{ height: 44, display: 'block' }} />
           </a>
 
           {/* Desktop nav */}
