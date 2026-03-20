@@ -1,93 +1,89 @@
+const GOLD = '#D4A853';
+const NAVY = '#0A1628';
+const NAVY_MID = '#1A3068';
+
 export function About() {
   return (
     <section
       id="about"
       style={{
-        background: '#0a1020',
+        background: '#F8F9FC',
         padding: '8rem 0',
         position: 'relative',
         overflow: 'hidden',
       }}
     >
-      {/* Subtle background accent */}
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '40%',
-        height: '100%',
-        background: 'linear-gradient(to right, rgba(196,151,59,0.03), transparent)',
-        pointerEvents: 'none',
-      }} />
-
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 2rem', position: 'relative' }}>
-        {/* Section label */}
-        <SectionLabel text="About EMMA Capital" />
+        <SectionLabel text="About EMMA Capital" dark />
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '5rem', alignItems: 'start', marginTop: '4rem' }}>
-          {/* Left col */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
+          gap: '5rem',
+          alignItems: 'start',
+          marginTop: '4rem',
+        }}>
+          {/* Left col — narrative */}
           <div>
             <h2 style={{
-              fontFamily: 'Cormorant Garamond, serif',
-              fontSize: 'clamp(2rem, 4vw, 3.2rem)',
-              fontWeight: 300,
-              lineHeight: 1.2,
-              color: '#f0ebe0',
-              margin: '0 0 1.5rem',
+              fontFamily: "'Instrument Serif', serif",
+              fontSize: 'clamp(2rem, 4vw, 3rem)',
+              fontWeight: 400, lineHeight: 1.15,
+              color: NAVY, margin: '0 0 1.5rem',
             }}>
-              A different kind of<br />
-              <em style={{ color: '#c4973b', fontStyle: 'italic' }}>investment firm</em>
+              A different kind of{' '}
+              <em style={{ color: GOLD, fontStyle: 'italic' }}>investment firm</em>
             </h2>
 
-            <div style={{ width: 40, height: 1, background: '#c4973b', marginBottom: '2rem' }} />
+            <div style={{ width: 40, height: 2, background: '#C8102E', marginBottom: '2rem' }} />
 
             <p style={{
-              fontFamily: 'Inter, sans-serif',
-              fontSize: '0.95rem',
-              fontWeight: 300,
-              lineHeight: 1.9,
-              color: '#6a6258',
-              marginBottom: '1.5rem',
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: '0.95rem', fontWeight: 300, lineHeight: 1.9,
+              color: '#3A4A5A', marginBottom: '1.5rem',
             }}>
-              Founded in 2012 and headquartered in Prague, EMMA Capital is a principal
-              investment firm with a long-term perspective. We don't just deploy capital —
-              we roll up our sleeves and actively participate in the strategic management
-              of every business we own.
+              Founded in 2012 and headquartered in Prague, EMMA Capital is a
+              €1.45bn investment management group with a long-term perspective.
+              We don't just deploy capital — we roll up our sleeves and actively
+              participate in the strategic management of every business we own.
             </p>
 
             <p style={{
-              fontFamily: 'Inter, sans-serif',
-              fontSize: '0.95rem',
-              fontWeight: 300,
-              lineHeight: 1.9,
-              color: '#6a6258',
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: '0.95rem', fontWeight: 300, lineHeight: 1.9,
+              color: '#3A4A5A', marginBottom: '1.5rem',
             }}>
-              Our team brings deep operational expertise and an established network across
-              Central and Eastern Europe, enabling us to create genuine value rather than
-              simply optimise financial structures.
+              Our team combines deep sector expertise with an established network
+              across Central and Eastern Europe, built over 13+ years of hands-on
+              operational involvement — not passive capital allocation.
             </p>
 
-            <div style={{ marginTop: '2.5rem', display: 'flex', gap: '1rem' }}>
+            <p style={{
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: '0.95rem', fontWeight: 300, lineHeight: 1.9,
+              color: '#3A4A5A',
+            }}>
+              From founding OPAP's privatization to building Allwyn into Europe's
+              #1 lottery group, from growing Premier Energy into a BSE-listed utility
+              to creating Box Now — a #1 parcel network across 4 countries — EMMA
+              builds scalable platforms with replicable success.
+            </p>
+
+            <div style={{ marginTop: '2.5rem' }}>
               <a
                 href="#contact"
                 onClick={e => { e.preventDefault(); document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' }); }}
                 style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.6rem',
-                  fontFamily: 'Inter, sans-serif',
-                  fontSize: '0.72rem',
-                  fontWeight: 500,
-                  letterSpacing: '0.15em',
-                  textTransform: 'uppercase',
-                  color: '#c4973b',
-                  textDecoration: 'none',
-                  borderBottom: '1px solid rgba(196,151,59,0.4)',
-                  paddingBottom: '2px',
-                  transition: 'border-color 0.2s',
+                  display: 'inline-flex', alignItems: 'center', gap: '0.6rem',
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: '0.72rem', fontWeight: 500,
+                  letterSpacing: '0.15em', textTransform: 'uppercase',
+                  color: NAVY_MID, textDecoration: 'none',
+                  borderBottom: `1px solid rgba(26,48,104,0.3)`,
+                  paddingBottom: '2px', transition: 'all 0.2s',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = '#c4973b'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(196,151,59,0.4)'; }}
+                onMouseEnter={e => { e.currentTarget.style.color = GOLD; e.currentTarget.style.borderColor = GOLD; }}
+                onMouseLeave={e => { e.currentTarget.style.color = NAVY_MID; e.currentTarget.style.borderColor = 'rgba(26,48,104,0.3)'; }}
               >
                 Get in touch
                 <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
@@ -97,61 +93,47 @@ export function About() {
             </div>
           </div>
 
-          {/* Right col — values */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            {VALUES.map(({ icon, title, description }, i) => (
+          {/* Right col — 2×2 pillar cards */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '1.25rem',
+          }}>
+            {PILLARS.map(({ icon, title, description }, i) => (
               <div
                 key={i}
                 style={{
                   padding: '1.75rem',
-                  border: '1px solid rgba(196,151,59,0.12)',
-                  background: 'rgba(196,151,59,0.02)',
-                  transition: 'border-color 0.3s, background 0.3s',
+                  background: '#FFFFFF',
+                  border: '1px solid rgba(26,48,104,0.08)',
+                  boxShadow: '0 1px 4px rgba(10,22,40,0.04)',
+                  transition: 'border-color 0.3s, box-shadow 0.3s',
                   cursor: 'default',
                 }}
                 onMouseEnter={e => {
-                  e.currentTarget.style.borderColor = 'rgba(196,151,59,0.3)';
-                  e.currentTarget.style.background = 'rgba(196,151,59,0.04)';
+                  e.currentTarget.style.borderColor = `rgba(212,168,83,0.4)`;
+                  e.currentTarget.style.boxShadow = '0 4px 16px rgba(212,168,83,0.12)';
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.borderColor = 'rgba(196,151,59,0.12)';
-                  e.currentTarget.style.background = 'rgba(196,151,59,0.02)';
+                  e.currentTarget.style.borderColor = 'rgba(26,48,104,0.08)';
+                  e.currentTarget.style.boxShadow = '0 1px 4px rgba(10,22,40,0.04)';
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
-                  <div style={{
-                    width: 36,
-                    height: 36,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                    color: '#c4973b',
-                  }}>
-                    {icon}
-                  </div>
-                  <div>
-                    <h3 style={{
-                      fontFamily: 'Cormorant Garamond, serif',
-                      fontSize: '1.2rem',
-                      fontWeight: 500,
-                      color: '#f0ebe0',
-                      margin: '0 0 0.5rem',
-                    }}>
-                      {title}
-                    </h3>
-                    <p style={{
-                      fontFamily: 'Inter, sans-serif',
-                      fontSize: '0.85rem',
-                      fontWeight: 300,
-                      lineHeight: 1.7,
-                      color: '#6a6258',
-                      margin: 0,
-                    }}>
-                      {description}
-                    </p>
-                  </div>
-                </div>
+                <div style={{ fontSize: '1.4rem', marginBottom: '0.75rem' }}>{icon}</div>
+                <h3 style={{
+                  fontFamily: "'Instrument Serif', serif",
+                  fontSize: '1.05rem', fontWeight: 400,
+                  color: NAVY, margin: '0 0 0.5rem', lineHeight: 1.3,
+                }}>
+                  {title}
+                </h3>
+                <p style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: '0.82rem', fontWeight: 300,
+                  lineHeight: 1.65, color: '#5A6A7A', margin: 0,
+                }}>
+                  {description}
+                </p>
               </div>
             ))}
           </div>
@@ -161,17 +143,15 @@ export function About() {
   );
 }
 
-function SectionLabel({ text }) {
+function SectionLabel({ text, dark }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-      <div style={{ width: 32, height: 1, background: '#c4973b' }} />
+      <div style={{ width: 32, height: 1, background: GOLD }} />
       <span style={{
-        fontFamily: 'Inter, sans-serif',
-        fontSize: '0.68rem',
-        fontWeight: 500,
-        letterSpacing: '0.25em',
-        textTransform: 'uppercase',
-        color: '#c4973b',
+        fontFamily: "'DM Sans', sans-serif",
+        fontSize: '0.68rem', fontWeight: 500,
+        letterSpacing: '0.25em', textTransform: 'uppercase',
+        color: dark ? GOLD : GOLD,
       }}>
         {text}
       </span>
@@ -179,35 +159,25 @@ function SectionLabel({ text }) {
   );
 }
 
-const VALUES = [
+const PILLARS = [
   {
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-      </svg>
-    ),
-    title: 'Active Ownership',
-    description: 'We are deeply involved in the strategic direction and operational management of each company in our portfolio — not passive observers.',
+    icon: '◆',
+    title: 'Strategic Capital with Long-Term Vision',
+    description: 'Patient, principal capital deployed with no artificial exit pressure — aligning our interests entirely with business success.',
   },
   {
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.3"/>
-        <path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
-      </svg>
-    ),
-    title: 'Long-Term Horizon',
-    description: 'We invest for the long term, building relationships and value over years rather than seeking quick returns.',
+    icon: '◈',
+    title: 'Sector Expertise with Investor-Operator Edge',
+    description: 'We invest in sectors where we have decades of operational experience and regulatory insight across CEE markets.',
   },
   {
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
-        <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="1.3"/>
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
-      </svg>
-    ),
-    title: 'Regional Expertise',
-    description: 'Twenty-plus years of combined experience navigating the unique dynamics of Central and Eastern European markets.',
+    icon: '◉',
+    title: 'Value Creation through M&A Agility',
+    description: '65+ acquisitions demonstrate our ability to identify, execute and integrate deals quickly — creating platform scale.',
+  },
+  {
+    icon: '▲',
+    title: 'Scalable Platforms with Replicable Success',
+    description: 'We build category-leading businesses that can be systematically replicated across multiple CEE geographies.',
   },
 ];

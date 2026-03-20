@@ -1,16 +1,21 @@
 import { useState, useEffect } from 'react';
 
+const GOLD = '#D4A853';
+const DARK = '#0A1628';
+const EMMA_RED = '#C8102E';
+const EMMA_NAVY = '#1A3068';
+
 const NAV_LINKS = [
   { label: 'About', href: '#about' },
   { label: 'Portfolio', href: '#portfolio' },
-  { label: 'Strategy', href: '#strategy' },
-  { label: 'News', href: '#news' },
-  { label: 'Contact', href: '#contact' },
+  { label: 'Track Record', href: '#track-record' },
+  { label: 'Team', href: '#team' },
 ];
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [lang, setLang] = useState('EN');
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -28,15 +33,11 @@ export function Header() {
   return (
     <header
       style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 100,
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
         transition: 'all 0.4s ease',
-        background: scrolled ? 'rgba(8,14,28,0.95)' : 'transparent',
-        backdropFilter: scrolled ? 'blur(12px)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(196,151,59,0.15)' : '1px solid transparent',
+        background: scrolled ? `rgba(10,22,40,0.96)` : 'transparent',
+        backdropFilter: scrolled ? 'blur(16px)' : 'none',
+        borderBottom: scrolled ? `1px solid rgba(212,168,83,0.12)` : '1px solid transparent',
       }}
     >
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 2rem' }}>
@@ -45,12 +46,26 @@ export function Header() {
           <a
             href="#"
             onClick={e => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', textDecoration: 'none' }}
           >
             <LogoMark />
-            <span style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '1.35rem', fontWeight: 600, color: '#f0ebe0', letterSpacing: '0.12em' }}>
-              EMMA CAPITAL
-            </span>
+            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
+              <span style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: '1.1rem', fontWeight: 600,
+                color: '#F0EBE0', letterSpacing: '0.18em',
+              }}>
+                EMMA
+              </span>
+              <span style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: '0.6rem', fontWeight: 400,
+                color: '#8C9198', letterSpacing: '0.3em',
+                textTransform: 'uppercase', marginTop: '1px',
+              }}>
+                Capital
+              </span>
+            </div>
           </a>
 
           {/* Desktop nav */}
@@ -61,21 +76,57 @@ export function Header() {
                 href={href}
                 onClick={e => handleNavClick(e, href)}
                 style={{
-                  fontFamily: 'Inter, sans-serif',
-                  fontSize: '0.75rem',
-                  fontWeight: 500,
-                  letterSpacing: '0.12em',
-                  textTransform: 'uppercase',
-                  color: '#9a9080',
-                  textDecoration: 'none',
-                  transition: 'color 0.2s',
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: '0.75rem', fontWeight: 500,
+                  letterSpacing: '0.1em', textTransform: 'uppercase',
+                  color: '#8C9198', textDecoration: 'none', transition: 'color 0.2s',
                 }}
-                onMouseEnter={e => (e.target.style.color = '#c4973b')}
-                onMouseLeave={e => (e.target.style.color = '#9a9080')}
+                onMouseEnter={e => (e.target.style.color = GOLD)}
+                onMouseLeave={e => (e.target.style.color = '#8C9198')}
               >
                 {label}
               </a>
             ))}
+
+            {/* Language toggle */}
+            <div style={{ display: 'flex', gap: '0', border: '1px solid rgba(212,168,83,0.2)', borderRadius: 2 }}>
+              {['EN', 'CZ'].map(l => (
+                <button
+                  key={l}
+                  onClick={() => setLang(l)}
+                  style={{
+                    padding: '0.3rem 0.6rem',
+                    fontFamily: "'DM Sans', sans-serif",
+                    fontSize: '0.65rem', fontWeight: 500,
+                    letterSpacing: '0.1em',
+                    background: lang === l ? GOLD : 'transparent',
+                    color: lang === l ? DARK : '#8C9198',
+                    border: 'none', cursor: 'pointer',
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  {l}
+                </button>
+              ))}
+            </div>
+
+            {/* Contact CTA */}
+            <a
+              href="#contact"
+              onClick={e => handleNavClick(e, '#contact')}
+              style={{
+                padding: '0.5rem 1.2rem',
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: '0.72rem', fontWeight: 600,
+                letterSpacing: '0.1em', textTransform: 'uppercase',
+                background: EMMA_RED, color: '#FFFFFF',
+                textDecoration: 'none', transition: 'background 0.2s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#a80d25'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = EMMA_RED; }}
+            >
+              Contact
+            </a>
           </nav>
 
           {/* Mobile hamburger */}
@@ -85,9 +136,9 @@ export function Header() {
             style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0.5rem', display: 'none' }}
             aria-label="Toggle menu"
           >
-            <div style={{ width: 24, height: 2, background: '#c4973b', marginBottom: 5, transition: 'all 0.3s', transform: menuOpen ? 'rotate(45deg) translate(5px,5px)' : 'none' }} />
-            <div style={{ width: 24, height: 2, background: '#c4973b', marginBottom: 5, opacity: menuOpen ? 0 : 1, transition: 'opacity 0.3s' }} />
-            <div style={{ width: 24, height: 2, background: '#c4973b', transition: 'all 0.3s', transform: menuOpen ? 'rotate(-45deg) translate(5px,-5px)' : 'none' }} />
+            <div style={{ width: 24, height: 2, background: GOLD, marginBottom: 5, transition: 'all 0.3s', transform: menuOpen ? 'rotate(45deg) translate(5px,5px)' : 'none' }} />
+            <div style={{ width: 24, height: 2, background: GOLD, marginBottom: 5, opacity: menuOpen ? 0 : 1, transition: 'opacity 0.3s' }} />
+            <div style={{ width: 24, height: 2, background: GOLD, transition: 'all 0.3s', transform: menuOpen ? 'rotate(-45deg) translate(5px,-5px)' : 'none' }} />
           </button>
         </div>
       </div>
@@ -95,9 +146,9 @@ export function Header() {
       {/* Mobile menu */}
       {menuOpen && (
         <div style={{
-          background: 'rgba(8,14,28,0.98)',
-          backdropFilter: 'blur(12px)',
-          borderTop: '1px solid rgba(196,151,59,0.15)',
+          background: 'rgba(10,22,40,0.98)',
+          backdropFilter: 'blur(16px)',
+          borderTop: `1px solid rgba(212,168,83,0.12)`,
           padding: '1.5rem 2rem',
         }}>
           {NAV_LINKS.map(({ label, href }) => (
@@ -106,34 +157,48 @@ export function Header() {
               href={href}
               onClick={e => handleNavClick(e, href)}
               style={{
-                display: 'block',
-                padding: '0.75rem 0',
-                fontFamily: 'Inter, sans-serif',
-                fontSize: '0.8rem',
-                fontWeight: 500,
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                color: '#9a9080',
-                textDecoration: 'none',
+                display: 'block', padding: '0.75rem 0',
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: '0.8rem', fontWeight: 500,
+                letterSpacing: '0.1em', textTransform: 'uppercase',
+                color: '#8C9198', textDecoration: 'none',
                 borderBottom: '1px solid rgba(255,255,255,0.05)',
               }}
             >
               {label}
             </a>
           ))}
+          <a
+            href="#contact"
+            onClick={e => handleNavClick(e, '#contact')}
+            style={{
+              display: 'block', padding: '0.75rem 0',
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: '0.8rem', fontWeight: 600,
+              letterSpacing: '0.1em', textTransform: 'uppercase',
+              color: EMMA_RED, textDecoration: 'none',
+            }}
+          >
+            Contact
+          </a>
         </div>
       )}
     </header>
   );
 }
 
+/* Replicates the EMMA logo mark: red square with curved cutout + EMMA initial */
 function LogoMark() {
   return (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-      <rect width="32" height="32" rx="2" fill="none" />
-      <path d="M4 28 L16 4 L28 28" stroke="#c4973b" strokeWidth="1.5" strokeLinejoin="round" fill="none" />
-      <path d="M8 20 L24 20" stroke="#c4973b" strokeWidth="1.5" />
-      <circle cx="16" cy="4" r="2" fill="#c4973b" />
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+      {/* Red square block */}
+      <rect x="1" y="1" width="16" height="34" rx="1.5" fill={EMMA_RED} />
+      {/* White curved cutout — comma/quote shape */}
+      <path d="M8 8 Q5 14 8 20 Q11 14 14 8 Z" fill="white" opacity="0.9" />
+      {/* Navy E letterform suggestion */}
+      <rect x="20" y="8" width="15" height="2.5" rx="0.5" fill="#1A3068" />
+      <rect x="20" y="16.75" width="12" height="2.5" rx="0.5" fill="#1A3068" />
+      <rect x="20" y="25.5" width="15" height="2.5" rx="0.5" fill="#1A3068" />
     </svg>
   );
 }

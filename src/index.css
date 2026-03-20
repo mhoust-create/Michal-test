@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* EMMA Capital Brand Colors
+   Red:   #C8102E  (logo mark)
+   Navy:  #1A3068  (logo letterforms)
+   Gray:  #8C9198  (CAPITAL wordmark)
+   Gold:  #D4A853  (accent)
+   Dark:  #0A1628  (primary background)
+   Light: #F8F9FC  (section background)
+*/
+
 *, *::before, *::after {
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
@@ -13,9 +22,9 @@ html {
 
 body {
   margin: 0;
-  background-color: #080e1c;
-  color: #f0ebe0;
-  font-family: 'Inter', sans-serif;
+  background-color: #0A1628;
+  color: #0A1628;
+  font-family: 'DM Sans', sans-serif;
   overscroll-behavior: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -28,15 +37,26 @@ body {
 
 /* Custom scrollbar */
 ::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: #080e1c; }
-::-webkit-scrollbar-thumb { background: rgba(196,151,59,0.3); border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(196,151,59,0.5); }
+::-webkit-scrollbar-track { background: #0A1628; }
+::-webkit-scrollbar-thumb { background: rgba(212,168,83,0.35); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(212,168,83,0.6); }
 
 /* Responsive nav visibility */
 @media (max-width: 768px) {
   .desktop-nav { display: none !important; }
   .mobile-menu-btn { display: flex !important; }
 }
+
+/* Horizontal scroll for timeline */
+.timeline-scroll {
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(212,168,83,0.3) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+.timeline-scroll::-webkit-scrollbar { height: 3px; }
+.timeline-scroll::-webkit-scrollbar-track { background: transparent; }
+.timeline-scroll::-webkit-scrollbar-thumb { background: rgba(212,168,83,0.3); border-radius: 2px; }
 
 /* Section fade-in animation */
 @keyframes fadeUp {
