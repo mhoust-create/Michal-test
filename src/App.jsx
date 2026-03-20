@@ -14,13 +14,13 @@ function App() {
     <div style={{ background: '#0A1628', minHeight: '100vh', overflowX: 'hidden' }}>
       <Header />
       <main>
-        <Hero />          {/* Dark navy */}
+        <Hero />          {/* Dark #0A1628 */}
         <About />         {/* Light #F8F9FC */}
         <TrackRecord />   {/* Dark #0A1628 */}
-        <CaseStudies />   {/* Dark mid #132035 */}
-        <Portfolio />     {/* Light #F8F9FC */}
-        <CeeRegion />     {/* Dark mid #1B2D4A */}
-        <Team />          {/* White #FFFFFF */}
+        <CaseStudies />   {/* Light #F8F9FC */}
+        <Portfolio />     {/* Dark #0A1628 */}
+        <CeeRegion />     {/* Light #F8F9FC */}
+        <Team />          {/* Dark #0A1628 */}
         <Contact />       {/* Light #F8F9FC */}
       </main>
       <Footer />          {/* Dark #04080f */}

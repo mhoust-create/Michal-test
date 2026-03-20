@@ -1,6 +1,7 @@
 const GOLD = '#D4A853';
 const DARK_MID = '#1B2D4A';
 const CREAM = '#F0EBE0';
+const NAVY = '#0A1628';
 
 const COUNTRIES = [
   'Czechia', 'Romania', 'Greece', 'Croatia', 'Poland',
@@ -13,7 +14,7 @@ export function CeeRegion() {
     <section
       id="cee-region"
       style={{
-        background: DARK_MID,
+        background: '#F8F9FC',
         padding: '8rem 0',
         position: 'relative',
         overflow: 'hidden',
@@ -38,7 +39,7 @@ export function CeeRegion() {
               fontFamily: "'Instrument Serif', serif",
               fontSize: 'clamp(2rem, 4vw, 3rem)',
               fontWeight: 400, lineHeight: 1.15,
-              color: CREAM, margin: '0 0 1.5rem',
+              color: NAVY, margin: '0 0 1.5rem',
             }}>
               The world's most{' '}
               <em style={{ color: GOLD, fontStyle: 'italic' }}>compelling</em>
@@ -50,7 +51,7 @@ export function CeeRegion() {
             <p style={{
               fontFamily: "'DM Sans', sans-serif",
               fontSize: '0.95rem', fontWeight: 300, lineHeight: 1.9,
-              color: '#8C9198', marginBottom: '1.5rem',
+              color: '#5A6A7A', marginBottom: '1.5rem',
             }}>
               CEE is home to 126 million people, 79% of whom are below the age of 64.
               The region's GDP is growing at 2.3% CAGR — 53% faster than the EU average
@@ -60,7 +61,7 @@ export function CeeRegion() {
             <p style={{
               fontFamily: "'DM Sans', sans-serif",
               fontSize: '0.95rem', fontWeight: 300, lineHeight: 1.9,
-              color: '#8C9198', marginBottom: '2.5rem',
+              color: '#5A6A7A', marginBottom: '2.5rem',
             }}>
               Underpenetrated markets, fragmented competitive landscapes and structural
               tailwinds create consolidation opportunities unavailable in Western Europe.
@@ -95,7 +96,7 @@ export function CeeRegion() {
               <div key={i} style={{
                 padding: '2rem 1.5rem',
                 border: `1px solid rgba(212,168,83,0.12)`,
-                background: 'rgba(10,22,40,0.3)',
+                background: '#FFFFFF',
               }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.15rem', marginBottom: '0.5rem' }}>
                   <span style={{
@@ -117,14 +118,14 @@ export function CeeRegion() {
                   fontFamily: "'DM Sans', sans-serif",
                   fontSize: '0.72rem', fontWeight: 600,
                   letterSpacing: '0.1em', textTransform: 'uppercase',
-                  color: CREAM, marginBottom: '0.4rem',
+                  color: NAVY, marginBottom: '0.4rem',
                 }}>
                   {label}
                 </div>
                 <p style={{
                   fontFamily: "'DM Sans', sans-serif",
                   fontSize: '0.78rem', fontWeight: 300,
-                  lineHeight: 1.6, color: '#8C9198', margin: 0,
+                  lineHeight: 1.6, color: '#5A6A7A', margin: 0,
                 }}>
                   {desc}
                 </p>

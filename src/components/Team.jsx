@@ -108,7 +108,7 @@ export function Team() {
     <section
       id="team"
       style={{
-        background: '#FFFFFF',
+        background: '#0A1628',
         padding: '8rem 0',
         position: 'relative',
         overflow: 'hidden',
@@ -122,7 +122,7 @@ export function Team() {
             fontFamily: "'Instrument Serif', serif",
             fontSize: 'clamp(2rem, 4vw, 3rem)',
             fontWeight: 400, lineHeight: 1.15,
-            color: DARK, margin: '0 0 0.75rem',
+            color: '#F0EBE0', margin: '0 0 0.75rem',
           }}>
             Experienced investors,{' '}
             <em style={{ color: GOLD, fontStyle: 'italic' }}>proven operators</em>
@@ -130,7 +130,7 @@ export function Team() {
           <p style={{
             fontFamily: "'DM Sans', sans-serif",
             fontSize: '0.9rem', fontWeight: 300, lineHeight: 1.8,
-            color: '#5A6A7A', maxWidth: 500, margin: 0,
+            color: '#8C9198', maxWidth: 500, margin: 0,
           }}>
             Supported by an in-house team of 30+ professionals across Prague and portfolio companies.
           </p>
@@ -138,7 +138,7 @@ export function Team() {
 
         {/* Featured founder card */}
         <div style={{
-          background: DARK,
+          background: '#0d1a2e',
           padding: '3rem',
           marginBottom: '2rem',
           display: 'grid',
@@ -189,19 +189,19 @@ export function Team() {
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
           gap: '1px',
-          background: 'rgba(26,48,104,0.08)',
+          background: 'rgba(212,168,83,0.08)',
         }}>
           {PARTNERS.map(({ name, title, focus, initials, photo, bio }, i) => (
             <div
               key={i}
               style={{
-                background: '#FFFFFF',
+                background: '#0d1a2e',
                 padding: '2rem',
                 transition: 'background 0.3s',
                 cursor: 'default',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#F8F9FC'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#112238'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#0d1a2e'; }}
             >
               <Avatar photo={photo} initials={initials} size={64} />
 
@@ -209,7 +209,7 @@ export function Team() {
                 <h3 style={{
                   fontFamily: "'Instrument Serif', serif",
                   fontSize: '1.2rem', fontWeight: 400,
-                  color: DARK, margin: '0 0 0.2rem',
+                  color: '#F0EBE0', margin: '0 0 0.2rem',
                 }}>
                   {name}
                 </h3>
@@ -234,7 +234,7 @@ export function Team() {
                 <p style={{
                   fontFamily: "'DM Sans', sans-serif",
                   fontSize: '0.8rem', fontWeight: 300,
-                  lineHeight: 1.7, color: '#5A6A7A', margin: 0,
+                  lineHeight: 1.7, color: '#8C9198', margin: 0,
                 }}>
                   {bio}
                 </p>

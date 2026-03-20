@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
 const GOLD = '#D4A853';
 const DARK = '#0A1628';
 const EMMA_RED = '#C8102E';
@@ -48,7 +49,7 @@ export function Header() {
             onClick={e => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
             style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', textDecoration: 'none' }}
           >
-            <img src="/images/emma logo.jpg" alt="EMMA Capital" style={{ height: 44, display: 'block' }} />
+            <img src={`${BASE}/images/emma logo.jpg`} alt="EMMA Capital" style={{ height: 44, display: 'block' }} />
           </a>
 
           {/* Desktop nav */}

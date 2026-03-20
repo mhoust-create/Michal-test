@@ -1,6 +1,7 @@
 const GOLD = '#D4A853';
 const DARK_MID = '#132035';
 const CREAM = '#F0EBE0';
+const NAVY = '#0A1628';
 const EMMA_RED = '#C8102E';
 
 export function CaseStudies() {
@@ -8,7 +9,7 @@ export function CaseStudies() {
     <section
       id="case-studies"
       style={{
-        background: DARK_MID,
+        background: '#F8F9FC',
         padding: '8rem 0',
         position: 'relative',
         overflow: 'hidden',
@@ -25,7 +26,7 @@ export function CaseStudies() {
             fontFamily: "'Instrument Serif', serif",
             fontSize: 'clamp(2rem, 4vw, 3rem)',
             fontWeight: 400, lineHeight: 1.15,
-            color: CREAM, margin: '0 0 1rem',
+            color: NAVY, margin: '0 0 1rem',
           }}>
             Value creation in{' '}
             <em style={{ color: GOLD, fontStyle: 'italic' }}>practice</em>
@@ -33,7 +34,7 @@ export function CaseStudies() {
           <p style={{
             fontFamily: "'DM Sans', sans-serif",
             fontSize: '0.95rem', fontWeight: 300, lineHeight: 1.8,
-            color: '#8C9198', maxWidth: 540, margin: 0,
+            color: '#5A6A7A', maxWidth: 540, margin: 0,
           }}>
             Three examples of how EMMA builds category-leading businesses
             through hands-on operational involvement and M&A agility.
@@ -45,20 +46,20 @@ export function CaseStudies() {
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
           gap: '1px',
-          background: 'rgba(212,168,83,0.12)',
+          background: 'rgba(26,48,104,0.08)',
         }}>
           {CASES.map(({ sector, name, tagline, story, metrics, color }, i) => (
             <div
               key={i}
               style={{
-                background: DARK_MID,
+                background: '#FFFFFF',
                 padding: '2.75rem',
                 transition: 'background 0.3s',
                 cursor: 'default',
                 position: 'relative',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#1a2d48'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = DARK_MID; }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#F0F2F5'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
             >
               {/* Sector badge */}
               <div style={{
@@ -78,7 +79,7 @@ export function CaseStudies() {
               <h3 style={{
                 fontFamily: "'Instrument Serif', serif",
                 fontSize: '1.6rem', fontWeight: 400,
-                color: CREAM, margin: '0 0 0.5rem',
+                color: NAVY, margin: '0 0 0.5rem',
               }}>
                 {name}
               </h3>
@@ -95,7 +96,7 @@ export function CaseStudies() {
               <p style={{
                 fontFamily: "'DM Sans', sans-serif",
                 fontSize: '0.85rem', fontWeight: 300,
-                lineHeight: 1.75, color: '#8C9198',
+                lineHeight: 1.75, color: '#5A6A7A',
                 margin: '0 0 2rem',
               }}>
                 {story}
@@ -121,7 +122,7 @@ export function CaseStudies() {
                     <div style={{
                       fontFamily: "'DM Sans', sans-serif",
                       fontSize: '0.65rem', fontWeight: 500,
-                      letterSpacing: '0.1em', textTransform: 'uppercase', color: '#4A5568',
+                      letterSpacing: '0.1em', textTransform: 'uppercase', color: '#5A6A7A',
                     }}>
                       {label}
                     </div>
