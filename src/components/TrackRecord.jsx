@@ -101,44 +101,18 @@ export function TrackRecord() {
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 2rem', position: 'relative' }}>
         <SectionLabel text="Track Record" />
 
-        {/* Heading + bullet callouts */}
-        <div style={{
-          marginTop: '1.5rem', marginBottom: '4rem',
-          display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
-          flexWrap: 'wrap', gap: '2rem',
-        }}>
+        {/* Heading */}
+        <div style={{ marginTop: '1.5rem', marginBottom: '4rem' }}>
           <h2 style={{
             fontFamily: "'Instrument Serif', serif",
-            fontSize: 'clamp(1.8rem, 3.2vw, 2.7rem)',
+            fontSize: 'clamp(1.8rem, 3.8vw, 3.2rem)',
             fontWeight: 400, lineHeight: 1.2,
-            color: '#0A1628', margin: 0, maxWidth: 560,
+            color: '#0A1628', margin: 0, maxWidth: 820,
           }}>
             NAV grown from €31m to{' '}
             <em style={{ color: GOLD, fontStyle: 'italic' }}>€1.45bn</em>
-            {' '}in 13 years —{' '}
-            paying €146m to shareholders on top
+            {' '}in 13 years — paying €146m to shareholders on top
           </h2>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxWidth: 320 }}>
-            {[
-              { strong: 'More than 65 new or add-on acquisitions', rest: ' and several exits since inception.' },
-              { strong: 'NAV grew to €1.45 billion', rest: ' — and on top of it €146 million was paid to shareholders.' },
-            ].map(({ strong, rest }, i) => (
-              <div key={i} style={{ display: 'flex', gap: '0.6rem', alignItems: 'flex-start' }}>
-                <div style={{
-                  width: 6, height: 6, borderRadius: 1,
-                  background: '#C8102E', flexShrink: 0, marginTop: '0.4rem',
-                }} />
-                <p style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: '0.83rem', fontWeight: 300, lineHeight: 1.7,
-                  color: '#5A6A7A', margin: 0,
-                }}>
-                  <strong style={{ fontWeight: 600, color: '#0A1628' }}>{strong}</strong>{rest}
-                </p>
-              </div>
-            ))}
-          </div>
         </div>
 
         {/* Key stats row */}
