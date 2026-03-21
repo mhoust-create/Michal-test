@@ -109,9 +109,9 @@ export function TrackRecord() {
             fontWeight: 400, lineHeight: 1.2,
             color: '#0A1628', margin: 0, maxWidth: 820,
           }}>
-            NAV grown from €31m to{' '}
+            NAV grew from €31m to{' '}
             <em style={{ color: GOLD, fontStyle: 'italic' }}>€1.45bn</em>
-            {' '}in 13 years — paying €146m to shareholders on top
+            {' '}in 13 years
           </h2>
         </div>
 
