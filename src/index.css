@@ -11,6 +11,20 @@
    Light: #F8F9FC  (section background)
 */
 
+/* Track Record stats grid: 2 columns on mobile */
+@media (max-width: 600px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .stats-grid > div {
+    border-right: 1px solid rgba(212,168,83,0.15) !important;
+    border-bottom: 1px solid rgba(212,168,83,0.15);
+  }
+  .stats-grid > div:nth-child(2n) {
+    border-right: none !important;
+  }
+}
+
 /* Founder card: photo+name left, bio right on desktop; stack on mobile */
 .founder-card {
   display: grid;

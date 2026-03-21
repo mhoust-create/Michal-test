@@ -116,7 +116,7 @@ export function TrackRecord() {
         </div>
 
         {/* Key stats row */}
-        <div style={{
+        <div className="stats-grid" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
           border: `1px solid rgba(212,168,83,0.15)`,
