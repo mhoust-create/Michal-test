@@ -209,6 +209,22 @@ const SECTORS = [
     ],
   },
   {
+    sector: 'Marinas',
+    icon: '⚓',
+    companies: [
+      {
+        name: 'Marina 21',
+        tag: 'CEE',
+        desc: 'Premium marina network across Croatia and Greece, built through targeted acquisitions of 6 marinas.',
+      },
+      {
+        name: 'Marina Porto Heli',
+        tag: 'Greece',
+        desc: 'Luxury marina in Porto Heli, Greece — one of the most exclusive sailing destinations in the Mediterranean.',
+      },
+    ],
+  },
+  {
     sector: 'E-com Aggregators',
     icon: '🛒',
     companies: [
@@ -221,6 +237,11 @@ const SECTORS = [
         name: 'RIXO.cz',
         tag: 'Czech Digital',
         desc: 'Czech digital insurance aggregator — comparison and distribution platform for insurance products online.',
+      },
+      {
+        name: 'Bazzar',
+        tag: 'CEE',
+        desc: 'E-commerce aggregator platform operating across Central and Eastern Europe.',
       },
     ],
   },
