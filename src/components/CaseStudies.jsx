@@ -132,32 +132,6 @@ export function CaseStudies() {
             </div>
           ))}
         </div>
-
-        {/* Additional case studies note */}
-        <div style={{
-          marginTop: '2rem',
-          padding: '1.25rem 1.75rem',
-          border: 'rgba(212,168,83,0.1) 1px solid',
-          display: 'flex', alignItems: 'center', gap: '1rem',
-          flexWrap: 'wrap',
-        }}>
-          <span style={{
-            fontFamily: "'DM Sans', sans-serif",
-            fontSize: '0.78rem', fontWeight: 300, color: '#8C9198',
-          }}>
-            Additional case studies:
-          </span>
-          {['OPAP', 'Profarm', 'Magna MedTech', 'Home Credit', 'PPF Transformation'].map((c, i) => (
-            <span key={i} style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: '0.75rem', fontWeight: 500, color: '#8C9198',
-              padding: '0.2rem 0.6rem',
-              border: 'rgba(140,145,152,0.2) 1px solid',
-            }}>
-              {c}
-            </span>
-          ))}
-        </div>
       </div>
     </section>
   );
