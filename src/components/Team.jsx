@@ -130,9 +130,9 @@ export function Team() {
           <p style={{
             fontFamily: "'DM Sans', sans-serif",
             fontSize: '0.9rem', fontWeight: 300, lineHeight: 1.8,
-            color: '#5A6A7A', maxWidth: 500, margin: 0,
+            color: '#5A6A7A', margin: 0,
           }}>
-            Supported by an in-house team of 30+ professionals across Prague and portfolio companies.
+            Supported by an in-house team of 30+ professionals across Prague and Cyprus
           </p>
         </div>
 
