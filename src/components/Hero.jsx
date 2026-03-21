@@ -62,19 +62,7 @@ export function Hero() {
 
       {/* Content */}
       <div style={{ position: 'relative', maxWidth: 1280, margin: '0 auto', padding: '0 2rem', paddingTop: 120 }}>
-        <div style={{ maxWidth: 820 }}>
-          {/* Eyebrow */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
-            <div style={{ width: 36, height: 1, background: GOLD }} />
-            <span style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: '0.7rem', fontWeight: 500,
-              letterSpacing: '0.28em', textTransform: 'uppercase', color: GOLD,
-            }}>
-              Investment Management Group
-            </span>
-          </div>
-
+        <div>
           {/* Main heading */}
           <h1 style={{
             fontFamily: "'Instrument Serif', serif",
@@ -106,41 +94,6 @@ export function Hero() {
             logistics and medical distribution across 15 CEE markets.
           </p>
 
-          {/* CTAs */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', flexWrap: 'wrap' }}>
-            <a
-              href="#portfolio"
-              onClick={e => { e.preventDefault(); document.querySelector('#portfolio')?.scrollIntoView({ behavior: 'smooth' }); }}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: '0.75rem',
-                padding: '0.9rem 2rem', background: GOLD, color: DARK,
-                textDecoration: 'none', fontFamily: "'DM Sans', sans-serif",
-                fontSize: '0.75rem', fontWeight: 600,
-                letterSpacing: '0.15em', textTransform: 'uppercase', transition: 'background 0.2s',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#e0b86a'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = GOLD; }}
-            >
-              Explore Portfolio
-              <svg width="14" height="10" viewBox="0 0 14 10" fill="none">
-                <path d="M8 1l5 4-5 4M1 5h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
-            </a>
-            <a
-              href="#track-record"
-              onClick={e => { e.preventDefault(); document.querySelector('#track-record')?.scrollIntoView({ behavior: 'smooth' }); }}
-              style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: '0.75rem', fontWeight: 500,
-                letterSpacing: '0.12em', textTransform: 'uppercase',
-                color: '#4A5568', textDecoration: 'none', transition: 'color 0.2s',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.color = GOLD; }}
-              onMouseLeave={e => { e.currentTarget.style.color = '#4A5568'; }}
-            >
-              Track Record →
-            </a>
-          </div>
         </div>
 
         {/* Stats bar */}
