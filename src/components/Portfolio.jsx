@@ -39,7 +39,7 @@ export function Portfolio() {
         {/* 4 sector cards */}
         <div className="cards-carousel" style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gridTemplateColumns: 'repeat(3, 1fr)',
           gap: '1.5rem',
           marginBottom: '3rem',
         }}>
@@ -209,22 +209,6 @@ const SECTORS = [
     ],
   },
   {
-    sector: 'Marinas',
-    icon: '⚓',
-    companies: [
-      {
-        name: 'Marina 21',
-        tag: 'CEE',
-        desc: 'Premium marina network across Croatia and Greece, built through targeted acquisitions of 6 marinas.',
-      },
-      {
-        name: 'Marina Porto Heli',
-        tag: 'Greece',
-        desc: 'Luxury marina in Porto Heli, Greece — one of the most exclusive sailing destinations in the Mediterranean.',
-      },
-    ],
-  },
-  {
     sector: 'E-com Aggregators',
     icon: '🛒',
     companies: [
@@ -242,6 +226,22 @@ const SECTORS = [
         name: 'Bazzar',
         tag: 'CEE',
         desc: 'E-commerce aggregator platform operating across Central and Eastern Europe.',
+      },
+    ],
+  },
+  {
+    sector: 'Marinas',
+    icon: '⚓',
+    companies: [
+      {
+        name: 'Marina 21',
+        tag: 'CEE',
+        desc: 'Premium marina network across Croatia and Greece, built through targeted acquisitions of 6 marinas.',
+      },
+      {
+        name: 'Marina Porto Heli',
+        tag: 'Greece',
+        desc: 'Luxury marina in Porto Heli, Greece — one of the most exclusive sailing destinations in the Mediterranean.',
       },
     ],
   },
