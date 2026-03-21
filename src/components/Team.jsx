@@ -208,6 +208,7 @@ export function Team() {
               onMouseEnter={e => { e.currentTarget.style.background = '#F0F2F5'; }}
               onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
             >
+
               <Avatar photo={photo} initials={initials} size={64} />
 
               <div style={{ marginTop: '1.25rem' }}>
@@ -246,6 +247,7 @@ export function Team() {
               </div>
             </div>
           ))}
+          <div style={{ background: '#FFFFFF' }} />
         </div>
       </div>
     </section>
