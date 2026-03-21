@@ -148,6 +148,11 @@ const SECTORS = [
         tag: 'BSE Listed',
         desc: 'SE Europe\'s fastest-growing integrated utility. Romania & Moldova. ~€900m market cap, 1,400+ MW capacity.',
       },
+      {
+        name: 'Stratum',
+        tag: 'Romania',
+        desc: 'Exploration and production company in Romania.',
+      },
     ],
   },
   {
