@@ -52,7 +52,7 @@ export function CaseStudies() {
             <div
               key={i}
               style={{
-                background: '#0d1a2e',
+                background: '#152236',
                 padding: '2.75rem',
                 transition: 'background 0.3s',
                 cursor: 'default',

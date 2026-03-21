@@ -96,7 +96,7 @@ export function CeeRegion() {
               <div key={i} style={{
                 padding: '2rem 1.5rem',
                 border: `1px solid rgba(212,168,83,0.12)`,
-                background: '#0d1a2e',
+                background: '#152236',
               }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.15rem', marginBottom: '0.5rem' }}>
                   <span style={{

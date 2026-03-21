@@ -104,8 +104,8 @@ export function About() {
                 key={i}
                 style={{
                   padding: '1.75rem',
-                  background: '#0d1a2e',
-                  border: '1px solid rgba(212,168,83,0.12)',
+                  background: '#152236',
+                  border: '1px solid rgba(212,168,83,0.18)',
                   boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
                   transition: 'border-color 0.3s, box-shadow 0.3s',
                   cursor: 'default',
@@ -119,7 +119,6 @@ export function About() {
                   e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.2)';
                 }}
               >
-                <div style={{ fontSize: '1.4rem', marginBottom: '0.75rem' }}>{icon}</div>
                 <h3 style={{
                   fontFamily: "'Instrument Serif', serif",
                   fontSize: '1.05rem', fontWeight: 400,

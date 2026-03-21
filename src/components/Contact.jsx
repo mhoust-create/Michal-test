@@ -183,7 +183,7 @@ export function Contact() {
               <div style={{
                 padding: '1.25rem',
                 border: `1px solid rgba(212,168,83,0.1)`,
-                background: '#0d1a2e',
+                background: '#152236',
               }}>
                 <div style={{
                   fontFamily: "'DM Sans', sans-serif",
