@@ -118,17 +118,6 @@ export function Portfolio() {
           ))}
         </div>
 
-        {/* Footer note */}
-        <div style={{
-          padding: '1rem 1.5rem',
-          border: '1px solid rgba(26,48,104,0.08)',
-          background: '#FFFFFF',
-          fontFamily: "'DM Sans', sans-serif",
-          fontSize: '0.78rem', fontWeight: 300, color: '#5A6A7A',
-        }}>
-          <span style={{ fontWeight: 500, color: '#5A6A7A', marginRight: '0.5rem' }}>Also:</span>
-          RIXO.cz (Czech digital insurance) · Marina 21 (premium marinas) · FAVI (furniture e-commerce) · Bazzar · Europe IVF
-        </div>
       </div>
     </section>
   );
