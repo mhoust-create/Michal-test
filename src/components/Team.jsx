@@ -137,42 +137,47 @@ export function Team() {
         </div>
 
         {/* Featured founder card */}
-        <div style={{
-          background: '#FFFFFF',
-          padding: '3rem',
-          marginBottom: '2rem',
-          display: 'grid',
-          gridTemplateColumns: 'auto 1fr',
-          gap: '2.5rem',
-          alignItems: 'start',
-          border: `1px solid rgba(26,48,104,0.08)`,
-        }}>
-          <Avatar photo={FOUNDER.photo} initials={FOUNDER.initials} size={96} />
+        <div
+          className="founder-card"
+          style={{
+            background: '#FFFFFF',
+            padding: '3rem',
+            marginBottom: '2rem',
+            border: `1px solid rgba(26,48,104,0.08)`,
+          }}
+        >
+          {/* Photo + name/title grouped so on mobile they sit side-by-side in one row */}
+          <div className="founder-card-header">
+            <Avatar photo={FOUNDER.photo} initials={FOUNDER.initials} size={96} />
+            <div>
+              <div style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: '0.65rem', fontWeight: 600,
+                letterSpacing: '0.2em', textTransform: 'uppercase',
+                color: EMMA_RED, marginBottom: '0.5rem',
+              }}>
+                Founder
+              </div>
+              <h3 style={{
+                fontFamily: "'Instrument Serif', serif",
+                fontSize: '1.8rem', fontWeight: 400,
+                color: '#0A1628', margin: '0 0 0.3rem',
+              }}>
+                {FOUNDER.name}
+              </h3>
+              <div style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: '0.75rem', fontWeight: 500,
+                letterSpacing: '0.1em', textTransform: 'uppercase',
+                color: GOLD,
+              }}>
+                {FOUNDER.title}
+              </div>
+            </div>
+          </div>
 
-          <div>
-            <div style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: '0.65rem', fontWeight: 600,
-              letterSpacing: '0.2em', textTransform: 'uppercase',
-              color: EMMA_RED, marginBottom: '0.5rem',
-            }}>
-              Founder
-            </div>
-            <h3 style={{
-              fontFamily: "'Instrument Serif', serif",
-              fontSize: '1.8rem', fontWeight: 400,
-              color: '#0A1628', margin: '0 0 0.3rem',
-            }}>
-              {FOUNDER.name}
-            </h3>
-            <div style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: '0.75rem', fontWeight: 500,
-              letterSpacing: '0.1em', textTransform: 'uppercase',
-              color: GOLD, marginBottom: '1.25rem',
-            }}>
-              {FOUNDER.title}
-            </div>
+          {/* Bio spans full width below on mobile */}
+          <div className="founder-card-bio">
             <p style={{
               fontFamily: "'DM Sans', sans-serif",
               fontSize: '0.9rem', fontWeight: 300,

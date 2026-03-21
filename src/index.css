@@ -11,6 +11,25 @@
    Light: #F8F9FC  (section background)
 */
 
+/* Founder card: photo+name left, bio right on desktop; stack on mobile */
+.founder-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+.founder-card-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1.25rem;
+}
+@media (max-width: 600px) {
+  .founder-card {
+    grid-template-columns: 1fr;
+  }
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
