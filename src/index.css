@@ -11,6 +11,29 @@
    Light: #F8F9FC  (section background)
 */
 
+/* Hero stats: 2 columns on mobile */
+@media (max-width: 600px) {
+  .hero-stats {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .hero-stats > div {
+    padding-left: 0 !important;
+    padding-right: 1.25rem !important;
+    border-right: 1px solid rgba(212,168,83,0.1) !important;
+    border-bottom: 1px solid rgba(212,168,83,0.1);
+    padding-bottom: 1.25rem;
+  }
+  .hero-stats > div:nth-child(2n) {
+    border-right: none !important;
+    padding-right: 0 !important;
+    padding-left: 1.25rem !important;
+  }
+  .hero-stats > div:nth-last-child(-n+2) {
+    border-bottom: none;
+  }
+}
+
 /* Track Record stats grid: 2 columns on mobile */
 @media (max-width: 600px) {
   .stats-grid {

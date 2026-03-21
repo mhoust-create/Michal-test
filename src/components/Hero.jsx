@@ -97,7 +97,7 @@ export function Hero() {
         </div>
 
         {/* Stats bar */}
-        <div style={{
+        <div className="hero-stats" style={{
           display: 'flex', gap: '0', marginTop: '5rem',
           borderTop: `1px solid rgba(212,168,83,0.2)`,
           paddingTop: '2.5rem', flexWrap: 'wrap',
