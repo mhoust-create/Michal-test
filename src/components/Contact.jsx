@@ -125,8 +125,8 @@ export function Contact() {
                   fontSize: '0.88rem', fontWeight: 300,
                   lineHeight: 1.8, color: '#8C9198',
                 }}>
-                  Na Příkopě 19<br />
-                  110 00 Prague 1<br />
+                  Na Zátorce 672/24<br />
+                  160 00 Prague 6<br />
                   Czech Republic
                 </div>
                 <a
