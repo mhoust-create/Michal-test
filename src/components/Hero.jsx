@@ -136,18 +136,7 @@ export function Hero() {
         </div>
       </div>
 
-      {/* Scroll indicator */}
-      <div style={{
-        position: 'absolute', bottom: '2.5rem', right: '2rem',
-        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem',
-      }}>
-        <span style={{
-          fontFamily: "'DM Sans', sans-serif", fontSize: '0.58rem',
-          letterSpacing: '0.2em', textTransform: 'uppercase',
-          color: '#3E4A5A', writingMode: 'vertical-rl',
-        }}>Scroll</span>
-        <div style={{ width: 1, height: 40, background: 'linear-gradient(to bottom, #3E4A5A, transparent)' }} />
-      </div>
+
     </section>
   );
 }
