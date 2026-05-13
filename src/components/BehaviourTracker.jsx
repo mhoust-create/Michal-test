@@ -137,10 +137,10 @@ export function BehaviourTracker() {
   const [viewMonth, setViewMonth] = useState(today.getMonth());
   const [syncOpen, setSyncOpen] = useState(false);
 
-  const [familyCode, setFamilyCode] = useFamilyCode();
-  const [records, setRecords]   = useSynced(familyCode, 'records', {});
-  const [kid1Name, setKid1Name] = useSynced(familyCode, 'kid1', 'Niki');
-  const [kid2Name, setKid2Name] = useSynced(familyCode, 'kid2', 'David');
+  const [familyCode, setFamilyCode, isOwn] = useFamilyCode();
+  const [records, setRecords]   = useSynced(familyCode, 'records', {}, isOwn);
+  const [kid1Name, setKid1Name] = useSynced(familyCode, 'kid1', 'Niki', isOwn);
+  const [kid2Name, setKid2Name] = useSynced(familyCode, 'kid2', 'David', isOwn);
 
   const names   = [kid1Name, kid2Name];
   const setters = [setKid1Name, setKid2Name];
