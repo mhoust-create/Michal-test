@@ -1,6 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
-import { ref, onValue, set } from 'firebase/database';
+import { ref, onValue, set, get } from 'firebase/database';
 import { db } from '../firebase';
+
+// Returns true/false Firebase connection status
+export function useFirebaseConnected() {
+  const [connected, setConnected] = useState(false);
+  useEffect(() => {
+    return onValue(ref(db, '.info/connected'), snap => setConnected(snap.val() === true));
+  }, []);
+  return connected;
+}
 
 function randomCode() {
   return Math.random().toString(36).slice(2, 8).toUpperCase();

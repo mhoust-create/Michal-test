@@ -12,4 +12,5 @@ const config = {
 };
 
 export const app = initializeApp(config);
-export const db = getDatabase(app);
+// Explicitly pass databaseURL — required for non-US (e.g. europe-west1) databases.
+export const db = getDatabase(app, config.databaseURL);

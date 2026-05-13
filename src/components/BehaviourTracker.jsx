@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { useFamilyCode, useSynced } from '../hooks/useSync';
+import { useFamilyCode, useSynced, useFirebaseConnected } from '../hooks/useSync';
+import { ref, set } from 'firebase/database';
+import { db } from '../firebase';
 
 const CYCLE = [null, 'good', 'bad'];
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -59,9 +61,17 @@ function EditableName({ value, onChange, color }) {
   );
 }
 
-function SyncModal({ familyCode, onChangeCode, onReset, onClose }) {
+function SyncModal({ familyCode, onChangeCode, onReset, onClose, onForcePush }) {
   const [input, setInput] = useState('');
   const [copied, setCopied] = useState(false);
+  const [pushed, setPushed] = useState(false);
+  const connected = useFirebaseConnected();
+
+  function forcePush() {
+    onForcePush();
+    setPushed(true);
+    setTimeout(() => setPushed(false), 2500);
+  }
 
   function copy() {
     navigator.clipboard.writeText(familyCode).then(() => {
@@ -85,7 +95,13 @@ function SyncModal({ familyCode, onChangeCode, onReset, onClose }) {
 
         <div className="flex items-center justify-between">
           <h2 className="font-bold text-base" style={{ color: '#e6edf3' }}>🔄 Sync across devices</h2>
-          <button onClick={onClose} style={{ color: '#6b7280', fontSize: '1.2rem' }}>✕</button>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold px-2 py-0.5 rounded-full"
+              style={{ background: connected ? '#22c55e22' : '#ef444422', color: connected ? '#22c55e' : '#ef4444', border: `1px solid ${connected ? '#22c55e' : '#ef4444'}` }}>
+              {connected ? '● Online' : '● Offline'}
+            </span>
+            <button onClick={onClose} style={{ color: '#6b7280', fontSize: '1.2rem' }}>✕</button>
+          </div>
         </div>
 
         {/* Current code */}
@@ -127,6 +143,13 @@ function SyncModal({ familyCode, onChangeCode, onReset, onClose }) {
             </button>
           </div>
         </div>
+
+        {/* Force push */}
+        <button onClick={forcePush}
+          className="w-full py-2.5 rounded-xl text-sm font-semibold transition-all active:scale-95"
+          style={{ background: pushed ? '#22c55e22' : '#21262d', border: `1px solid ${pushed ? '#22c55e' : '#30363d'}`, color: pushed ? '#22c55e' : '#8b949e' }}>
+          {pushed ? '✓ Uploaded to Firebase' : '⬆ Push my data to Firebase now'}
+        </button>
 
         <p className="text-xs text-center" style={{ color: '#484f58' }}>
           Both devices with the same code share all records in real-time
@@ -286,6 +309,11 @@ export function BehaviourTracker() {
           familyCode={familyCode}
           onChangeCode={setFamilyCode}
           onReset={() => resetCode({ records, kid1: kid1Name, kid2: kid2Name })}
+          onForcePush={() => {
+            set(ref(db, `families/${familyCode}/records`), records).catch(() => {});
+            set(ref(db, `families/${familyCode}/kid1`), kid1Name).catch(() => {});
+            set(ref(db, `families/${familyCode}/kid2`), kid2Name).catch(() => {});
+          }}
           onClose={() => setSyncOpen(false)}
         />
       )}
