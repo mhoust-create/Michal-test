@@ -3,16 +3,16 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
-  base: '/warfit/',
+  base: '/Michal-test/',
   plugins: [
     react(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
       manifest: {
-        name: 'WarFit — Military Calisthenics',
-        short_name: 'WarFit',
-        description: 'Military & calisthenics training app with body weight, bars and rings',
+        name: 'Behaviour Tracker',
+        short_name: 'Behaviour',
+        description: 'Track good and bad behaviour for Niki and David',
         theme_color: '#0d1117',
         background_color: '#0d1117',
         display: 'standalone',
