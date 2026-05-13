@@ -1,0 +1,20 @@
+name: Mirror to behaviour-tracker
+
+on:
+  push:
+    branches: [claude/behavior-tracking-app-DQ18j]
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push to behaviour-tracker repo
+        run: |
+          git config user.email "action@github.com"
+          git config user.name "GitHub Action"
+          git remote add behaviour-tracker https://x-access-token:${{ secrets.BT_TOKEN }}@github.com/mhoust-create/behaviour-tracker.git
+          git push behaviour-tracker HEAD:main --force
