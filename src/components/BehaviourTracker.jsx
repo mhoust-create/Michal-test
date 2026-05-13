@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import { useFamilyCode, useSynced, useFirebaseConnected } from '../hooks/useSync';
-import { ref, set } from 'firebase/database';
-import { db } from '../firebase';
 
 const CYCLE = [null, 'good', 'bad'];
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -182,22 +180,6 @@ export function BehaviourTracker() {
     });
   }
 
-  const [pushStatus, setPushStatus] = useState(null); // null | 'ok' | 'fail'
-
-  async function forcePush() {
-    setPushStatus(null);
-    try {
-      await Promise.all([
-        set(ref(db, `families/${familyCode}/records`), records),
-        set(ref(db, `families/${familyCode}/kid1`), kid1Name),
-        set(ref(db, `families/${familyCode}/kid2`), kid2Name),
-      ]);
-      setPushStatus('ok');
-    } catch {
-      setPushStatus('fail');
-    }
-    setTimeout(() => setPushStatus(null), 4000);
-  }
 
   function joinCode() {
     const c = joinInput.trim().toUpperCase();
@@ -274,15 +256,6 @@ export function BehaviourTracker() {
               className="px-2.5 py-1 rounded-lg text-xs font-semibold transition-all"
               style={{ background: copied ? '#22c55e22' : '#21262d', border: `1px solid ${copied ? '#22c55e' : '#30363d'}`, color: copied ? '#22c55e' : '#8b949e' }}>
               {copied ? '✓ Copied' : 'Copy'}
-            </button>
-            <button onClick={forcePush}
-              className="px-2.5 py-1 rounded-lg text-xs font-semibold transition-all"
-              style={{
-                background: pushStatus === 'ok' ? '#22c55e22' : pushStatus === 'fail' ? '#ef444422' : '#21262d',
-                border: `1px solid ${pushStatus === 'ok' ? '#22c55e' : pushStatus === 'fail' ? '#ef4444' : '#30363d'}`,
-                color: pushStatus === 'ok' ? '#22c55e' : pushStatus === 'fail' ? '#ef4444' : '#8b949e',
-              }}>
-              {pushStatus === 'ok' ? '✓ Saved' : pushStatus === 'fail' ? '✗ Failed' : '⬆ Push'}
             </button>
             <button onClick={() => resetCode({ records, kid1: kid1Name, kid2: kid2Name })}
               className="px-2.5 py-1 rounded-lg text-xs font-semibold transition-all"
