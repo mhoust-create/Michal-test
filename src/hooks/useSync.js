@@ -52,8 +52,18 @@ export function useFamilyCode() {
 // isOwn=false → if Firebase is empty, leave state as-is (never overwrite another family).
 export function useSynced(familyCode, key, initial, isOwn) {
   const lsKey = `behaviour_${key}`;
-  const [value, setValueState] = useState(initial);
+
+  // Initialise from localStorage so records are visible instantly on load,
+  // before Firebase responds — prevents passing {} to resetCode on first open.
+  const [value, setValueState] = useState(() => {
+    try {
+      const v = localStorage.getItem(lsKey);
+      return v ? JSON.parse(v) : initial;
+    } catch { return initial; }
+  });
+
   const firstRead = useRef(true);
+  const isMounted = useRef(false); // tracks whether this is a path change vs first mount
   const isOwnRef = useRef(isOwn);
   isOwnRef.current = isOwn;
 
@@ -61,6 +71,11 @@ export function useSynced(familyCode, key, initial, isOwn) {
 
   useEffect(() => {
     firstRead.current = true;
+
+    // On code switch (join / reset) clear stale data while new data loads.
+    // Skip on first mount so the localStorage snapshot shows immediately.
+    if (isMounted.current) setValueState(initial);
+    isMounted.current = true;
 
     const dbRef = ref(db, path);
     const unsub = onValue(dbRef, snap => {
