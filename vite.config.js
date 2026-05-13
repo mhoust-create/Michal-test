@@ -17,8 +17,8 @@ export default defineConfig({
         background_color: '#0d1117',
         display: 'standalone',
         orientation: 'portrait',
-        scope: '/',
-        start_url: '/',
+        scope: '/behaviour-tracker/',
+        start_url: '/behaviour-tracker/',
         icons: [
           {
             src: 'icons/icon-192.png',
