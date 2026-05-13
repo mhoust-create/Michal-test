@@ -282,7 +282,12 @@ export function BehaviourTracker() {
 
       {/* Sync modal */}
       {syncOpen && (
-        <SyncModal familyCode={familyCode} onChangeCode={setFamilyCode} onReset={resetCode} onClose={() => setSyncOpen(false)} />
+        <SyncModal
+          familyCode={familyCode}
+          onChangeCode={setFamilyCode}
+          onReset={() => resetCode({ records, kid1: kid1Name, kid2: kid2Name })}
+          onClose={() => setSyncOpen(false)}
+        />
       )}
 
     </div>

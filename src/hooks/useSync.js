@@ -6,10 +6,10 @@ function randomCode() {
   return Math.random().toString(36).slice(2, 8).toUpperCase();
 }
 
-// ownCode: auto-generated once per device, never changes.
-// activeCode: the code currently in use (may differ if the user joined another family).
 export function useFamilyCode() {
-  const [ownCode] = useState(() => {
+  // ownCode is the code auto-generated for this device — stored as state so
+  // isOwn stays correct after resetCode() generates a new one.
+  const [ownCode, setOwnCode] = useState(() => {
     const stored = localStorage.getItem('own_family_code');
     if (stored) return stored;
     const code = randomCode();
@@ -21,32 +21,35 @@ export function useFamilyCode() {
     () => localStorage.getItem('family_code') || ownCode
   );
 
-  useEffect(() => {
-    if (!localStorage.getItem('family_code')) {
-      localStorage.setItem('family_code', ownCode);
-    }
-  }, []);
-
   function setCode(c) {
     const clean = c.trim().toUpperCase();
     localStorage.setItem('family_code', clean);
     setCodeState(clean);
   }
 
-  function resetCode() {
+  // currentValues: write them to the new Firebase path before the path changes,
+  // so useSynced reads back the right data immediately on re-subscribe.
+  function resetCode(currentValues = {}) {
     const newCode = randomCode();
     localStorage.setItem('own_family_code', newCode);
     localStorage.setItem('family_code', newCode);
+    setOwnCode(newCode);   // keeps isOwn === true after reset
     setCodeState(newCode);
+
+    const { records, kid1, kid2 } = currentValues;
+    if (records && Object.keys(records).length > 0)
+      set(ref(db, `families/${newCode}/records`), records).catch(() => {});
+    if (kid1) set(ref(db, `families/${newCode}/kid1`), kid1).catch(() => {});
+    if (kid2) set(ref(db, `families/${newCode}/kid2`), kid2).catch(() => {});
   }
 
   const isOwn = code === ownCode;
   return [code, setCode, isOwn, resetCode];
 }
 
-// Syncs a value at families/{familyCode}/{key}.
-// On first connect with own code + empty Firebase → uploads local data.
-// On join (not own code) + empty Firebase → stays empty, does not overwrite.
+// Firebase is the source of truth.
+// isOwn=true  → if Firebase is empty on first connect, upload local data (migration).
+// isOwn=false → if Firebase is empty, leave state as-is (never overwrite another family).
 export function useSynced(familyCode, key, initial, isOwn) {
   const lsKey = `behaviour_${key}`;
   const [value, setValueState] = useState(initial);
@@ -58,18 +61,16 @@ export function useSynced(familyCode, key, initial, isOwn) {
 
   useEffect(() => {
     firstRead.current = true;
-    setValueState(initial); // Reset while switching to new path
 
     const dbRef = ref(db, path);
     const unsub = onValue(dbRef, snap => {
       const fbData = snap.val();
 
       if (fbData !== null) {
-        // Firebase has data — use it and cache locally
         setValueState(fbData);
         try { localStorage.setItem(lsKey, JSON.stringify(fbData)); } catch {}
       } else if (firstRead.current && isOwnRef.current) {
-        // Own code, Firebase empty — upload whatever we have locally
+        // Own code + Firebase empty → one-time migration from localStorage
         try {
           const localStr = localStorage.getItem(lsKey);
           if (localStr) {
@@ -79,7 +80,6 @@ export function useSynced(familyCode, key, initial, isOwn) {
           }
         } catch {}
       }
-      // Joined foreign code + Firebase empty → leave as initial (empty)
 
       firstRead.current = false;
     });
