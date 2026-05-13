@@ -33,8 +33,15 @@ export function useFamilyCode() {
     setCodeState(clean);
   }
 
+  function resetCode() {
+    const newCode = randomCode();
+    localStorage.setItem('own_family_code', newCode);
+    localStorage.setItem('family_code', newCode);
+    setCodeState(newCode);
+  }
+
   const isOwn = code === ownCode;
-  return [code, setCode, isOwn, ownCode];
+  return [code, setCode, isOwn, resetCode];
 }
 
 // Syncs a value at families/{familyCode}/{key}.

@@ -59,7 +59,7 @@ function EditableName({ value, onChange, color }) {
   );
 }
 
-function SyncModal({ familyCode, onChangeCode, onClose }) {
+function SyncModal({ familyCode, onChangeCode, onReset, onClose }) {
   const [input, setInput] = useState('');
   const [copied, setCopied] = useState(false);
 
@@ -97,6 +97,11 @@ function SyncModal({ familyCode, onChangeCode, onClose }) {
               className="px-3 py-1.5 rounded-lg text-sm font-semibold transition-all"
               style={{ background: copied ? '#22c55e22' : '#21262d', border: `1px solid ${copied ? '#22c55e' : '#30363d'}`, color: copied ? '#22c55e' : '#8b949e' }}>
               {copied ? '✓ Copied' : 'Copy'}
+            </button>
+            <button onClick={() => { onReset(); onClose(); }}
+              className="px-3 py-1.5 rounded-lg text-sm font-semibold transition-all"
+              style={{ background: '#21262d', border: '1px solid #30363d', color: '#6b7280' }}>
+              New ↺
             </button>
           </div>
         </div>
@@ -137,7 +142,7 @@ export function BehaviourTracker() {
   const [viewMonth, setViewMonth] = useState(today.getMonth());
   const [syncOpen, setSyncOpen] = useState(false);
 
-  const [familyCode, setFamilyCode, isOwn] = useFamilyCode();
+  const [familyCode, setFamilyCode, isOwn, resetCode] = useFamilyCode();
   const [records, setRecords]   = useSynced(familyCode, 'records', {}, isOwn);
   const [kid1Name, setKid1Name] = useSynced(familyCode, 'kid1', 'Niki', isOwn);
   const [kid2Name, setKid2Name] = useSynced(familyCode, 'kid2', 'David', isOwn);
@@ -277,7 +282,7 @@ export function BehaviourTracker() {
 
       {/* Sync modal */}
       {syncOpen && (
-        <SyncModal familyCode={familyCode} onChangeCode={setFamilyCode} onClose={() => setSyncOpen(false)} />
+        <SyncModal familyCode={familyCode} onChangeCode={setFamilyCode} onReset={resetCode} onClose={() => setSyncOpen(false)} />
       )}
 
     </div>
