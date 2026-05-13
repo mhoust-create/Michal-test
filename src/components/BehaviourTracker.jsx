@@ -23,23 +23,26 @@ function dateKey(y, m, d) {
 function DayToggle({ state, color, bg, onClick }) {
   if (state === 'good') return (
     <button onClick={onClick} className="w-7 h-7 rounded-full flex items-center justify-center transition-all active:scale-90 text-sm"
-      style={{ background: '#22c55e28', border: '1.5px solid #22c55e' }}>⭐</button>
+      style={{ background: '#22c55e28', border: '1.5px solid #22c55e', cursor: onClick ? 'pointer' : 'default' }}>⭐</button>
   );
   if (state === 'bad') return (
     <button onClick={onClick} className="w-7 h-7 rounded-full flex items-center justify-center transition-all active:scale-90 text-xs"
-      style={{ background: '#ef444428', border: '1.5px solid #ef4444' }}>❌</button>
+      style={{ background: '#ef444428', border: '1.5px solid #ef4444', cursor: onClick ? 'pointer' : 'default' }}>❌</button>
   );
   return (
     <button onClick={onClick} className="w-7 h-7 rounded-full flex items-center justify-center transition-all active:scale-90"
-      style={{ background: bg, border: `1.5px solid ${color}55` }}>
+      style={{ background: bg, border: `1.5px solid ${color}55`, cursor: onClick ? 'pointer' : 'default' }}>
       <span style={{ color: `${color}88`, fontSize: '0.6rem', fontWeight: 800 }}>?</span>
     </button>
   );
 }
 
-function EditableName({ value, onChange, color }) {
+function EditableName({ value, onChange, color, editable }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(value);
+  if (!editable) return (
+    <span className="px-2 py-0.5 text-sm font-bold" style={{ color }}>{value}</span>
+  );
   if (editing) return (
     <input autoFocus value={draft}
       onChange={e => setDraft(e.target.value)}
@@ -60,10 +63,156 @@ function EditableName({ value, onChange, color }) {
   );
 }
 
+function PinModal({ onSuccess, onClose, storedPin }) {
+  const [input, setInput] = useState('');
+  const [error, setError] = useState(false);
+
+  function press(digit) {
+    if (input.length >= 4) return;
+    const next = input + digit;
+    setInput(next);
+    if (next.length === 4) {
+      if (next === storedPin) {
+        onSuccess();
+      } else {
+        setError(true);
+        setTimeout(() => { setError(false); setInput(''); }, 700);
+      }
+    }
+  }
+
+  function del() { setInput(p => p.slice(0, -1)); }
+
+  const KEYS = ['1','2','3','4','5','6','7','8','9','','0','⌫'];
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center"
+      style={{ background: 'rgba(0,0,0,0.75)' }}
+      onClick={onClose}>
+      <div className="rounded-2xl p-6 flex flex-col items-center gap-5 w-72"
+        style={{ background: '#161b22', border: '1px solid #30363d' }}
+        onClick={e => e.stopPropagation()}>
+
+        <h2 className="font-bold text-base" style={{ color: '#e6edf3' }}>🔒 Parent mode</h2>
+        <p className="text-xs" style={{ color: '#6b7280' }}>Enter PIN to unlock editing</p>
+
+        {/* Dots */}
+        <div className="flex gap-3">
+          {[0,1,2,3].map(i => (
+            <div key={i} className="w-4 h-4 rounded-full transition-all"
+              style={{ background: i < input.length ? (error ? '#ef4444' : '#e8c547') : '#21262d', border: `2px solid ${i < input.length ? (error ? '#ef4444' : '#e8c547') : '#30363d'}` }} />
+          ))}
+        </div>
+
+        {error && <p className="text-xs font-semibold" style={{ color: '#ef4444', marginTop: -8 }}>Wrong PIN</p>}
+
+        {/* Number pad */}
+        <div className="grid grid-cols-3 gap-2 w-full">
+          {KEYS.map((k, i) => (
+            k === '' ? <div key={i} /> :
+            k === '⌫' ? (
+              <button key={i} onClick={del}
+                className="h-14 rounded-xl text-lg font-bold transition-all active:scale-90"
+                style={{ background: '#21262d', border: '1px solid #30363d', color: '#8b949e' }}>
+                {k}
+              </button>
+            ) : (
+              <button key={i} onClick={() => press(k)}
+                className="h-14 rounded-xl text-xl font-bold transition-all active:scale-90"
+                style={{ background: '#21262d', border: '1px solid #30363d', color: '#e6edf3' }}>
+                {k}
+              </button>
+            )
+          ))}
+        </div>
+
+        <button onClick={onClose} className="text-xs" style={{ color: '#484f58' }}>Cancel</button>
+      </div>
+    </div>
+  );
+}
+
+function ChangePinModal({ storedPin, onSave, onClose }) {
+  const [step, setStep] = useState('current'); // 'current' | 'new' | 'confirm'
+  const [input, setInput] = useState('');
+  const [newPin, setNewPin] = useState('');
+  const [error, setError] = useState(false);
+
+  const titles = { current: 'Enter current PIN', new: 'Enter new PIN', confirm: 'Confirm new PIN' };
+
+  function press(digit) {
+    if (input.length >= 4) return;
+    const next = input + digit;
+    setInput(next);
+    if (next.length === 4) {
+      if (step === 'current') {
+        if (next === storedPin) { setStep('new'); setInput(''); }
+        else { setError(true); setTimeout(() => { setError(false); setInput(''); }, 700); }
+      } else if (step === 'new') {
+        setNewPin(next); setStep('confirm'); setInput('');
+      } else {
+        if (next === newPin) { onSave(next); }
+        else { setError(true); setTimeout(() => { setError(false); setInput(''); setStep('new'); setNewPin(''); }, 700); }
+      }
+    }
+  }
+
+  function del() { setInput(p => p.slice(0, -1)); }
+
+  const KEYS = ['1','2','3','4','5','6','7','8','9','','0','⌫'];
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center"
+      style={{ background: 'rgba(0,0,0,0.75)' }}
+      onClick={onClose}>
+      <div className="rounded-2xl p-6 flex flex-col items-center gap-5 w-72"
+        style={{ background: '#161b22', border: '1px solid #30363d' }}
+        onClick={e => e.stopPropagation()}>
+
+        <h2 className="font-bold text-base" style={{ color: '#e6edf3' }}>Change PIN</h2>
+        <p className="text-xs" style={{ color: '#6b7280' }}>{titles[step]}</p>
+
+        <div className="flex gap-3">
+          {[0,1,2,3].map(i => (
+            <div key={i} className="w-4 h-4 rounded-full transition-all"
+              style={{ background: i < input.length ? (error ? '#ef4444' : '#a78bfa') : '#21262d', border: `2px solid ${i < input.length ? (error ? '#ef4444' : '#a78bfa') : '#30363d'}` }} />
+          ))}
+        </div>
+
+        {error && <p className="text-xs font-semibold" style={{ color: '#ef4444', marginTop: -8 }}>
+          {step === 'current' ? 'Wrong PIN' : 'PINs do not match'}
+        </p>}
+
+        <div className="grid grid-cols-3 gap-2 w-full">
+          {KEYS.map((k, i) => (
+            k === '' ? <div key={i} /> :
+            k === '⌫' ? (
+              <button key={i} onClick={del}
+                className="h-14 rounded-xl text-lg font-bold transition-all active:scale-90"
+                style={{ background: '#21262d', border: '1px solid #30363d', color: '#8b949e' }}>{k}</button>
+            ) : (
+              <button key={i} onClick={() => press(k)}
+                className="h-14 rounded-xl text-xl font-bold transition-all active:scale-90"
+                style={{ background: '#21262d', border: '1px solid #30363d', color: '#e6edf3' }}>{k}</button>
+            )
+          ))}
+        </div>
+
+        <button onClick={onClose} className="text-xs" style={{ color: '#484f58' }}>Cancel</button>
+      </div>
+    </div>
+  );
+}
+
 export function BehaviourTracker() {
   const today = new Date();
   const [viewYear, setViewYear] = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth());
+
+  const [isParent, setIsParent] = useState(false);
+  const [pin, setPin] = useState(() => localStorage.getItem('parent_pin') || '1234');
+  const [showPinModal, setShowPinModal] = useState(false);
+  const [showChangePinModal, setShowChangePinModal] = useState(false);
 
   const [records, setRecords]   = useSynced(FAMILY_CODE, 'records', {}, true);
   const [kid1Name, setKid1Name] = useSynced(FAMILY_CODE, 'kid1', 'Niki', true);
@@ -71,6 +220,15 @@ export function BehaviourTracker() {
 
   const names   = [kid1Name, kid2Name];
   const setters = [setKid1Name, setKid2Name];
+
+  function unlock() { setIsParent(true); setShowPinModal(false); }
+  function lock()   { setIsParent(false); }
+
+  function savePin(newPin) {
+    localStorage.setItem('parent_pin', newPin);
+    setPin(newPin);
+    setShowChangePinModal(false);
+  }
 
   const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
   const firstDow    = (new Date(viewYear, viewMonth, 1).getDay() + 6) % 7;
@@ -123,15 +281,37 @@ export function BehaviourTracker() {
 
       {/* Header */}
       <div className="px-4 pt-5 pb-4" style={{ borderBottom: '1px solid #21262d' }}>
-        <h1 className="text-xl font-extrabold mb-3" style={{ color: '#e6edf3', letterSpacing: '-0.5px' }}>
-          ⭐ Behaviour Tracker
-        </h1>
+        <div className="flex items-center justify-between mb-3">
+          <h1 className="text-xl font-extrabold" style={{ color: '#e6edf3', letterSpacing: '-0.5px' }}>
+            ⭐ Behaviour Tracker
+          </h1>
+          {isParent ? (
+            <div className="flex items-center gap-2">
+              <button onClick={() => setShowChangePinModal(true)}
+                className="text-xs px-2 py-1 rounded-lg"
+                style={{ color: '#6b7280', background: '#21262d', border: '1px solid #30363d' }}>
+                PIN
+              </button>
+              <button onClick={lock}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all active:scale-95"
+                style={{ background: '#22c55e18', border: '1px solid #22c55e44', color: '#22c55e' }}>
+                🔓 Parent
+              </button>
+            </div>
+          ) : (
+            <button onClick={() => setShowPinModal(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all active:scale-95"
+              style={{ background: '#21262d', border: '1px solid #30363d', color: '#6b7280' }}>
+              🔒 Kids view
+            </button>
+          )}
+        </div>
 
         <div className="grid grid-cols-2 gap-3">
           {KIDS.map(({ id, color }, i) => (
             <div key={id} className="rounded-2xl px-3 py-3"
               style={{ background: '#161b22', border: `1.5px solid ${color}44` }}>
-              <EditableName value={names[i]} onChange={setters[i]} color={color} />
+              <EditableName value={names[i]} onChange={setters[i]} color={color} editable={isParent} />
               <div className="flex gap-3 mt-2">
                 <div className="flex items-center gap-1">
                   <span className="text-base">⭐</span>
@@ -161,7 +341,7 @@ export function BehaviourTracker() {
         {KIDS.map(({ id, color }, i) => (
           <span key={id} style={{ color }}>● {names[i]}</span>
         ))}
-        <span className="ml-auto" style={{ color: '#484f58' }}>? → ⭐ → ❌ → ?</span>
+        {isParent && <span className="ml-auto" style={{ color: '#484f58' }}>? → ⭐ → ❌ → ?</span>}
       </div>
 
       {/* Calendar */}
@@ -186,13 +366,20 @@ export function BehaviourTracker() {
                 <span className="text-xs font-semibold" style={{ color: isToday ? '#e8c547' : '#6b7280' }}>{day}</span>
                 {KIDS.map(({ id, color, bg }) => (
                   <DayToggle key={id} state={rec[id] ?? null} color={color} bg={bg}
-                    onClick={isFuture ? undefined : () => toggle(day, id)} />
+                    onClick={isParent && !isFuture ? () => toggle(day, id) : undefined} />
                 ))}
               </div>
             );
           })}
         </div>
       </div>
+
+      {showPinModal && (
+        <PinModal storedPin={pin} onSuccess={unlock} onClose={() => setShowPinModal(false)} />
+      )}
+      {showChangePinModal && (
+        <ChangePinModal storedPin={pin} onSave={savePin} onClose={() => setShowChangePinModal(false)} />
+      )}
 
     </div>
   );
