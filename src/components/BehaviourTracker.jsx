@@ -165,7 +165,6 @@ export function BehaviourTracker() {
   const [viewMonth, setViewMonth] = useState(today.getMonth());
   const [joinInput, setJoinInput] = useState('');
   const [copied, setCopied] = useState(false);
-  const [pushed, setPushed] = useState(false);
   const [joinOpen, setJoinOpen] = useState(false);
 
   const connected = useFirebaseConnected();
@@ -183,11 +182,21 @@ export function BehaviourTracker() {
     });
   }
 
-  function forcePush() {
-    set(ref(db, `families/${familyCode}/records`), records).catch(() => {});
-    set(ref(db, `families/${familyCode}/kid1`), kid1Name).catch(() => {});
-    set(ref(db, `families/${familyCode}/kid2`), kid2Name).catch(() => {});
-    setPushed(true); setTimeout(() => setPushed(false), 2500);
+  const [pushStatus, setPushStatus] = useState(null); // null | 'ok' | 'fail'
+
+  async function forcePush() {
+    setPushStatus(null);
+    try {
+      await Promise.all([
+        set(ref(db, `families/${familyCode}/records`), records),
+        set(ref(db, `families/${familyCode}/kid1`), kid1Name),
+        set(ref(db, `families/${familyCode}/kid2`), kid2Name),
+      ]);
+      setPushStatus('ok');
+    } catch {
+      setPushStatus('fail');
+    }
+    setTimeout(() => setPushStatus(null), 4000);
   }
 
   function joinCode() {
@@ -268,8 +277,12 @@ export function BehaviourTracker() {
             </button>
             <button onClick={forcePush}
               className="px-2.5 py-1 rounded-lg text-xs font-semibold transition-all"
-              style={{ background: pushed ? '#22c55e22' : '#21262d', border: `1px solid ${pushed ? '#22c55e' : '#30363d'}`, color: pushed ? '#22c55e' : '#8b949e' }}>
-              {pushed ? '✓ Pushed' : '⬆ Push'}
+              style={{
+                background: pushStatus === 'ok' ? '#22c55e22' : pushStatus === 'fail' ? '#ef444422' : '#21262d',
+                border: `1px solid ${pushStatus === 'ok' ? '#22c55e' : pushStatus === 'fail' ? '#ef4444' : '#30363d'}`,
+                color: pushStatus === 'ok' ? '#22c55e' : pushStatus === 'fail' ? '#ef4444' : '#8b949e',
+              }}>
+              {pushStatus === 'ok' ? '✓ Saved' : pushStatus === 'fail' ? '✗ Failed' : '⬆ Push'}
             </button>
             <button onClick={() => resetCode({ records, kid1: kid1Name, kid2: kid2Name })}
               className="px-2.5 py-1 rounded-lg text-xs font-semibold transition-all"
