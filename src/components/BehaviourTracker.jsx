@@ -163,8 +163,12 @@ export function BehaviourTracker() {
   const today = new Date();
   const [viewYear, setViewYear] = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth());
-  const [syncOpen, setSyncOpen] = useState(false);
+  const [joinInput, setJoinInput] = useState('');
+  const [copied, setCopied] = useState(false);
+  const [pushed, setPushed] = useState(false);
+  const [joinOpen, setJoinOpen] = useState(false);
 
+  const connected = useFirebaseConnected();
   const [familyCode, setFamilyCode, isOwn, resetCode] = useFamilyCode();
   const [records, setRecords]   = useSynced(familyCode, 'records', {}, isOwn);
   const [kid1Name, setKid1Name] = useSynced(familyCode, 'kid1', 'Niki', isOwn);
@@ -172,6 +176,24 @@ export function BehaviourTracker() {
 
   const names   = [kid1Name, kid2Name];
   const setters = [setKid1Name, setKid2Name];
+
+  function copyCode() {
+    navigator.clipboard.writeText(familyCode).then(() => {
+      setCopied(true); setTimeout(() => setCopied(false), 2000);
+    });
+  }
+
+  function forcePush() {
+    set(ref(db, `families/${familyCode}/records`), records).catch(() => {});
+    set(ref(db, `families/${familyCode}/kid1`), kid1Name).catch(() => {});
+    set(ref(db, `families/${familyCode}/kid2`), kid2Name).catch(() => {});
+    setPushed(true); setTimeout(() => setPushed(false), 2500);
+  }
+
+  function joinCode() {
+    const c = joinInput.trim().toUpperCase();
+    if (c.length >= 4) { setFamilyCode(c); setJoinInput(''); setJoinOpen(false); }
+  }
 
   const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
   const firstDow    = (new Date(viewYear, viewMonth, 1).getDay() + 6) % 7;
@@ -223,18 +245,56 @@ export function BehaviourTracker() {
     <div className="flex flex-col min-h-full" style={{ background: '#0d1117' }}>
 
       {/* Header */}
-      <div className="px-4 pt-6 pb-4" style={{ borderBottom: '1px solid #21262d' }}>
-        <div className="flex items-center justify-between mb-1">
-          <h1 className="text-2xl font-extrabold" style={{ color: '#e6edf3', letterSpacing: '-0.5px' }}>
-            ⭐ Behaviour Tracker
-          </h1>
-          <button onClick={() => setSyncOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all active:scale-95"
-            style={{ background: '#21262d', border: '1px solid #30363d', color: '#8b949e' }}>
-            🔄 Sync
-          </button>
+      <div className="px-4 pt-5 pb-4" style={{ borderBottom: '1px solid #21262d' }}>
+        <h1 className="text-xl font-extrabold mb-3" style={{ color: '#e6edf3', letterSpacing: '-0.5px' }}>
+          ⭐ Behaviour Tracker
+        </h1>
+
+        {/* Always-visible sync bar */}
+        <div className="rounded-xl px-3 py-2.5 mb-4" style={{ background: '#161b22', border: '1px solid #30363d' }}>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-semibold" style={{ color: '#6b7280' }}>Sync code</span>
+            <span className="text-xs font-semibold px-2 py-0.5 rounded-full"
+              style={{ background: connected ? '#22c55e22' : '#ef444422', color: connected ? '#22c55e' : '#ef4444', border: `1px solid ${connected ? '#22c55e55' : '#ef444455'}` }}>
+              {connected ? '● Online' : '● Offline'}
+            </span>
+          </div>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-xl font-extrabold tracking-widest flex-1" style={{ color: '#e8c547' }}>{familyCode}</span>
+            <button onClick={copyCode}
+              className="px-2.5 py-1 rounded-lg text-xs font-semibold transition-all"
+              style={{ background: copied ? '#22c55e22' : '#21262d', border: `1px solid ${copied ? '#22c55e' : '#30363d'}`, color: copied ? '#22c55e' : '#8b949e' }}>
+              {copied ? '✓ Copied' : 'Copy'}
+            </button>
+            <button onClick={forcePush}
+              className="px-2.5 py-1 rounded-lg text-xs font-semibold transition-all"
+              style={{ background: pushed ? '#22c55e22' : '#21262d', border: `1px solid ${pushed ? '#22c55e' : '#30363d'}`, color: pushed ? '#22c55e' : '#8b949e' }}>
+              {pushed ? '✓ Pushed' : '⬆ Push'}
+            </button>
+            <button onClick={() => resetCode({ records, kid1: kid1Name, kid2: kid2Name })}
+              className="px-2.5 py-1 rounded-lg text-xs font-semibold transition-all"
+              style={{ background: '#21262d', border: '1px solid #30363d', color: '#6b7280' }}>
+              New ↺
+            </button>
+          </div>
+          {/* Join row — always visible */}
+          <div className="flex gap-2">
+            <input
+              value={joinInput}
+              onChange={e => setJoinInput(e.target.value.toUpperCase())}
+              onKeyDown={e => e.key === 'Enter' && joinCode()}
+              placeholder="Enter another device's code to join…"
+              maxLength={10}
+              className="flex-1 rounded-lg px-3 py-2 text-sm font-bold tracking-widest outline-none"
+              style={{ background: '#0d1117', border: '1px solid #30363d', color: '#e6edf3', fontSize: '0.8rem' }}
+            />
+            <button onClick={joinCode}
+              className="px-3 py-2 rounded-lg text-sm font-semibold transition-all active:scale-95"
+              style={{ background: '#e8c547', color: '#0d1117' }}>
+              Join
+            </button>
+          </div>
         </div>
-        <p className="text-xs mb-4" style={{ color: '#6b7280' }}>Tap a star to track each day</p>
 
         <div className="grid grid-cols-2 gap-3">
           {KIDS.map(({ id, color }, i) => (
@@ -304,19 +364,6 @@ export function BehaviourTracker() {
       </div>
 
       {/* Sync modal */}
-      {syncOpen && (
-        <SyncModal
-          familyCode={familyCode}
-          onChangeCode={setFamilyCode}
-          onReset={() => resetCode({ records, kid1: kid1Name, kid2: kid2Name })}
-          onForcePush={() => {
-            set(ref(db, `families/${familyCode}/records`), records).catch(() => {});
-            set(ref(db, `families/${familyCode}/kid1`), kid1Name).catch(() => {});
-            set(ref(db, `families/${familyCode}/kid2`), kid2Name).catch(() => {});
-          }}
-          onClose={() => setSyncOpen(false)}
-        />
-      )}
 
     </div>
   );
