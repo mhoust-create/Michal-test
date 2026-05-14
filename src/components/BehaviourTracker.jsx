@@ -312,7 +312,7 @@ export function BehaviourTracker() {
             <div key={id} className="rounded-2xl px-3 py-3"
               style={{ background: '#161b22', border: `1.5px solid ${color}44` }}>
               <EditableName value={names[i]} onChange={setters[i]} color={color} editable={isParent} />
-              <div className="flex gap-3 mt-2 items-center">
+              <div className="flex gap-3 mt-2 items-center rounded-xl px-2 py-1.5" style={{ background: `${color}18`, border: `1px solid ${color}30` }}>
                 <div className="flex items-center gap-1">
                   <span className="text-base">⭐</span>
                   <span className="text-lg font-extrabold" style={{ color: '#22c55e' }}>{stats[i].good}</span>
