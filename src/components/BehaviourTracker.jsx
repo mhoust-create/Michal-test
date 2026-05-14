@@ -23,11 +23,11 @@ function dateKey(y, m, d) {
 function DayToggle({ state, color, bg, onClick }) {
   if (state === 'good') return (
     <button onClick={onClick} className="w-7 h-7 rounded-full flex items-center justify-center transition-all active:scale-90 text-sm"
-      style={{ background: '#22c55e28', border: '1.5px solid #22c55e', cursor: onClick ? 'pointer' : 'default' }}>⭐</button>
+      style={{ background: `${color}28`, border: `1.5px solid ${color}`, cursor: onClick ? 'pointer' : 'default' }}>⭐</button>
   );
   if (state === 'bad') return (
     <button onClick={onClick} className="w-7 h-7 rounded-full flex items-center justify-center transition-all active:scale-90 text-xs"
-      style={{ background: '#ef444428', border: '1.5px solid #ef4444', cursor: onClick ? 'pointer' : 'default' }}>❌</button>
+      style={{ background: `${color}18`, border: `1.5px solid ${color}`, cursor: onClick ? 'pointer' : 'default' }}>❌</button>
   );
   return (
     <button onClick={onClick} className="w-7 h-7 rounded-full flex items-center justify-center transition-all active:scale-90"
