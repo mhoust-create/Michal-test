@@ -324,7 +324,7 @@ export function BehaviourTracker() {
                 <div className="ml-auto flex items-center">
                   {(() => { const s = stats[i].good - stats[i].bad; return (
                     <span className="text-lg font-extrabold" style={{ color: s > 0 ? '#22c55e' : s < 0 ? '#ef4444' : '#6b7280' }}>
-                      {s > 0 ? '+' : ''}{s}
+                      ∑{s > 0 ? '+' : ''}{s}
                     </span>
                   ); })()}
                 </div>
