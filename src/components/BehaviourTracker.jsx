@@ -9,8 +9,8 @@ const MONTHS = [
   'July','August','September','October','November','December',
 ];
 const KIDS = [
-  { id: 'kid1', color: '#a78bfa', bg: '#a78bfa18' },
-  { id: 'kid2', color: '#38bdf8', bg: '#38bdf818' },
+  { id: 'kid1', color: '#a78bfa', bg: '#a78bfa18', star: 15, cross: 5 },
+  { id: 'kid2', color: '#38bdf8', bg: '#38bdf818', star: 7,  cross: 2 },
 ];
 
 function nextState(cur) {
@@ -258,14 +258,14 @@ export function BehaviourTracker() {
     else setViewMonth(m => m + 1);
   }
 
-  const stats = KIDS.map(({ id }) => {
+  const stats = KIDS.map(({ id, star, cross }) => {
     let good = 0, bad = 0;
     for (let d = 1; d <= daysInMonth; d++) {
       const rec = records[dateKey(viewYear, viewMonth, d)] || {};
       if (rec[id] === 'good') good++;
       if (rec[id] === 'bad')  bad++;
     }
-    return { good, bad };
+    return { good, bad, balance: good * star - bad * cross };
   });
 
   const isCurrentMonth = viewYear === today.getFullYear() && viewMonth === today.getMonth();
@@ -328,6 +328,14 @@ export function BehaviourTracker() {
                     </span>
                   ); })()}
                 </div>
+              </div>
+              <div className="flex items-center justify-between mt-1.5 px-1">
+                <span className="text-xs" style={{ color: `${color}88` }}>
+                  ⭐{KIDS[i].star} / ❌-{KIDS[i].cross} CZK
+                </span>
+                <span className="text-sm font-extrabold" style={{ color: stats[i].balance >= 0 ? '#22c55e' : '#ef4444' }}>
+                  {stats[i].balance >= 0 ? '+' : ''}{stats[i].balance} CZK
+                </span>
               </div>
             </div>
           ))}
