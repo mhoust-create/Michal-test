@@ -9,8 +9,8 @@ const MONTHS = [
   'July','August','September','October','November','December',
 ];
 const KIDS = [
-  { id: 'kid1', color: '#a78bfa', bg: '#a78bfa18', star: 15, cross: 5 },
-  { id: 'kid2', color: '#38bdf8', bg: '#38bdf818', star: 7,  cross: 2 },
+  { id: 'kid1', color: '#a78bfa', bg: '#a78bfa18', star: 15, cross: 10 },
+  { id: 'kid2', color: '#38bdf8', bg: '#38bdf818', star: 7,  cross: 3  },
 ];
 
 function nextState(cur) {
