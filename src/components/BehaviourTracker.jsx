@@ -204,48 +204,74 @@ function ChangePinModal({ storedPin, onSave, onClose }) {
   );
 }
 
-function SummaryTab({ records, names, daysInMonth, viewYear, viewMonth, today, isCurrentMonth }) {
+function SummaryTab({ records, names }) {
   const TARGET = 30;
-  const maxDay = isCurrentMonth ? today.getDate() : daysInMonth;
+  const today = new Date();
+  const todayStr = dateKey(today.getFullYear(), today.getMonth(), today.getDate());
+
+  const allDateKeys = Object.keys(records).sort();
+  const firstDate = allDateKeys[0];
+
+  // Build full list of dates from first record to today
+  const dateList = [];
+  if (firstDate) {
+    const d = new Date(firstDate + 'T00:00:00');
+    const end = new Date(todayStr + 'T00:00:00');
+    while (d <= end) {
+      dateList.push(dateKey(d.getFullYear(), d.getMonth(), d.getDate()));
+      d.setDate(d.getDate() + 1);
+    }
+  }
 
   const cumulativeData = KIDS.map(({ id }) => {
     let sum = 0;
-    return Array.from({ length: daysInMonth }, (_, i) => {
-      const day = i + 1;
-      const rec = records[dateKey(viewYear, viewMonth, day)] || {};
+    return dateList.map((date, i) => {
+      const rec = records[date] || {};
       if (rec[id] === 'good') sum += 1;
       else if (rec[id] === 'bad') sum -= 1;
-      return { day, value: sum, hasRecord: rec[id] != null };
-    }).slice(0, maxDay);
+      return { i, value: sum };
+    });
   });
 
-  const W = 300, H = 180;
-  const PAD = { left: 30, right: 12, top: 18, bottom: 26 };
+  const W = 300, H = 190;
+  const PAD = { left: 30, right: 12, top: 18, bottom: 32 };
   const plotW = W - PAD.left - PAD.right;
   const plotH = H - PAD.top - PAD.bottom;
+  const n = Math.max(dateList.length - 1, 1);
 
   const allVals = [...cumulativeData.flat().map(p => p.value), TARGET, 0];
   const minV = Math.min(...allVals) - 2;
   const maxV = Math.max(...allVals) + 3;
 
-  const xScale = day => PAD.left + ((day - 1) / Math.max(daysInMonth - 1, 1)) * plotW;
-  const yScale = v  => PAD.top + plotH - ((v - minV) / (maxV - minV)) * plotH;
+  const xScale = i => PAD.left + (i / n) * plotW;
+  const yScale = v => PAD.top + plotH - ((v - minV) / (maxV - minV)) * plotH;
 
   function buildPath(data) {
-    return data.map(({ day, value }, i) =>
-      `${i === 0 ? 'M' : 'L'}${xScale(day).toFixed(1)},${yScale(value).toFixed(1)}`
+    return data.map(({ i, value }) =>
+      `${i === 0 ? 'M' : 'L'}${xScale(i).toFixed(1)},${yScale(value).toFixed(1)}`
     ).join(' ');
   }
+
+  // Month boundary labels
+  const monthLabels = [];
+  dateList.forEach((date, i) => {
+    if (date.slice(8) === '01' || i === 0) {
+      const d = new Date(date + 'T00:00:00');
+      monthLabels.push({ i, label: d.toLocaleDateString('en', { month: 'short', year: '2-digit' }) });
+    }
+  });
 
   const yStep = maxV - minV > 20 ? 10 : 5;
   const yTicks = [];
   for (let v = Math.ceil(minV / yStep) * yStep; v <= maxV; v += yStep) yTicks.push(v);
-  const xTicks = [1, 5, 10, 15, 20, 25, daysInMonth].filter((d, i, a) => d <= daysInMonth && a.indexOf(d) === i);
+
+  if (dateList.length === 0) return (
+    <div className="px-4 py-8 text-center" style={{ color: '#484f58' }}>No records yet — start tracking!</div>
+  );
 
   return (
     <div className="px-3 py-4 flex flex-col gap-3">
       <div className="rounded-2xl p-4" style={{ background: '#161b22', border: '1px solid #21262d' }}>
-
         {/* Legend */}
         <div className="flex items-center gap-4 mb-3">
           {KIDS.map(({ color }, i) => (
@@ -271,6 +297,15 @@ function SummaryTab({ records, names, daysInMonth, viewYear, viewMonth, today, i
             </g>
           ))}
 
+          {/* Month boundaries */}
+          {monthLabels.map(({ i, label }) => (
+            <g key={i}>
+              <line x1={xScale(i)} y1={PAD.top} x2={xScale(i)} y2={H - PAD.bottom}
+                stroke="#21262d" strokeWidth="0.5" strokeDasharray="3,2" />
+              <text x={xScale(i) + 2} y={H - PAD.bottom + 12} fontSize="7" fill="#6b7280">{label}</text>
+            </g>
+          ))}
+
           {/* Target dashed line */}
           <line x1={PAD.left} y1={yScale(TARGET)} x2={W - PAD.right} y2={yScale(TARGET)}
             stroke="#e8c547" strokeWidth="1.5" strokeDasharray="5,3" />
@@ -281,23 +316,9 @@ function SummaryTab({ records, names, daysInMonth, viewYear, viewMonth, today, i
               stroke={color} strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
           ))}
 
-          {/* Dots for days with a record */}
-          {KIDS.map(({ color }, i) =>
-            cumulativeData[i].filter(p => p.hasRecord).map(({ day, value }) => (
-              <circle key={day} cx={xScale(day)} cy={yScale(value)} r="3"
-                fill={color} stroke="#161b22" strokeWidth="1.5" />
-            ))
-          )}
-
           {/* X axis */}
           <line x1={PAD.left} y1={H - PAD.bottom} x2={W - PAD.right} y2={H - PAD.bottom}
             stroke="#30363d" />
-          {xTicks.map(d => (
-            <g key={d}>
-              <line x1={xScale(d)} y1={H - PAD.bottom} x2={xScale(d)} y2={H - PAD.bottom + 3} stroke="#484f58" />
-              <text x={xScale(d)} y={H - PAD.bottom + 11} textAnchor="middle" fontSize="7.5" fill="#484f58">{d}</text>
-            </g>
-          ))}
         </svg>
       </div>
 
@@ -484,16 +505,15 @@ export function BehaviourTracker() {
         ))}
       </div>
 
-      {/* Month nav */}
-      <div className="flex items-center justify-between px-4 py-3">
-        <button onClick={prevMonth} className="w-9 h-9 rounded-full flex items-center justify-center text-xl transition-all active:scale-90"
-          style={{ background: '#161b22', border: '1px solid #30363d', color: '#c9d1d9' }}>‹</button>
-        <span className="font-bold text-base" style={{ color: '#e6edf3' }}>{MONTHS[viewMonth]} {viewYear}</span>
-        <button onClick={nextMonth} className="w-9 h-9 rounded-full flex items-center justify-center text-xl transition-all active:scale-90"
-          style={{ background: '#161b22', border: '1px solid #30363d', color: '#c9d1d9' }}>›</button>
-      </div>
-
       {activeTab === 'calendar' && <>
+        {/* Month nav */}
+        <div className="flex items-center justify-between px-4 py-3">
+          <button onClick={prevMonth} className="w-9 h-9 rounded-full flex items-center justify-center text-xl transition-all active:scale-90"
+            style={{ background: '#161b22', border: '1px solid #30363d', color: '#c9d1d9' }}>‹</button>
+          <span className="font-bold text-base" style={{ color: '#e6edf3' }}>{MONTHS[viewMonth]} {viewYear}</span>
+          <button onClick={nextMonth} className="w-9 h-9 rounded-full flex items-center justify-center text-xl transition-all active:scale-90"
+            style={{ background: '#161b22', border: '1px solid #30363d', color: '#c9d1d9' }}>›</button>
+        </div>
         {/* Legend */}
         <div className="flex items-center gap-4 px-4 pb-1 text-xs" style={{ color: '#6b7280' }}>
           {KIDS.map(({ id, color }, i) => (
@@ -534,8 +554,7 @@ export function BehaviourTracker() {
       </>}
 
       {activeTab === 'maledives' && (
-        <SummaryTab records={records} names={names} daysInMonth={daysInMonth}
-          viewYear={viewYear} viewMonth={viewMonth} today={today} isCurrentMonth={isCurrentMonth} />
+        <SummaryTab records={records} names={names} />
       )}
 
       {showPinModal && (
