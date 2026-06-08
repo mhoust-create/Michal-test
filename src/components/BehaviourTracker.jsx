@@ -204,11 +204,138 @@ function ChangePinModal({ storedPin, onSave, onClose }) {
   );
 }
 
+function SummaryTab({ records, names, daysInMonth, viewYear, viewMonth, today, isCurrentMonth }) {
+  const TARGET = 30;
+  const maxDay = isCurrentMonth ? today.getDate() : daysInMonth;
+
+  const cumulativeData = KIDS.map(({ id }) => {
+    let sum = 0;
+    return Array.from({ length: daysInMonth }, (_, i) => {
+      const day = i + 1;
+      const rec = records[dateKey(viewYear, viewMonth, day)] || {};
+      if (rec[id] === 'good') sum += 1;
+      else if (rec[id] === 'bad') sum -= 1;
+      return { day, value: sum, hasRecord: rec[id] != null };
+    }).slice(0, maxDay);
+  });
+
+  const W = 300, H = 180;
+  const PAD = { left: 30, right: 12, top: 18, bottom: 26 };
+  const plotW = W - PAD.left - PAD.right;
+  const plotH = H - PAD.top - PAD.bottom;
+
+  const allVals = [...cumulativeData.flat().map(p => p.value), TARGET, 0];
+  const minV = Math.min(...allVals) - 2;
+  const maxV = Math.max(...allVals) + 3;
+
+  const xScale = day => PAD.left + ((day - 1) / Math.max(daysInMonth - 1, 1)) * plotW;
+  const yScale = v  => PAD.top + plotH - ((v - minV) / (maxV - minV)) * plotH;
+
+  function buildPath(data) {
+    return data.map(({ day, value }, i) =>
+      `${i === 0 ? 'M' : 'L'}${xScale(day).toFixed(1)},${yScale(value).toFixed(1)}`
+    ).join(' ');
+  }
+
+  const yStep = maxV - minV > 20 ? 10 : 5;
+  const yTicks = [];
+  for (let v = Math.ceil(minV / yStep) * yStep; v <= maxV; v += yStep) yTicks.push(v);
+  const xTicks = [1, 5, 10, 15, 20, 25, daysInMonth].filter((d, i, a) => d <= daysInMonth && a.indexOf(d) === i);
+
+  return (
+    <div className="px-3 py-4 flex flex-col gap-3">
+      <div className="rounded-2xl p-4" style={{ background: '#161b22', border: '1px solid #21262d' }}>
+
+        {/* Legend */}
+        <div className="flex items-center gap-4 mb-3">
+          {KIDS.map(({ color }, i) => (
+            <div key={i} className="flex items-center gap-1.5">
+              <div className="w-5 rounded-full" style={{ height: 2, background: color }} />
+              <span className="text-xs font-semibold" style={{ color }}>{names[i]}</span>
+            </div>
+          ))}
+          <div className="flex items-center gap-1.5 ml-auto">
+            <svg width="20" height="8"><line x1="0" y1="4" x2="20" y2="4" stroke="#e8c547" strokeWidth="1.5" strokeDasharray="4,2" /></svg>
+            <span className="text-xs font-semibold" style={{ color: '#e8c547' }}>Target {TARGET}</span>
+          </div>
+        </div>
+
+        <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
+          {/* Y grid + labels */}
+          {yTicks.map(v => (
+            <g key={v}>
+              <line x1={PAD.left} y1={yScale(v)} x2={W - PAD.right} y2={yScale(v)}
+                stroke={v === 0 ? '#30363d' : '#1e2530'} strokeWidth={v === 0 ? 1 : 0.5} />
+              <text x={PAD.left - 4} y={yScale(v)} textAnchor="end" dominantBaseline="middle"
+                fontSize="7.5" fill="#484f58">{v}</text>
+            </g>
+          ))}
+
+          {/* Target dashed line */}
+          <line x1={PAD.left} y1={yScale(TARGET)} x2={W - PAD.right} y2={yScale(TARGET)}
+            stroke="#e8c547" strokeWidth="1.5" strokeDasharray="5,3" />
+
+          {/* Kid lines */}
+          {KIDS.map(({ color }, i) => (
+            <path key={i} d={buildPath(cumulativeData[i])} fill="none"
+              stroke={color} strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+          ))}
+
+          {/* Dots for days with a record */}
+          {KIDS.map(({ color }, i) =>
+            cumulativeData[i].filter(p => p.hasRecord).map(({ day, value }) => (
+              <circle key={day} cx={xScale(day)} cy={yScale(value)} r="3"
+                fill={color} stroke="#161b22" strokeWidth="1.5" />
+            ))
+          )}
+
+          {/* X axis */}
+          <line x1={PAD.left} y1={H - PAD.bottom} x2={W - PAD.right} y2={H - PAD.bottom}
+            stroke="#30363d" />
+          {xTicks.map(d => (
+            <g key={d}>
+              <line x1={xScale(d)} y1={H - PAD.bottom} x2={xScale(d)} y2={H - PAD.bottom + 3} stroke="#484f58" />
+              <text x={xScale(d)} y={H - PAD.bottom + 11} textAnchor="middle" fontSize="7.5" fill="#484f58">{d}</text>
+            </g>
+          ))}
+        </svg>
+      </div>
+
+      {/* Progress cards */}
+      <div className="grid grid-cols-2 gap-3">
+        {KIDS.map(({ color }, i) => {
+          const last = cumulativeData[i][cumulativeData[i].length - 1];
+          const score = last ? last.value : 0;
+          const pct = Math.min(100, Math.max(0, (score / TARGET) * 100));
+          return (
+            <div key={i} className="rounded-2xl px-3 py-3"
+              style={{ background: '#161b22', border: `1.5px solid ${color}44` }}>
+              <span className="text-sm font-bold" style={{ color }}>{names[i]}</span>
+              <div className="flex items-baseline gap-1 mt-1">
+                <span className="text-2xl font-extrabold"
+                  style={{ color: score >= TARGET ? '#22c55e' : score >= 0 ? '#e8c547' : '#ef4444' }}>
+                  {score}
+                </span>
+                <span className="text-xs" style={{ color: '#484f58' }}>/ {TARGET}</span>
+              </div>
+              <div className="mt-2 rounded-full overflow-hidden" style={{ height: 5, background: '#21262d' }}>
+                <div className="h-full rounded-full"
+                  style={{ width: `${pct}%`, background: score >= TARGET ? '#22c55e' : color }} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export function BehaviourTracker() {
   const today = new Date();
   const [viewYear, setViewYear] = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth());
 
+  const [activeTab, setActiveTab] = useState('calendar');
   const [isParent, setIsParent] = useState(false);
   const [pin, setPin] = useState(() => localStorage.getItem('parent_pin') || '1234');
   const [showPinModal, setShowPinModal] = useState(false);
@@ -342,6 +469,21 @@ export function BehaviourTracker() {
         </div>
       </div>
 
+      {/* Tab bar */}
+      <div className="flex px-4 pt-3 gap-2">
+        {[['calendar','📅 Calendar'],['maledives','🌴 Trip to Maledives']].map(([id, label]) => (
+          <button key={id} onClick={() => setActiveTab(id)}
+            className="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all"
+            style={{
+              background: activeTab === id ? '#e8c547' : '#161b22',
+              color: activeTab === id ? '#0d1117' : '#6b7280',
+              border: `1px solid ${activeTab === id ? '#e8c547' : '#30363d'}`,
+            }}>
+            {label}
+          </button>
+        ))}
+      </div>
+
       {/* Month nav */}
       <div className="flex items-center justify-between px-4 py-3">
         <button onClick={prevMonth} className="w-9 h-9 rounded-full flex items-center justify-center text-xl transition-all active:scale-90"
@@ -351,43 +493,50 @@ export function BehaviourTracker() {
           style={{ background: '#161b22', border: '1px solid #30363d', color: '#c9d1d9' }}>›</button>
       </div>
 
-      {/* Legend */}
-      <div className="flex items-center gap-4 px-4 pb-1 text-xs" style={{ color: '#6b7280' }}>
-        {KIDS.map(({ id, color }, i) => (
-          <span key={id} style={{ color }}>● {names[i]}</span>
-        ))}
-        {isParent && <span className="ml-auto" style={{ color: '#484f58' }}>? → ⭐ → ❌ → ?</span>}
-      </div>
-
-      {/* Calendar */}
-      <div className="px-2 pb-2">
-        <div className="grid grid-cols-7 mb-1">
-          {WEEKDAYS.map(d => (
-            <div key={d} className="text-center text-xs font-semibold py-1" style={{ color: '#484f58' }}>{d}</div>
+      {activeTab === 'calendar' && <>
+        {/* Legend */}
+        <div className="flex items-center gap-4 px-4 pb-1 text-xs" style={{ color: '#6b7280' }}>
+          {KIDS.map(({ id, color }, i) => (
+            <span key={id} style={{ color }}>● {names[i]}</span>
           ))}
+          {isParent && <span className="ml-auto" style={{ color: '#484f58' }}>? → ⭐ → ❌ → ?</span>}
         </div>
-        <div className="grid grid-cols-7 gap-1">
-          {cells.map((day, idx) => {
-            if (day === null) return <div key={`x${idx}`} style={{ minHeight: 78 }} />;
-            const key = dateKey(viewYear, viewMonth, day);
-            const rec = records[key] || {};
-            const isToday   = isCurrentMonth && day === today.getDate();
-            const isFuture  = isCurrentMonth
-              ? day > today.getDate()
-              : (viewYear > today.getFullYear() || (viewYear === today.getFullYear() && viewMonth > today.getMonth()));
-            return (
-              <div key={day} className="rounded-xl flex flex-col items-center py-2 gap-1"
-                style={{ background: isToday ? '#1c2535' : '#161b22', border: isToday ? '1.5px solid #e8c547' : '1px solid #21262d', minHeight: 78, opacity: isFuture ? 0.45 : 1 }}>
-                <span className="text-xs font-semibold" style={{ color: isToday ? '#e8c547' : '#6b7280' }}>{day}</span>
-                {KIDS.map(({ id, color, bg }) => (
-                  <DayToggle key={id} state={rec[id] ?? null} color={color} bg={bg}
-                    onClick={isParent && !isFuture ? () => toggle(day, id) : undefined} />
-                ))}
-              </div>
-            );
-          })}
+
+        {/* Calendar */}
+        <div className="px-2 pb-2">
+          <div className="grid grid-cols-7 mb-1">
+            {WEEKDAYS.map(d => (
+              <div key={d} className="text-center text-xs font-semibold py-1" style={{ color: '#484f58' }}>{d}</div>
+            ))}
+          </div>
+          <div className="grid grid-cols-7 gap-1">
+            {cells.map((day, idx) => {
+              if (day === null) return <div key={`x${idx}`} style={{ minHeight: 78 }} />;
+              const key = dateKey(viewYear, viewMonth, day);
+              const rec = records[key] || {};
+              const isToday   = isCurrentMonth && day === today.getDate();
+              const isFuture  = isCurrentMonth
+                ? day > today.getDate()
+                : (viewYear > today.getFullYear() || (viewYear === today.getFullYear() && viewMonth > today.getMonth()));
+              return (
+                <div key={day} className="rounded-xl flex flex-col items-center py-2 gap-1"
+                  style={{ background: isToday ? '#1c2535' : '#161b22', border: isToday ? '1.5px solid #e8c547' : '1px solid #21262d', minHeight: 78, opacity: isFuture ? 0.45 : 1 }}>
+                  <span className="text-xs font-semibold" style={{ color: isToday ? '#e8c547' : '#6b7280' }}>{day}</span>
+                  {KIDS.map(({ id, color, bg }) => (
+                    <DayToggle key={id} state={rec[id] ?? null} color={color} bg={bg}
+                      onClick={isParent && !isFuture ? () => toggle(day, id) : undefined} />
+                  ))}
+                </div>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      </>}
+
+      {activeTab === 'maledives' && (
+        <SummaryTab records={records} names={names} daysInMonth={daysInMonth}
+          viewYear={viewYear} viewMonth={viewMonth} today={today} isCurrentMonth={isCurrentMonth} />
+      )}
 
       {showPinModal && (
         <PinModal storedPin={pin} onSuccess={unlock} onClose={() => setShowPinModal(false)} />
