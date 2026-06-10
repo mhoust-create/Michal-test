@@ -21,12 +21,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # ── Behaviour Tracker (main) ──────────────────────────────────────────
+      # Behaviour Tracker (main)
       - uses: actions/checkout@v4
         with:
           path: behaviour-app
 
-      # ── Supplements Tracker (feature branch) ─────────────────────────────
+      # Supplements Tracker (feature branch)
       - uses: actions/checkout@v4
         with:
           ref: claude/vitamins-supplements-app-br0yw2
@@ -48,7 +48,7 @@ jobs:
       - run: npm run build
         working-directory: supplements-app
 
-      # Combine: put supplements build inside behaviour dist
+      # Combine: supplements build nested inside behaviour dist
       - run: mkdir -p behaviour-app/dist/supplements && cp -r supplements-app/dist/. behaviour-app/dist/supplements/
 
       - uses: actions/upload-pages-artifact@v3
