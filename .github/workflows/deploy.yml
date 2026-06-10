@@ -37,7 +37,7 @@ jobs:
           node-version: 22
 
       # Build behaviour tracker
-      - run: npm ci
+      - run: npm install --legacy-peer-deps
         working-directory: behaviour-app
       - run: npm run build
         working-directory: behaviour-app
