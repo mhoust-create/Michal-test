@@ -15,7 +15,204 @@ const EMPTY_FORM = {
   color: '#22c55e',
 };
 
-function Form({ initial, onSave, onCancel, isEdit }) {
+// ─── URL importer ──────────────────────────────────────────────────────────────
+
+function guessUnit(text) {
+  const t = text.toLowerCase();
+  if (t.includes('kapsl') || t.includes('capsule') || t.includes('kps')) return 'capsule(s)';
+  if (t.includes('tablet') || t.includes('tableta')) return 'tablet(s)';
+  if (t.includes('drop') || t.includes('kapka')) return 'drop(s)';
+  if (t.includes('lžíc') || t.includes('spoon') || t.includes('scoop')) return 'spoon(s)';
+  if (t.includes('ml')) return 'ml';
+  return 'capsule(s)';
+}
+
+function parseDosage(text) {
+  if (!text) return { amount: '1', unit: 'capsule(s)', times: 1, note: '' };
+  // Match patterns like "1 kapsle", "2 tablets", "3 drops", "3 kapsle denně", etc.
+  const m = text.match(/(\d+)\s*(kapsle[i]?|kapslí|tablet[ay]?|drops?|kapky|lžíce?|spoon|scoop)/i);
+  const amount = m ? m[1] : '1';
+  const unit = guessUnit(text);
+  // Times per day
+  const timesM = text.match(/(\d+)x\s*denně|(\d+)\s*times\s*(?:a|per)\s*day/i);
+  const times = timesM ? parseInt(timesM[1] || timesM[2]) : 1;
+  // Note: look for "after meal", "po jídle", etc.
+  const noteM = text.match(/po jídle|after meal|with food|s jídlem|before sleep|před spánkem|ráno|morning|večer|evening/i);
+  const note = noteM ? noteM[0] : '';
+  return { amount, unit, times: Math.min(times, 3), note };
+}
+
+function cleanName(raw) {
+  if (!raw) return '';
+  // Remove site name suffix like " | aktin.cz", " - Aktin", etc.
+  return raw.replace(/\s*[|–\-]\s*.{2,30}$/u, '').trim();
+}
+
+async function fetchProductPage(url) {
+  const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+  const res = await fetch(proxy, { signal: AbortSignal.timeout(12000) });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const html = await res.text();
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+
+  const ogTitle = doc.querySelector('meta[property="og:title"]')?.getAttribute('content') || '';
+  const h1 = doc.querySelector('h1')?.textContent?.trim() || '';
+  const ogDesc = doc.querySelector('meta[property="og:description"]')?.getAttribute('content') || '';
+  const metaDesc = doc.querySelector('meta[name="description"]')?.getAttribute('content') || '';
+
+  // Try to grab product description text blocks
+  const descBlocks = [
+    ...doc.querySelectorAll('.product-description, .description, [class*="description"], [class*="detail"], .product-detail, .product__description'),
+  ].map(el => el.textContent?.trim()).filter(Boolean);
+
+  // Look for dosage-specific text
+  const allText = [ogDesc, metaDesc, ...descBlocks].join(' ');
+  const dosageMatch = allText.match(
+    /(?:dávkování|dosage|doporučené dávkování|jak dávkovat|serving size|directions)[:\s]*([^.]{5,120})/i
+  );
+  const dosageText = dosageMatch ? dosageMatch[1] : allText.slice(0, 300);
+
+  const name = cleanName(ogTitle || h1);
+  const shortDesc = ogDesc || metaDesc || '';
+
+  return { name, shortDesc, dosageText, rawDescBlock: descBlocks.slice(0, 2).join('\n\n') };
+}
+
+function ImportFromUrl({ onPrefill, onCancel }) {
+  const [url, setUrl] = useState('');
+  const [state, setState] = useState('idle'); // idle | loading | done | error
+  const [result, setResult] = useState(null);
+  const [errMsg, setErrMsg] = useState('');
+
+  const handleFetch = async () => {
+    if (!url.trim()) return;
+    setState('loading');
+    setResult(null);
+    try {
+      const data = await fetchProductPage(url.trim());
+      setResult(data);
+      setState('done');
+    } catch (e) {
+      setErrMsg(e.message || 'Could not fetch page');
+      setState('error');
+    }
+  };
+
+  const handleUse = () => {
+    if (!result) return;
+    const { amount, unit, times, note } = parseDosage(result.dosageText || result.shortDesc);
+    onPrefill({
+      name: result.name,
+      doseAmount: amount,
+      unit,
+      timesPerDay: times,
+      note,
+      shortDesc: result.shortDesc,
+      dosageHint: result.dosageText,
+    });
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-end"
+      style={{ background: 'rgba(0,0,0,0.8)' }}
+      onClick={e => e.target === e.currentTarget && onCancel()}
+    >
+      <div
+        className="w-full rounded-t-3xl p-5 overflow-y-auto"
+        style={{ background: '#161b22', maxWidth: 480, margin: '0 auto', maxHeight: '90vh' }}
+      >
+        <div className="w-10 h-1 rounded-full mx-auto mb-4" style={{ background: '#30363d' }} />
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="text-lg font-bold text-white">Import from webpage</h2>
+            <p className="text-xs text-gray-500 mt-0.5">Paste the product URL from the seller's site</p>
+          </div>
+          <button onClick={onCancel} className="text-gray-400 text-2xl leading-none">×</button>
+        </div>
+
+        {/* URL input */}
+        <div className="flex gap-2 mb-4">
+          <input
+            value={url}
+            onChange={e => { setUrl(e.target.value); setState('idle'); }}
+            placeholder="https://aktin.cz/..."
+            className="flex-1 rounded-xl px-3 py-3 text-white text-sm outline-none"
+            style={{ background: '#21262d', border: '1px solid #30363d' }}
+            onKeyDown={e => e.key === 'Enter' && handleFetch()}
+          />
+          <button
+            onClick={handleFetch}
+            disabled={!url.trim() || state === 'loading'}
+            className="px-4 py-3 rounded-xl text-sm font-bold transition-opacity flex-shrink-0"
+            style={{ background: '#22c55e', color: '#0d1117', opacity: url.trim() ? 1 : 0.4 }}
+          >
+            {state === 'loading' ? '...' : 'Fetch'}
+          </button>
+        </div>
+
+        {/* Loading */}
+        {state === 'loading' && (
+          <div className="text-center py-8 text-gray-400 text-sm">
+            <div className="text-2xl mb-2 animate-pulse">🌐</div>
+            Fetching product info…
+          </div>
+        )}
+
+        {/* Error */}
+        {state === 'error' && (
+          <div className="rounded-xl p-4 mb-4" style={{ background: '#1c1c2e', border: '1px solid #ef444440' }}>
+            <p className="text-sm font-semibold" style={{ color: '#ef4444' }}>Could not fetch this page</p>
+            <p className="text-xs text-gray-400 mt-1">{errMsg}. Some sites block automated access. You can add the supplement manually instead.</p>
+            <button
+              onClick={() => onPrefill({ name: '', doseAmount: '1', unit: 'capsule(s)', timesPerDay: 1, note: '' })}
+              className="mt-3 text-xs font-semibold"
+              style={{ color: '#22c55e' }}
+            >
+              Add manually →
+            </button>
+          </div>
+        )}
+
+        {/* Result */}
+        {state === 'done' && result && (
+          <div>
+            {/* Extracted name */}
+            <div className="rounded-xl p-4 mb-3" style={{ background: '#0d1117', border: '1px solid #22c55e40' }}>
+              <p className="text-xs text-gray-500 mb-1 uppercase tracking-widest">Product found</p>
+              <p className="text-white font-semibold text-base">{result.name || '(name not detected)'}</p>
+              {result.shortDesc && (
+                <p className="text-xs text-gray-400 mt-2 leading-relaxed">{result.shortDesc}</p>
+              )}
+            </div>
+
+            {/* Dosage hint */}
+            {result.dosageText && (
+              <div className="rounded-xl p-4 mb-4" style={{ background: '#0d1117', border: '1px solid #3b82f640' }}>
+                <p className="text-xs uppercase tracking-widest mb-1" style={{ color: '#3b82f6' }}>Dosage info found</p>
+                <p className="text-xs text-gray-300 leading-relaxed">{result.dosageText.trim()}</p>
+              </div>
+            )}
+
+            <button
+              onClick={handleUse}
+              className="w-full py-3.5 rounded-xl font-bold text-sm"
+              style={{ background: '#22c55e', color: '#0d1117' }}
+            >
+              Use this product →
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Add/Edit form ─────────────────────────────────────────────────────────────
+
+function Form({ initial, onSave, onCancel, isEdit, dosageHint }) {
   const [form, setForm] = useState(initial);
 
   const set = (key, val) => setForm(f => ({ ...f, [key]: val }));
@@ -48,13 +245,19 @@ function Form({ initial, onSave, onCancel, isEdit }) {
         className="w-full rounded-t-3xl p-5 overflow-y-auto"
         style={{ background: '#161b22', maxWidth: 480, margin: '0 auto', maxHeight: '92vh' }}
       >
-        {/* Handle */}
         <div className="w-10 h-1 rounded-full mx-auto mb-4" style={{ background: '#30363d' }} />
-
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-lg font-bold text-white">{isEdit ? 'Edit' : 'Add'} Supplement</h2>
           <button onClick={onCancel} className="text-gray-400 text-2xl leading-none">×</button>
         </div>
+
+        {/* Dosage hint banner (when imported from URL) */}
+        {dosageHint && (
+          <div className="rounded-xl p-3 mb-4" style={{ background: '#0d1117', border: '1px solid #3b82f640' }}>
+            <p className="text-xs uppercase tracking-widest mb-1" style={{ color: '#3b82f6' }}>Dosage from product page</p>
+            <p className="text-xs text-gray-300 leading-relaxed">{dosageHint}</p>
+          </div>
+        )}
 
         {/* Emoji */}
         <p className="text-xs text-gray-400 mb-2">Icon</p>
@@ -92,7 +295,7 @@ function Form({ initial, onSave, onCancel, isEdit }) {
         <input
           value={form.name}
           onChange={e => set('name', e.target.value)}
-          placeholder="e.g. Vitamin D3+K2"
+          placeholder="e.g. Reishi"
           className="w-full rounded-xl px-3 py-3 text-white text-sm mb-4 outline-none"
           style={{ background: '#21262d', border: '1px solid #30363d' }}
         />
@@ -166,11 +369,7 @@ function Form({ initial, onSave, onCancel, isEdit }) {
           onClick={handleSave}
           disabled={!form.name.trim()}
           className="w-full py-3.5 rounded-xl font-bold text-sm transition-opacity"
-          style={{
-            background: '#22c55e',
-            color: '#0d1117',
-            opacity: form.name.trim() ? 1 : 0.4,
-          }}
+          style={{ background: '#22c55e', color: '#0d1117', opacity: form.name.trim() ? 1 : 0.4 }}
         >
           {isEdit ? 'Save Changes' : 'Add Supplement'}
         </button>
@@ -179,12 +378,14 @@ function Form({ initial, onSave, onCancel, isEdit }) {
   );
 }
 
+// ─── Helpers ───────────────────────────────────────────────────────────────────
+
 function supplementToForm(supp) {
   const parts = supp.dose.split(' ');
   return {
     name: supp.name,
     doseAmount: parts[0] || '1',
-    unit: parts.slice(1).join(' ') || 'pill(s)',
+    unit: parts.slice(1).join(' ') || 'capsule(s)',
     timesPerDay: supp.timesPerDay,
     timeLabels: supp.timeLabels || ['Morning', 'Noon', 'Evening'],
     note: supp.note || '',
@@ -193,13 +394,40 @@ function supplementToForm(supp) {
   };
 }
 
+// ─── Main component ────────────────────────────────────────────────────────────
+
 export function ManageSupplements({ supplements, setSupplements }) {
-  const [mode, setMode] = useState(null); // null | 'add' | { editId }
+  const [mode, setMode] = useState(null); // null | 'import' | 'add' | { editId }
+  const [pendingForm, setPendingForm] = useState(null); // pre-filled data from URL import
+  const [dosageHint, setDosageHint] = useState('');
   const [deleteId, setDeleteId] = useState(null);
+
+  const openAdd = () => {
+    setPendingForm(null);
+    setDosageHint('');
+    setMode('add');
+  };
+
+  const handleImportPrefill = (data) => {
+    setPendingForm({
+      name: data.name || '',
+      doseAmount: data.doseAmount || '1',
+      unit: data.unit || 'capsule(s)',
+      timesPerDay: data.timesPerDay || 1,
+      timeLabels: ['Morning', 'Noon', 'Evening'],
+      note: data.note || '',
+      emoji: '💊',
+      color: '#22c55e',
+    });
+    setDosageHint(data.dosageHint || '');
+    setMode('add');
+  };
 
   const handleAdd = (data) => {
     setSupplements(prev => [...prev, { id: `supp-${Date.now()}`, ...data }]);
     setMode(null);
+    setPendingForm(null);
+    setDosageHint('');
   };
 
   const handleEdit = (data) => {
@@ -219,20 +447,32 @@ export function ManageSupplements({ supplements, setSupplements }) {
           <h1 className="text-xl font-bold text-white">My Supplements</h1>
           <p className="text-xs text-gray-500 mt-0.5">{supplements.length} supplement{supplements.length !== 1 ? 's' : ''}</p>
         </div>
-        <button
-          onClick={() => setMode('add')}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold"
-          style={{ background: '#22c55e', color: '#0d1117' }}
-        >
-          + Add
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setMode('import')}
+            className="flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-semibold"
+            style={{ background: '#21262d', color: '#9ca3af', border: '1px solid #30363d' }}
+          >
+            🌐 URL
+          </button>
+          <button
+            onClick={openAdd}
+            className="flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-semibold"
+            style={{ background: '#22c55e', color: '#0d1117' }}
+          >
+            + Add
+          </button>
+        </div>
       </div>
 
       {supplements.length === 0 ? (
         <div className="text-center text-gray-500 mt-16">
           <div className="text-5xl mb-4">💊</div>
           <p className="font-medium">No supplements yet</p>
-          <p className="text-sm mt-1">Tap + Add to get started</p>
+          <p className="text-sm mt-2">
+            Tap <span className="text-green-400 font-semibold">+ Add</span> to add manually,{' '}
+            or <span style={{ color: '#9ca3af' }}>🌐 URL</span> to import from a product page
+          </p>
         </div>
       ) : (
         <div className="flex flex-col gap-3">
@@ -272,7 +512,7 @@ export function ManageSupplements({ supplements, setSupplements }) {
                   </button>
                   <button
                     onClick={() => setDeleteId(supp.id)}
-                    className="w-8 h-8 rounded-xl flex items-center justify-center text-sm font-bold"
+                    className="w-8 h-8 rounded-xl flex items-center justify-center font-bold"
                     style={{ background: '#21262d', color: '#ef4444' }}
                   >
                     ×
@@ -284,13 +524,22 @@ export function ManageSupplements({ supplements, setSupplements }) {
         </div>
       )}
 
+      {/* Import from URL */}
+      {mode === 'import' && (
+        <ImportFromUrl
+          onPrefill={handleImportPrefill}
+          onCancel={() => setMode(null)}
+        />
+      )}
+
       {/* Add form */}
       {mode === 'add' && (
         <Form
-          initial={EMPTY_FORM}
+          initial={pendingForm || EMPTY_FORM}
           onSave={handleAdd}
-          onCancel={() => setMode(null)}
+          onCancel={() => { setMode(null); setPendingForm(null); setDosageHint(''); }}
           isEdit={false}
+          dosageHint={dosageHint}
         />
       )}
 
@@ -304,6 +553,7 @@ export function ManageSupplements({ supplements, setSupplements }) {
             onSave={handleEdit}
             onCancel={() => setMode(null)}
             isEdit={true}
+            dosageHint=""
           />
         );
       })()}
