@@ -1,4 +1,8 @@
+import { useState } from 'react';
+import { SupplementDetail } from './SupplementDetail';
+
 export function TodayView({ supplements, log, today, onToggle }) {
+  const [detailSupp, setDetailSupp] = useState(null);
   const dayLog = log[today] || {};
 
   const totalDoses = supplements.reduce((sum, s) => sum + s.timesPerDay, 0);
@@ -50,6 +54,7 @@ export function TodayView({ supplements, log, today, onToggle }) {
             const suppLog = dayLog[supp.id] || [];
             const taken = suppLog.filter(Boolean).length;
             const allTaken = taken === supp.timesPerDay;
+            const hasDetail = !!(supp.description || supp.dosageText);
 
             return (
               <div
@@ -70,20 +75,31 @@ export function TodayView({ supplements, log, today, onToggle }) {
                     {supp.emoji}
                   </div>
 
-                  {/* Info */}
-                  <div className="flex-1 min-w-0">
-                    <div
-                      className="font-semibold text-white leading-tight truncate"
-                      style={{ textDecoration: allTaken ? 'line-through' : 'none', color: allTaken ? '#6b7280' : '#fff' }}
-                    >
-                      {supp.name}
+                  {/* Info — tappable to open detail */}
+                  <button
+                    className="flex-1 min-w-0 text-left"
+                    onClick={() => setDetailSupp(supp)}
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <span
+                        className="font-semibold leading-tight truncate"
+                        style={{
+                          textDecoration: allTaken ? 'line-through' : 'none',
+                          color: allTaken ? '#6b7280' : '#fff',
+                        }}
+                      >
+                        {supp.name}
+                      </span>
+                      {hasDetail && (
+                        <span className="text-xs flex-shrink-0" style={{ color: supp.color + '90' }}>ⓘ</span>
+                      )}
                     </div>
                     <div className="text-xs text-gray-400 mt-0.5 truncate">
                       <span style={{ color: supp.color + 'cc' }}>{supp.dose}</span>
                       {supp.timesPerDay > 1 && <span className="text-gray-500"> × {supp.timesPerDay}/day</span>}
                       {supp.note ? <span className="text-gray-500"> · {supp.note}</span> : null}
                     </div>
-                  </div>
+                  </button>
 
                   {/* Dose checkboxes */}
                   <div className="flex gap-2 flex-shrink-0">
@@ -122,6 +138,11 @@ export function TodayView({ supplements, log, today, onToggle }) {
             );
           })}
         </div>
+      )}
+
+      {/* Detail sheet */}
+      {detailSupp && (
+        <SupplementDetail supp={detailSupp} onClose={() => setDetailSupp(null)} />
       )}
     </div>
   );

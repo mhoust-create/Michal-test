@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { SupplementDetail } from './SupplementDetail';
 
 const EMOJIS = ['💊', '🌿', '🍄', '☀️', '🦴', '✨', '🧬', '🌊', '🍃', '🌸', '⚡', '🫐', '🧪', '🌾', '🫚'];
 const COLORS = ['#22c55e', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#ef4444', '#f97316'];
@@ -13,6 +14,8 @@ const EMPTY_FORM = {
   note: '',
   emoji: '💊',
   color: '#22c55e',
+  description: '',
+  dosageText: '',
 };
 
 // ─── URL importer ──────────────────────────────────────────────────────────────
@@ -29,14 +32,11 @@ function guessUnit(text) {
 
 function parseDosage(text) {
   if (!text) return { amount: '1', unit: 'capsule(s)', times: 1, note: '' };
-  // Match patterns like "1 kapsle", "2 tablets", "3 drops", "3 kapsle denně", etc.
   const m = text.match(/(\d+)\s*(kapsle[i]?|kapslí|tablet[ay]?|drops?|kapky|lžíce?|spoon|scoop)/i);
   const amount = m ? m[1] : '1';
   const unit = guessUnit(text);
-  // Times per day
   const timesM = text.match(/(\d+)x\s*denně|(\d+)\s*times\s*(?:a|per)\s*day/i);
   const times = timesM ? parseInt(timesM[1] || timesM[2]) : 1;
-  // Note: look for "after meal", "po jídle", etc.
   const noteM = text.match(/po jídle|after meal|with food|s jídlem|before sleep|před spánkem|ráno|morning|večer|evening/i);
   const note = noteM ? noteM[0] : '';
   return { amount, unit, times: Math.min(times, 3), note };
@@ -44,7 +44,6 @@ function parseDosage(text) {
 
 function cleanName(raw) {
   if (!raw) return '';
-  // Remove site name suffix like " | aktin.cz", " - Aktin", etc.
   return raw.replace(/\s*[|–\-]\s*.{2,30}$/u, '').trim();
 }
 
@@ -62,27 +61,25 @@ async function fetchProductPage(url) {
   const ogDesc = doc.querySelector('meta[property="og:description"]')?.getAttribute('content') || '';
   const metaDesc = doc.querySelector('meta[name="description"]')?.getAttribute('content') || '';
 
-  // Try to grab product description text blocks
   const descBlocks = [
     ...doc.querySelectorAll('.product-description, .description, [class*="description"], [class*="detail"], .product-detail, .product__description'),
   ].map(el => el.textContent?.trim()).filter(Boolean);
 
-  // Look for dosage-specific text
   const allText = [ogDesc, metaDesc, ...descBlocks].join(' ');
   const dosageMatch = allText.match(
     /(?:dávkování|dosage|doporučené dávkování|jak dávkovat|serving size|directions)[:\s]*([^.]{5,120})/i
   );
-  const dosageText = dosageMatch ? dosageMatch[1] : allText.slice(0, 300);
+  const dosageText = dosageMatch ? dosageMatch[1].trim() : '';
 
   const name = cleanName(ogTitle || h1);
   const shortDesc = ogDesc || metaDesc || '';
 
-  return { name, shortDesc, dosageText, rawDescBlock: descBlocks.slice(0, 2).join('\n\n') };
+  return { name, shortDesc, dosageText };
 }
 
 function ImportFromUrl({ onPrefill, onCancel }) {
   const [url, setUrl] = useState('');
-  const [state, setState] = useState('idle'); // idle | loading | done | error
+  const [state, setState] = useState('idle');
   const [result, setResult] = useState(null);
   const [errMsg, setErrMsg] = useState('');
 
@@ -109,8 +106,8 @@ function ImportFromUrl({ onPrefill, onCancel }) {
       unit,
       timesPerDay: times,
       note,
-      shortDesc: result.shortDesc,
-      dosageHint: result.dosageText,
+      description: result.shortDesc,
+      dosageText: result.dosageText,
     });
   };
 
@@ -133,7 +130,6 @@ function ImportFromUrl({ onPrefill, onCancel }) {
           <button onClick={onCancel} className="text-gray-400 text-2xl leading-none">×</button>
         </div>
 
-        {/* URL input */}
         <div className="flex gap-2 mb-4">
           <input
             value={url}
@@ -146,14 +142,13 @@ function ImportFromUrl({ onPrefill, onCancel }) {
           <button
             onClick={handleFetch}
             disabled={!url.trim() || state === 'loading'}
-            className="px-4 py-3 rounded-xl text-sm font-bold transition-opacity flex-shrink-0"
+            className="px-4 py-3 rounded-xl text-sm font-bold flex-shrink-0"
             style={{ background: '#22c55e', color: '#0d1117', opacity: url.trim() ? 1 : 0.4 }}
           >
             {state === 'loading' ? '...' : 'Fetch'}
           </button>
         </div>
 
-        {/* Loading */}
         {state === 'loading' && (
           <div className="text-center py-8 text-gray-400 text-sm">
             <div className="text-2xl mb-2 animate-pulse">🌐</div>
@@ -161,13 +156,12 @@ function ImportFromUrl({ onPrefill, onCancel }) {
           </div>
         )}
 
-        {/* Error */}
         {state === 'error' && (
           <div className="rounded-xl p-4 mb-4" style={{ background: '#1c1c2e', border: '1px solid #ef444440' }}>
             <p className="text-sm font-semibold" style={{ color: '#ef4444' }}>Could not fetch this page</p>
             <p className="text-xs text-gray-400 mt-1">{errMsg}. Some sites block automated access. You can add the supplement manually instead.</p>
             <button
-              onClick={() => onPrefill({ name: '', doseAmount: '1', unit: 'capsule(s)', timesPerDay: 1, note: '' })}
+              onClick={() => onPrefill({ name: '', doseAmount: '1', unit: 'capsule(s)', timesPerDay: 1, note: '', description: '', dosageText: '' })}
               className="mt-3 text-xs font-semibold"
               style={{ color: '#22c55e' }}
             >
@@ -176,10 +170,8 @@ function ImportFromUrl({ onPrefill, onCancel }) {
           </div>
         )}
 
-        {/* Result */}
         {state === 'done' && result && (
           <div>
-            {/* Extracted name */}
             <div className="rounded-xl p-4 mb-3" style={{ background: '#0d1117', border: '1px solid #22c55e40' }}>
               <p className="text-xs text-gray-500 mb-1 uppercase tracking-widest">Product found</p>
               <p className="text-white font-semibold text-base">{result.name || '(name not detected)'}</p>
@@ -188,11 +180,10 @@ function ImportFromUrl({ onPrefill, onCancel }) {
               )}
             </div>
 
-            {/* Dosage hint */}
             {result.dosageText && (
               <div className="rounded-xl p-4 mb-4" style={{ background: '#0d1117', border: '1px solid #3b82f640' }}>
                 <p className="text-xs uppercase tracking-widest mb-1" style={{ color: '#3b82f6' }}>Dosage info found</p>
-                <p className="text-xs text-gray-300 leading-relaxed">{result.dosageText.trim()}</p>
+                <p className="text-xs text-gray-300 leading-relaxed">{result.dosageText}</p>
               </div>
             )}
 
@@ -212,7 +203,7 @@ function ImportFromUrl({ onPrefill, onCancel }) {
 
 // ─── Add/Edit form ─────────────────────────────────────────────────────────────
 
-function Form({ initial, onSave, onCancel, isEdit, dosageHint }) {
+function Form({ initial, onSave, onCancel, isEdit }) {
   const [form, setForm] = useState(initial);
 
   const set = (key, val) => setForm(f => ({ ...f, [key]: val }));
@@ -232,6 +223,8 @@ function Form({ initial, onSave, onCancel, isEdit, dosageHint }) {
       note: form.note.trim(),
       emoji: form.emoji,
       color: form.color,
+      description: form.description.trim(),
+      dosageText: form.dosageText.trim(),
     });
   };
 
@@ -250,14 +243,6 @@ function Form({ initial, onSave, onCancel, isEdit, dosageHint }) {
           <h2 className="text-lg font-bold text-white">{isEdit ? 'Edit' : 'Add'} Supplement</h2>
           <button onClick={onCancel} className="text-gray-400 text-2xl leading-none">×</button>
         </div>
-
-        {/* Dosage hint banner (when imported from URL) */}
-        {dosageHint && (
-          <div className="rounded-xl p-3 mb-4" style={{ background: '#0d1117', border: '1px solid #3b82f640' }}>
-            <p className="text-xs uppercase tracking-widest mb-1" style={{ color: '#3b82f6' }}>Dosage from product page</p>
-            <p className="text-xs text-gray-300 leading-relaxed">{dosageHint}</p>
-          </div>
-        )}
 
         {/* Emoji */}
         <p className="text-xs text-gray-400 mb-2">Icon</p>
@@ -361,7 +346,29 @@ function Form({ initial, onSave, onCancel, isEdit, dosageHint }) {
           value={form.note}
           onChange={e => set('note', e.target.value)}
           placeholder="e.g. After meal, with water"
-          className="w-full rounded-xl px-3 py-3 text-white text-sm mb-6 outline-none"
+          className="w-full rounded-xl px-3 py-3 text-white text-sm mb-4 outline-none"
+          style={{ background: '#21262d', border: '1px solid #30363d' }}
+        />
+
+        {/* Description */}
+        <label className="block text-xs text-gray-400 mb-1">Description (optional)</label>
+        <textarea
+          value={form.description}
+          onChange={e => set('description', e.target.value)}
+          placeholder="What this supplement does, benefits, etc."
+          rows={3}
+          className="w-full rounded-xl px-3 py-3 text-white text-sm mb-4 outline-none resize-none"
+          style={{ background: '#21262d', border: '1px solid #30363d' }}
+        />
+
+        {/* Dosage text */}
+        <label className="block text-xs text-gray-400 mb-1">Dosage instructions (optional)</label>
+        <textarea
+          value={form.dosageText}
+          onChange={e => set('dosageText', e.target.value)}
+          placeholder="Paste dosage instructions from the product page"
+          rows={3}
+          className="w-full rounded-xl px-3 py-3 text-white text-sm mb-6 outline-none resize-none"
           style={{ background: '#21262d', border: '1px solid #30363d' }}
         />
 
@@ -391,6 +398,8 @@ function supplementToForm(supp) {
     note: supp.note || '',
     emoji: supp.emoji || '💊',
     color: supp.color || '#22c55e',
+    description: supp.description || '',
+    dosageText: supp.dosageText || '',
   };
 }
 
@@ -398,13 +407,12 @@ function supplementToForm(supp) {
 
 export function ManageSupplements({ supplements, setSupplements }) {
   const [mode, setMode] = useState(null); // null | 'import' | 'add' | { editId }
-  const [pendingForm, setPendingForm] = useState(null); // pre-filled data from URL import
-  const [dosageHint, setDosageHint] = useState('');
+  const [pendingForm, setPendingForm] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
+  const [detailSupp, setDetailSupp] = useState(null);
 
   const openAdd = () => {
     setPendingForm(null);
-    setDosageHint('');
     setMode('add');
   };
 
@@ -418,8 +426,9 @@ export function ManageSupplements({ supplements, setSupplements }) {
       note: data.note || '',
       emoji: '💊',
       color: '#22c55e',
+      description: data.description || '',
+      dosageText: data.dosageText || '',
     });
-    setDosageHint(data.dosageHint || '');
     setMode('add');
   };
 
@@ -427,7 +436,6 @@ export function ManageSupplements({ supplements, setSupplements }) {
     setSupplements(prev => [...prev, { id: `supp-${Date.now()}`, ...data }]);
     setMode(null);
     setPendingForm(null);
-    setDosageHint('');
   };
 
   const handleEdit = (data) => {
@@ -476,60 +484,66 @@ export function ManageSupplements({ supplements, setSupplements }) {
         </div>
       ) : (
         <div className="flex flex-col gap-3">
-          {supplements.map(supp => (
-            <div
-              key={supp.id}
-              className="rounded-2xl p-4"
-              style={{ background: '#161b22', border: '1px solid #21262d' }}
-            >
-              <div className="flex items-center gap-3">
-                <div
-                  className="w-11 h-11 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
-                  style={{ background: supp.color + '20' }}
-                >
-                  {supp.emoji}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="font-semibold text-white truncate">{supp.name}</div>
-                  <div className="text-xs text-gray-400 mt-0.5">
-                    <span style={{ color: supp.color + 'cc' }}>{supp.dose}</span>
-                    {supp.timesPerDay > 1 ? ` × ${supp.timesPerDay}/day` : ' /day'}
-                    {supp.note ? ` · ${supp.note}` : ''}
+          {supplements.map(supp => {
+            const hasDetail = !!(supp.description || supp.dosageText);
+            return (
+              <div
+                key={supp.id}
+                className="rounded-2xl p-4"
+                style={{ background: '#161b22', border: '1px solid #21262d' }}
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-11 h-11 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
+                    style={{ background: supp.color + '20' }}
+                  >
+                    {supp.emoji}
                   </div>
-                  {supp.timesPerDay > 1 && supp.timeLabels && (
-                    <div className="text-xs text-gray-500 mt-0.5">
-                      {supp.timeLabels.slice(0, supp.timesPerDay).join(' · ')}
+                  {/* Tappable name area */}
+                  <button className="flex-1 min-w-0 text-left" onClick={() => setDetailSupp(supp)}>
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-semibold text-white truncate">{supp.name}</span>
+                      {hasDetail && (
+                        <span className="text-xs flex-shrink-0" style={{ color: supp.color + '90' }}>ⓘ</span>
+                      )}
                     </div>
-                  )}
-                </div>
-                <div className="flex gap-1.5 flex-shrink-0">
-                  <button
-                    onClick={() => setMode({ editId: supp.id })}
-                    className="w-8 h-8 rounded-xl flex items-center justify-center text-sm"
-                    style={{ background: '#21262d', color: '#9ca3af' }}
-                  >
-                    ✏️
+                    <div className="text-xs text-gray-400 mt-0.5">
+                      <span style={{ color: supp.color + 'cc' }}>{supp.dose}</span>
+                      {supp.timesPerDay > 1 ? ` × ${supp.timesPerDay}/day` : ' /day'}
+                      {supp.note ? ` · ${supp.note}` : ''}
+                    </div>
+                    {supp.timesPerDay > 1 && supp.timeLabels && (
+                      <div className="text-xs text-gray-500 mt-0.5">
+                        {supp.timeLabels.slice(0, supp.timesPerDay).join(' · ')}
+                      </div>
+                    )}
                   </button>
-                  <button
-                    onClick={() => setDeleteId(supp.id)}
-                    className="w-8 h-8 rounded-xl flex items-center justify-center font-bold"
-                    style={{ background: '#21262d', color: '#ef4444' }}
-                  >
-                    ×
-                  </button>
+                  <div className="flex gap-1.5 flex-shrink-0">
+                    <button
+                      onClick={() => setMode({ editId: supp.id })}
+                      className="w-8 h-8 rounded-xl flex items-center justify-center text-sm"
+                      style={{ background: '#21262d', color: '#9ca3af' }}
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      onClick={() => setDeleteId(supp.id)}
+                      className="w-8 h-8 rounded-xl flex items-center justify-center font-bold"
+                      style={{ background: '#21262d', color: '#ef4444' }}
+                    >
+                      ×
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
       {/* Import from URL */}
       {mode === 'import' && (
-        <ImportFromUrl
-          onPrefill={handleImportPrefill}
-          onCancel={() => setMode(null)}
-        />
+        <ImportFromUrl onPrefill={handleImportPrefill} onCancel={() => setMode(null)} />
       )}
 
       {/* Add form */}
@@ -537,9 +551,8 @@ export function ManageSupplements({ supplements, setSupplements }) {
         <Form
           initial={pendingForm || EMPTY_FORM}
           onSave={handleAdd}
-          onCancel={() => { setMode(null); setPendingForm(null); setDosageHint(''); }}
+          onCancel={() => { setMode(null); setPendingForm(null); }}
           isEdit={false}
-          dosageHint={dosageHint}
         />
       )}
 
@@ -553,7 +566,6 @@ export function ManageSupplements({ supplements, setSupplements }) {
             onSave={handleEdit}
             onCancel={() => setMode(null)}
             isEdit={true}
-            dosageHint=""
           />
         );
       })()}
@@ -570,7 +582,7 @@ export function ManageSupplements({ supplements, setSupplements }) {
             <div className="w-full rounded-2xl p-5" style={{ background: '#161b22', border: '1px solid #21262d' }}>
               <h3 className="font-bold text-white mb-2">Remove supplement?</h3>
               <p className="text-sm text-gray-400 mb-5">
-                <span style={{ color: supp?.color }}>{supp?.emoji} {supp?.name}</span> will be removed from your list. Your log history will be preserved.
+                <span style={{ color: supp?.color }}>{supp?.emoji} {supp?.name}</span> will be removed. Your log history is preserved.
               </p>
               <div className="flex gap-3">
                 <button
@@ -592,6 +604,11 @@ export function ManageSupplements({ supplements, setSupplements }) {
           </div>
         );
       })()}
+
+      {/* Detail sheet */}
+      {detailSupp && (
+        <SupplementDetail supp={detailSupp} onClose={() => setDetailSupp(null)} />
+      )}
     </div>
   );
 }
