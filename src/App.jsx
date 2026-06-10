@@ -9,7 +9,7 @@ const DEFAULT_SUPPLEMENTS = [
   { id: 'cholesterol', name: 'Cholesterol Complex', dose: '1 pill', timesPerDay: 3, timeLabels: ['Morning', 'Noon', 'Evening'], note: 'After meal', emoji: '💊', color: '#3b82f6' },
   { id: 'reishi', name: 'Reishi', dose: '2 pills', timesPerDay: 1, note: '', emoji: '🍄', color: '#8b5cf6' },
   { id: 'ashwagandha', name: 'Ashwagandha', dose: '1 pill', timesPerDay: 1, note: '', emoji: '🌿', color: '#22c55e' },
-  { id: 'joint-support', name: 'Joint Support', dose: '2 spoons', timesPerDay: 1, note: '', emoji: '🦴', color: '#06b6d4' },
+  { id: 'joint-support', name: 'Joint Support', dose: '1 spoon', timesPerDay: 2, note: '', emoji: '🦴', color: '#06b6d4' },
   { id: 'collagen', name: 'Collagen', dose: '1 spoon', timesPerDay: 1, note: '', emoji: '✨', color: '#ec4899' },
 ];
 
