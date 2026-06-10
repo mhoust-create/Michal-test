@@ -19,12 +19,10 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      # Behaviour Tracker (main)
+      # Checkout main to workspace root (keeps .git here for deploy action)
       - uses: actions/checkout@v4
-        with:
-          path: behaviour-app
 
-      # Supplements Tracker (feature branch)
+      # Checkout supplements branch to a subdirectory
       - uses: actions/checkout@v4
         with:
           ref: claude/vitamins-supplements-app-br0yw2
@@ -34,11 +32,9 @@ jobs:
         with:
           node-version: 22
 
-      # Build behaviour tracker
+      # Build behaviour tracker (workspace root)
       - run: npm install --legacy-peer-deps
-        working-directory: behaviour-app
       - run: npm run build
-        working-directory: behaviour-app
 
       # Build supplements tracker
       - run: npm install --legacy-peer-deps
@@ -46,12 +42,12 @@ jobs:
       - run: npm run build
         working-directory: supplements-app
 
-      # Combine: supplements build nested inside behaviour dist
-      - run: mkdir -p behaviour-app/dist/supplements && cp -r supplements-app/dist/. behaviour-app/dist/supplements/
+      # Nest supplements build inside behaviour dist
+      - run: mkdir -p dist/supplements && cp -r supplements-app/dist/. dist/supplements/
 
-      # Deploy to gh-pages branch
+      # Deploy dist/ to gh-pages branch
       - uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: behaviour-app/dist
+          folder: dist
           branch: gh-pages
           clean: true
