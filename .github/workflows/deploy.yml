@@ -19,10 +19,8 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      # Checkout main to workspace root (keeps .git here for deploy action)
       - uses: actions/checkout@v4
 
-      # Checkout supplements branch to a subdirectory
       - uses: actions/checkout@v4
         with:
           ref: claude/vitamins-supplements-app-br0yw2
@@ -32,20 +30,16 @@ jobs:
         with:
           node-version: 22
 
-      # Build behaviour tracker (workspace root)
       - run: npm install --legacy-peer-deps
       - run: npm run build
 
-      # Build supplements tracker
       - run: npm install --legacy-peer-deps
         working-directory: supplements-app
       - run: npm run build
         working-directory: supplements-app
 
-      # Nest supplements build inside behaviour dist
       - run: mkdir -p dist/supplements && cp -r supplements-app/dist/. dist/supplements/
 
-      # Deploy dist/ to gh-pages branch
       - uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: dist
