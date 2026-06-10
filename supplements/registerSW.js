@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/Michal-test/supplements/sw.js', { scope: '/Michal-test/supplements/' })})}
