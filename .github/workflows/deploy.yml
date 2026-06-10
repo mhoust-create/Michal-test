@@ -6,9 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
   group: pages
@@ -18,7 +16,7 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       # Behaviour Tracker (main)
@@ -51,16 +49,9 @@ jobs:
       # Combine: supplements build nested inside behaviour dist
       - run: mkdir -p behaviour-app/dist/supplements && cp -r supplements-app/dist/. behaviour-app/dist/supplements/
 
-      - uses: actions/upload-pages-artifact@v3
+      # Deploy to gh-pages branch
+      - uses: JamesIves/github-pages-deploy-action@v4
         with:
-          path: behaviour-app/dist
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - uses: actions/deploy-pages@v4
-        id: deployment
+          folder: behaviour-app/dist
+          branch: gh-pages
+          clean: true
