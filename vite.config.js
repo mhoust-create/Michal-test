@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
-  base: '/warfit/',
+  base: '/Michal-test/supplements/',
   plugins: [
     react(),
     VitePWA({
@@ -17,8 +17,8 @@ export default defineConfig({
         background_color: '#0d1117',
         display: 'standalone',
         orientation: 'portrait',
-        scope: '/',
-        start_url: '/',
+        scope: '/Michal-test/supplements/',
+        start_url: '/Michal-test/supplements/',
         icons: [
           {
             src: 'icons/icon-192.png',
