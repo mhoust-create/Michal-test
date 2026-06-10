@@ -21,16 +21,39 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # ── Behaviour Tracker (main) ──────────────────────────────────────────
       - uses: actions/checkout@v4
+        with:
+          path: behaviour-app
+
+      # ── Supplements Tracker (feature branch) ─────────────────────────────
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/vitamins-supplements-app-br0yw2
+          path: supplements-app
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
+
+      # Build behaviour tracker
       - run: npm ci
+        working-directory: behaviour-app
       - run: npm run build
+        working-directory: behaviour-app
+
+      # Build supplements tracker
+      - run: npm install --legacy-peer-deps
+        working-directory: supplements-app
+      - run: npm run build
+        working-directory: supplements-app
+
+      # Combine: put supplements build inside behaviour dist
+      - run: mkdir -p behaviour-app/dist/supplements && cp -r supplements-app/dist/. behaviour-app/dist/supplements/
+
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: behaviour-app/dist
 
   deploy:
     needs: build
