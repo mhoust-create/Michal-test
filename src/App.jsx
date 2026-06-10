@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useLocalStorage } from './hooks/useLocalStorage';
-import { TodayView } from './components/TodayView';
 import { CalendarView } from './components/CalendarView';
 import { ManageSupplements } from './components/ManageSupplements';
 
@@ -36,7 +35,7 @@ const DEFAULT_SUPPLEMENTS = [
     note: '',
     emoji: '🍄',
     color: '#8b5cf6',
-    description: 'Houba reši (Ganoderma lucidum) s pozitivními účinky na imunitní systém a celkové zdraví. Obsah 50 % polysacharidů včetně beta-glukanů. Přispívá k přirozené imunitě, normální hladině cholesterolu a normální funkci oběhové soustavy. Surové materíly jsou testovány nezávislými třetími stranami.',
+    description: 'Houba reši (Ganoderma lucidum) s pozitivními účinky na imunitní systém a celkové zdraví. Obsah 50 % polysacharidů včetně beta-glukanů. Přispívá k přirozené imunitě, normální hladině cholesterolu a normální funkci oběhové soustavy.',
     dosageText: '2 kapsle denně. Balíneck 90 kapslí (45 dávek).',
   },
   {
@@ -47,7 +46,7 @@ const DEFAULT_SUPPLEMENTS = [
     note: '',
     emoji: '🌿',
     color: '#22c55e',
-    description: 'Čistý extrakt KSM-66 s obsahem 5 % withanolidů – bioaktivních látek zodpovědných za zdra-votní benefity ashwagandhy. Podporuje duševní a kognitivní aktivitu, relaxaci a funkčnost reprodukčního systému. Bez přídatných látek, vegané celulozy kapsle.',
+    description: 'Čistý extrakt KSM-66 s obsahem 5 % withanolidů – bioaktivních látek zodpovědných za zdravotní benefity ashwagandhy. Podporuje duševní a kognitivní aktivitu, relaxaci a funkčnost reprodukčního systému. Bez přídatných látek, vegané celulozy kapsle.',
     dosageText: '1 kapsle denně, ideálně s jídlem (withanolidy jsou rozpustné v tucich). Užívat pravidelně minimálně 4 týdny pro viditelné výsledky.',
   },
   {
@@ -58,7 +57,7 @@ const DEFAULT_SUPPLEMENTS = [
     note: '',
     emoji: '🦴',
     color: '#06b6d4',
-    description: 'Komplexní kloubni výživa se 3 typy kolágenu: Peptinex (bioaktivní peptidy), Ovomet® (kolagen ze slepichích skoprřin) a kolágen typu II z kurĞte. Obsahuje Curcumin C3 Reduct®, Boswellia (65 % bosvelových kyselin), chondroitin, glukosamin a MSM. První produkt v ČR s Curcumin C3 Reduct. Určeno pro aktivní jedince pro podporu kloubů, vazů a šlach.',
+    description: 'Komplexní kloubni výživa se 3 typy kolágenu: Peptinex (bioaktivní peptidy), Ovomet® (kolagen ze slepichích skoprřin) a kolágen typu II z kurĞte. Obsahuje Curcumin C3 Reduct®, Boswellia (65 % bosvelových kyselin), chondroitin, glukosamin a MSM. Určeno pro aktivní jedince pro podporu kloubů, vazů a šlach.',
     dosageText: '2 lžíce denně (2 oddělené dávky po 1 lžíci). Rozmichat ve vodě nebo šťávě.',
   },
   {
@@ -75,13 +74,12 @@ const DEFAULT_SUPPLEMENTS = [
 ];
 
 const NAV = [
-  { id: 'today', label: 'Today', icon: '✅' },
   { id: 'calendar', label: 'Calendar', icon: '📅' },
   { id: 'list', label: 'My List', icon: '💊' },
 ];
 
 function App() {
-  const [activeTab, setActiveTab] = useState('today');
+  const [activeTab, setActiveTab] = useState('calendar');
   const [supplements, setSupplements] = useLocalStorage('supps_list', DEFAULT_SUPPLEMENTS);
   const [log, setLog] = useLocalStorage('supps_log', {});
 
@@ -104,26 +102,21 @@ function App() {
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const toggleDose = (suppId, doseIndex) => {
+  const toggleDose = (dateStr, suppId, doseIndex) => {
     setLog(prev => {
-      const dayLog = prev[today] || {};
+      const dayLog = prev[dateStr] || {};
       const suppLog = dayLog[suppId] ? [...dayLog[suppId]] : [];
       suppLog[doseIndex] = !suppLog[doseIndex];
-      return { ...prev, [today]: { ...dayLog, [suppId]: suppLog } };
+      return { ...prev, [dateStr]: { ...dayLog, [suppId]: suppLog } };
     });
   };
 
   return (
     <div className="flex flex-col h-screen" style={{ background: '#0d1117' }}>
       <div className="flex-1 overflow-hidden">
-        {activeTab === 'today' && (
-          <div className="h-full overflow-y-auto">
-            <TodayView supplements={supplements} log={log} today={today} onToggle={toggleDose} />
-          </div>
-        )}
         {activeTab === 'calendar' && (
           <div className="h-full overflow-y-auto">
-            <CalendarView supplements={supplements} log={log} today={today} />
+            <CalendarView supplements={supplements} log={log} today={today} onToggle={toggleDose} />
           </div>
         )}
         {activeTab === 'list' && (
