@@ -20,26 +20,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/checkout@v4
         with:
           ref: claude/vitamins-supplements-app-br0yw2
           path: supplements-app
-
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-
       - run: npm install --legacy-peer-deps
       - run: npm run build
-
       - run: npm install --legacy-peer-deps
         working-directory: supplements-app
       - run: npm run build
         working-directory: supplements-app
-
       - run: mkdir -p dist/supplements && cp -r supplements-app/dist/. dist/supplements/
-
       - uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: dist
