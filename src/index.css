@@ -26,8 +26,8 @@ body {
 }
 
 h1, h2, h3 {
-  font-family: 'Oswald', 'Impact', sans-serif;
-  letter-spacing: 0.05em;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  letter-spacing: 0.01em;
 }
 
 ::-webkit-scrollbar { width: 4px; }

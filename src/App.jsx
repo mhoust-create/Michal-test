@@ -1,151 +1,60 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useLocalStorage } from './hooks/useLocalStorage';
-import { TodayWorkout } from './components/TodayWorkout';
-import { WeeklyPlan } from './components/WeeklyPlan';
-import { ExerciseLibrary } from './components/ExerciseLibrary';
-import { ProgressTracker } from './components/ProgressTracker';
-import { WorkoutSession } from './components/WorkoutSession';
-import { getPlan } from './data/workoutPlans';
+import { TodayView } from './components/TodayView';
+import { CalendarView } from './components/CalendarView';
+import { ManageSupplements } from './components/ManageSupplements';
 
-// Default user state
-const DEFAULT_STATE = {
-  planId: 'military_3day',
-  currentWeek: 1,
-  currentDay: 1,
-};
+const DEFAULT_SUPPLEMENTS = [
+  { id: 'vit-d3-k2', name: 'Vitamin D3+K2', dose: '2 drops', timesPerDay: 1, note: 'After meal', emoji: '☀️', color: '#f59e0b' },
+  { id: 'cholesterol', name: 'Cholesterol Complex', dose: '1 pill', timesPerDay: 3, timeLabels: ['Morning', 'Noon', 'Evening'], note: 'After meal', emoji: '💊', color: '#3b82f6' },
+  { id: 'reishi', name: 'Reishi', dose: '2 pills', timesPerDay: 1, note: '', emoji: '🍄', color: '#8b5cf6' },
+  { id: 'ashwagandha', name: 'Ashwagandha', dose: '1 pill', timesPerDay: 1, note: '', emoji: '🌿', color: '#22c55e' },
+  { id: 'joint-support', name: 'Joint Support', dose: '2 spoons', timesPerDay: 1, note: '', emoji: '🦴', color: '#06b6d4' },
+  { id: 'collagen', name: 'Collagen', dose: '1 spoon', timesPerDay: 1, note: '', emoji: '✨', color: '#ec4899' },
+];
+
+const NAV = [
+  { id: 'today', label: 'Today', icon: '✅' },
+  { id: 'calendar', label: 'Calendar', icon: '📅' },
+  { id: 'list', label: 'My List', icon: '💊' },
+];
 
 function App() {
   const [activeTab, setActiveTab] = useState('today');
-  const [userState, setUserState] = useLocalStorage('warfit_user', DEFAULT_STATE);
-  const [workoutLog, setWorkoutLog] = useLocalStorage('warfit_log', []);
-  const [activeSession, setActiveSession] = useState(null);
-  const [toast, setToast] = useState(null);
+  const [supplements, setSupplements] = useLocalStorage('supps_list', DEFAULT_SUPPLEMENTS);
+  const [log, setLog] = useLocalStorage('supps_log', {});
 
-  // Auto-dismiss toast after 3 seconds
-  useEffect(() => {
-    if (!toast) return;
-    const t = setTimeout(() => setToast(null), 3000);
-    return () => clearTimeout(t);
-  }, [toast]);
+  const today = new Date().toISOString().slice(0, 10);
 
-  const { planId, currentWeek, currentDay } = userState;
-  const plan = getPlan(planId);
-
-  // Compute streak from log
-  const streak = computeStreak(workoutLog);
-
-  const handleStartWorkout = (workout, week) => {
-    setActiveSession({ workout, week });
-  };
-
-  const handleSessionComplete = (result) => {
-    const planData = getPlan(planId);
-
-    // Log the workout
-    const logEntry = {
-      date: new Date().toISOString(),
-      planId,
-      week: activeSession.week,
-      day: currentDay,
-      workoutName: activeSession.workout.name,
-      exercises: result.exercises,
-      duration: result.duration,
-    };
-    setWorkoutLog(prev => [...prev, logEntry]);
-    setToast(`✓ Workout saved — ${logEntry.exercises.length} exercises · ${logEntry.duration}m`);
-
-    // Advance to next day
-    const planDays = planData?.weeks[0]?.days.length || 3;
-    let newDay = currentDay + 1;
-    let newWeek = currentWeek;
-    if (newDay > planDays) {
-      newDay = 1;
-      newWeek = Math.min(currentWeek + 1, 8);
-    }
-    setUserState(prev => ({ ...prev, currentDay: newDay, currentWeek: newWeek }));
-
-    setActiveSession(null);
-    setActiveTab('today');
-  };
-
-  const handleSelectDay = (day, week) => {
-    setActiveSession({ workout: day, week });
-  };
-
-  const handleChangePlan = (newPlanId) => {
-    setUserState({ planId: newPlanId, currentWeek: 1, currentDay: 1 });
+  const toggleDose = (suppId, doseIndex) => {
+    setLog(prev => {
+      const dayLog = prev[today] || {};
+      const suppLog = dayLog[suppId] ? [...dayLog[suppId]] : [];
+      suppLog[doseIndex] = !suppLog[doseIndex];
+      return { ...prev, [today]: { ...dayLog, [suppId]: suppLog } };
+    });
   };
 
   return (
     <div className="flex flex-col h-screen" style={{ background: '#0d1117' }}>
-      {/* Main content — workout session overlays tabs when active */}
-      <div className="flex-1 overflow-hidden relative">
-        {/* Tab views — always mounted, hidden when session is active */}
-        <div className={`h-full ${activeSession ? 'hidden' : ''}`}>
-          {activeTab === 'today' && (
-            <div className="h-full overflow-y-auto">
-              <TodayWorkout
-                userPlan={planId}
-                currentWeek={currentWeek}
-                currentDay={currentDay}
-                workoutLog={workoutLog}
-                streak={streak}
-                onStartWorkout={handleStartWorkout}
-              />
-            </div>
-          )}
-          {activeTab === 'plan' && (
-            <div className="h-full overflow-y-auto">
-              <WeeklyPlan
-                userPlan={planId}
-                currentWeek={currentWeek}
-                currentDay={currentDay}
-                onSelectDay={handleSelectDay}
-                onChangePlan={handleChangePlan}
-              />
-            </div>
-          )}
-          {activeTab === 'exercises' && (
-            <div className="h-full overflow-y-auto">
-              <ExerciseLibrary />
-            </div>
-          )}
-          {activeTab === 'progress' && (
-            <div className="h-full overflow-y-auto">
-              <ProgressTracker
-                workoutLog={workoutLog}
-                currentStreak={streak}
-                totalWorkouts={workoutLog.length}
-              />
-            </div>
-          )}
-        </div>
-
-        {/* Workout session — sits on top when active */}
-        {activeSession && (
-          <div className="absolute inset-0 overflow-y-auto" style={{ background: '#0d1117' }}>
-            <WorkoutSession
-              workout={activeSession.workout}
-              planName={plan?.name || ''}
-              week={activeSession.week}
-              onComplete={handleSessionComplete}
-              onExit={() => setActiveSession(null)}
-            />
+      <div className="flex-1 overflow-hidden">
+        {activeTab === 'today' && (
+          <div className="h-full overflow-y-auto">
+            <TodayView supplements={supplements} log={log} today={today} onToggle={toggleDose} />
+          </div>
+        )}
+        {activeTab === 'calendar' && (
+          <div className="h-full overflow-y-auto">
+            <CalendarView supplements={supplements} log={log} today={today} />
+          </div>
+        )}
+        {activeTab === 'list' && (
+          <div className="h-full overflow-y-auto">
+            <ManageSupplements supplements={supplements} setSupplements={setSupplements} />
           </div>
         )}
       </div>
 
-      {/* Save toast */}
-      {toast && (
-        <div
-          className="fixed bottom-20 left-1/2 -translate-x-1/2 px-4 py-2.5 rounded-full text-sm font-medium z-50 fade-in"
-          style={{ background: '#39d353', color: '#0d1117', boxShadow: '0 4px 20px rgba(57,211,83,0.4)', whiteSpace: 'nowrap' }}
-        >
-          {toast}
-        </div>
-      )}
-
-      {/* Bottom Navigation */}
       <nav
         className="flex items-center justify-around py-2 px-2"
         style={{
@@ -154,62 +63,24 @@ function App() {
           paddingBottom: 'max(8px, env(safe-area-inset-bottom, 8px))',
         }}
       >
-        {NAV_ITEMS.map(({ id, label, icon }) => (
+        {NAV.map(({ id, label, icon }) => (
           <button
             key={id}
             onClick={() => setActiveTab(id)}
             className="flex flex-col items-center gap-1 px-4 py-1.5 rounded-xl transition-all"
             style={{
               background: activeTab === id ? '#21262d' : 'transparent',
-              color: activeTab === id ? '#e8c547' : '#6b7280',
-              minWidth: 60,
+              color: activeTab === id ? '#22c55e' : '#6b7280',
+              minWidth: 64,
             }}
           >
             <span className="text-xl">{icon}</span>
-            <span
-              className="font-medium uppercase tracking-wider"
-              style={{ fontSize: '0.6rem', color: activeTab === id ? '#e8c547' : '#6b7280' }}
-            >
-              {label}
-            </span>
+            <span className="font-medium uppercase tracking-wider" style={{ fontSize: '0.6rem' }}>{label}</span>
           </button>
         ))}
       </nav>
     </div>
   );
-}
-
-const NAV_ITEMS = [
-  { id: 'today', label: 'Today', icon: '⚡' },
-  { id: 'plan', label: 'Plan', icon: '📅' },
-  { id: 'exercises', label: 'Exercises', icon: '💪' },
-  { id: 'progress', label: 'Progress', icon: '📊' },
-];
-
-function computeStreak(workoutLog) {
-  if (!workoutLog.length) return 0;
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const sorted = [...workoutLog].sort((a, b) => new Date(b.date) - new Date(a.date));
-  const latestDate = new Date(sorted[0].date);
-  latestDate.setHours(0, 0, 0, 0);
-  const diffDays = (today - latestDate) / (1000 * 60 * 60 * 24);
-  if (diffDays > 1) return 0;
-
-  const doneOnDate = new Set(workoutLog.map(l => {
-    const d = new Date(l.date);
-    d.setHours(0, 0, 0, 0);
-    return d.toDateString();
-  }));
-
-  let streak = 0;
-  let checkDate = new Date(latestDate);
-  while (doneOnDate.has(checkDate.toDateString())) {
-    streak++;
-    checkDate.setDate(checkDate.getDate() - 1);
-  }
-  return streak;
 }
 
 export default App;
