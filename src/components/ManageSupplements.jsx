@@ -1,0 +1,243 @@
+import { useState } from 'react';
+import { SupplementDetail } from './SupplementDetail';
+
+const EMOJIS = ['💊', '🌿', '🍄', '☀️', '🦴', '✨', '🧬', '🌊', '🍃', '🌸', '⚡', '🫐', '🧪', '🌾', '🫚'];
+const COLORS = ['#22c55e', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#ef4444', '#f97316'];
+const UNITS = ['pill(s)', 'capsule(s)', 'drop(s)', 'spoon(s)', 'tablet(s)', 'scoop(s)', 'ml', 'mg', 'g'];
+
+const EMPTY_FORM = { name: '', doseAmount: '1', unit: 'pill(s)', timesPerDay: 1, timeLabels: ['Morning', 'Noon', 'Evening'], note: '', emoji: '💊', color: '#22c55e', description: '', dosageText: '' };
+
+function guessUnit(text) {
+  const t = text.toLowerCase();
+  if (t.includes('kapsl') || t.includes('capsule')) return 'capsule(s)';
+  if (t.includes('tablet')) return 'tablet(s)';
+  if (t.includes('drop') || t.includes('kapka')) return 'drop(s)';
+  if (t.includes('spoon') || t.includes('scoop') || t.includes('lžíc')) return 'spoon(s)';
+  if (t.includes('ml')) return 'ml';
+  return 'capsule(s)';
+}
+
+function parseDosage(text) {
+  if (!text) return { amount: '1', unit: 'capsule(s)', times: 1, note: '' };
+  const m = text.match(/(\d+)\s*(kapsle[i]?|kapslí|tablet[ay]?|drops?|kapky|lžíce?|spoon|scoop)/i);
+  const amount = m ? m[1] : '1';
+  const unit = guessUnit(text);
+  const timesM = text.match(/(\d+)x\s*denně|(\d+)\s*times\s*(?:a|per)\s*day/i);
+  const times = timesM ? parseInt(timesM[1] || timesM[2]) : 1;
+  const noteM = text.match(/po jídle|after meal|with food|before sleep|morning|evening/i);
+  return { amount, unit, times: Math.min(times, 3), note: noteM ? noteM[0] : '' };
+}
+
+function cleanName(raw) { return raw ? raw.replace(/\s*[|–\-]\s*.{2,30}$/u, '').trim() : ''; }
+
+async function fetchProductPage(url) {
+  const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+  const res = await fetch(proxy, { signal: AbortSignal.timeout(12000) });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const html = await res.text();
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const ogTitle = doc.querySelector('meta[property="og:title"]')?.getAttribute('content') || '';
+  const h1 = doc.querySelector('h1')?.textContent?.trim() || '';
+  const ogDesc = doc.querySelector('meta[property="og:description"]')?.getAttribute('content') || '';
+  const metaDesc = doc.querySelector('meta[name="description"]')?.getAttribute('content') || '';
+  const descBlocks = [...doc.querySelectorAll('.product-description,.description,[class*="description"],[class*="detail"]')].map(el => el.textContent?.trim()).filter(Boolean);
+  const allText = [ogDesc, metaDesc, ...descBlocks].join(' ');
+  const dosageMatch = allText.match(/(?:dávkování|dosage|doporučené dávkování|serving size|directions)[:\s]*([^.]{5,120})/i);
+  return { name: cleanName(ogTitle || h1), shortDesc: ogDesc || metaDesc || '', dosageText: dosageMatch ? dosageMatch[1].trim() : '' };
+}
+
+function ImportFromUrl({ onPrefill, onCancel }) {
+  const [url, setUrl] = useState('');
+  const [state, setState] = useState('idle');
+  const [result, setResult] = useState(null);
+  const [errMsg, setErrMsg] = useState('');
+
+  const handleFetch = async () => {
+    if (!url.trim()) return;
+    setState('loading'); setResult(null);
+    try { const data = await fetchProductPage(url.trim()); setResult(data); setState('done'); }
+    catch (e) { setErrMsg(e.message || 'Could not fetch'); setState('error'); }
+  };
+
+  const handleUse = () => {
+    if (!result) return;
+    const { amount, unit, times, note } = parseDosage(result.dosageText || result.shortDesc);
+    onPrefill({ name: result.name, doseAmount: amount, unit, timesPerDay: times, note, description: result.shortDesc, dosageText: result.dosageText });
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end" style={{ background: 'rgba(0,0,0,0.8)' }} onClick={e => e.target === e.currentTarget && onCancel()}>
+      <div className="w-full rounded-t-3xl p-5 overflow-y-auto" style={{ background: '#161b22', maxWidth: 480, margin: '0 auto', maxHeight: '90vh' }}>
+        <div className="w-10 h-1 rounded-full mx-auto mb-4" style={{ background: '#30363d' }} />
+        <div className="flex items-center justify-between mb-4">
+          <div><h2 className="text-lg font-bold text-white">Import from webpage</h2><p className="text-xs text-gray-500 mt-0.5">Paste the product URL from the seller's site</p></div>
+          <button onClick={onCancel} className="text-gray-400 text-2xl leading-none">×</button>
+        </div>
+        <div className="flex gap-2 mb-4">
+          <input value={url} onChange={e => { setUrl(e.target.value); setState('idle'); }} placeholder="https://..." onKeyDown={e => e.key === 'Enter' && handleFetch()}
+            className="flex-1 rounded-xl px-3 py-3 text-white text-sm outline-none" style={{ background: '#21262d', border: '1px solid #30363d' }} />
+          <button onClick={handleFetch} disabled={!url.trim() || state === 'loading'}
+            className="px-4 py-3 rounded-xl text-sm font-bold flex-shrink-0" style={{ background: '#22c55e', color: '#0d1117', opacity: url.trim() ? 1 : 0.4 }}>
+            {state === 'loading' ? '...' : 'Fetch'}
+          </button>
+        </div>
+        {state === 'loading' && <div className="text-center py-8 text-gray-400 text-sm"><div className="text-2xl mb-2">🌐</div>Fetching product info…</div>}
+        {state === 'error' && (
+          <div className="rounded-xl p-4 mb-4" style={{ background: '#1c1c2e', border: '1px solid #ef444440' }}>
+            <p className="text-sm font-semibold" style={{ color: '#ef4444' }}>Could not fetch this page</p>
+            <p className="text-xs text-gray-400 mt-1">{errMsg}. Some sites block automated access.</p>
+            <button onClick={() => onPrefill({ name: '', doseAmount: '1', unit: 'capsule(s)', timesPerDay: 1, note: '', description: '', dosageText: '' })} className="mt-3 text-xs font-semibold" style={{ color: '#22c55e' }}>Add manually →</button>
+          </div>
+        )}
+        {state === 'done' && result && (
+          <div>
+            <div className="rounded-xl p-4 mb-3" style={{ background: '#0d1117', border: '1px solid #22c55e40' }}>
+              <p className="text-xs text-gray-500 mb-1 uppercase tracking-widest">Product found</p>
+              <p className="text-white font-semibold">{result.name || '(name not detected)'}</p>
+              {result.shortDesc && <p className="text-xs text-gray-400 mt-2 leading-relaxed">{result.shortDesc}</p>}
+            </div>
+            {result.dosageText && (
+              <div className="rounded-xl p-4 mb-4" style={{ background: '#0d1117', border: '1px solid #3b82f640' }}>
+                <p className="text-xs uppercase tracking-widest mb-1" style={{ color: '#3b82f6' }}>Dosage info found</p>
+                <p className="text-xs text-gray-300 leading-relaxed">{result.dosageText}</p>
+              </div>
+            )}
+            <button onClick={handleUse} className="w-full py-3.5 rounded-xl font-bold text-sm" style={{ background: '#22c55e', color: '#0d1117' }}>Use this product →</button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Form({ initial, onSave, onCancel, isEdit }) {
+  const [form, setForm] = useState(initial);
+  const set = (key, val) => setForm(f => ({ ...f, [key]: val }));
+  const setLabel = (i, val) => setForm(f => { const labels = [...f.timeLabels]; labels[i] = val; return { ...f, timeLabels: labels }; });
+
+  const handleSave = () => {
+    if (!form.name.trim()) return;
+    onSave({ name: form.name.trim(), dose: `${form.doseAmount} ${form.unit}`, timesPerDay: form.timesPerDay, timeLabels: form.timesPerDay > 1 ? form.timeLabels.slice(0, form.timesPerDay) : undefined, note: form.note.trim(), emoji: form.emoji, color: form.color, description: form.description.trim(), dosageText: form.dosageText.trim() });
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end" style={{ background: 'rgba(0,0,0,0.75)' }} onClick={e => e.target === e.currentTarget && onCancel()}>
+      <div className="w-full rounded-t-3xl p-5 overflow-y-auto" style={{ background: '#161b22', maxWidth: 480, margin: '0 auto', maxHeight: '92vh' }}>
+        <div className="w-10 h-1 rounded-full mx-auto mb-4" style={{ background: '#30363d' }} />
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="text-lg font-bold text-white">{isEdit ? 'Edit' : 'Add'} Supplement</h2>
+          <button onClick={onCancel} className="text-gray-400 text-2xl leading-none">×</button>
+        </div>
+        <p className="text-xs text-gray-400 mb-2">Icon</p>
+        <div className="flex gap-2 flex-wrap mb-4">
+          {EMOJIS.map(e => <button key={e} onClick={() => set('emoji', e)} className="w-10 h-10 rounded-xl text-xl flex items-center justify-center" style={{ background: form.emoji === e ? '#22c55e22' : '#21262d', border: `2px solid ${form.emoji === e ? '#22c55e' : 'transparent'}` }}>{e}</button>)}
+        </div>
+        <p className="text-xs text-gray-400 mb-2">Color</p>
+        <div className="flex gap-2 mb-5">
+          {COLORS.map(c => <button key={c} onClick={() => set('color', c)} className="w-7 h-7 rounded-full border-2" style={{ background: c, borderColor: form.color === c ? '#fff' : 'transparent' }} />)}
+        </div>
+        <label className="block text-xs text-gray-400 mb-1">Name *</label>
+        <input value={form.name} onChange={e => set('name', e.target.value)} placeholder="e.g. Reishi" className="w-full rounded-xl px-3 py-3 text-white text-sm mb-4 outline-none" style={{ background: '#21262d', border: '1px solid #30363d' }} />
+        <label className="block text-xs text-gray-400 mb-1">Dose per serving</label>
+        <div className="flex gap-2 mb-4">
+          <input value={form.doseAmount} onChange={e => set('doseAmount', e.target.value)} className="w-20 rounded-xl px-3 py-3 text-white text-sm outline-none text-center" style={{ background: '#21262d', border: '1px solid #30363d' }} />
+          <select value={form.unit} onChange={e => set('unit', e.target.value)} className="flex-1 rounded-xl px-3 py-3 text-white text-sm outline-none" style={{ background: '#21262d', border: '1px solid #30363d' }}>
+            {UNITS.map(u => <option key={u} value={u}>{u}</option>)}
+          </select>
+        </div>
+        <label className="block text-xs text-gray-400 mb-2">Times per day</label>
+        <div className="flex gap-2 mb-4">
+          {[1,2,3].map(n => <button key={n} onClick={() => set('timesPerDay', n)} className="flex-1 py-2.5 rounded-xl text-sm font-semibold" style={{ background: form.timesPerDay === n ? '#22c55e' : '#21262d', color: form.timesPerDay === n ? '#0d1117' : '#9ca3af' }}>{n}×</button>)}
+        </div>
+        {form.timesPerDay > 1 && (
+          <><label className="block text-xs text-gray-400 mb-2">Time labels</label>
+          <div className="flex gap-2 mb-4">{Array.from({ length: form.timesPerDay }).map((_, i) => <input key={i} value={form.timeLabels[i] || ''} onChange={e => setLabel(i, e.target.value)} className="flex-1 rounded-xl px-2 py-2.5 text-white text-sm outline-none text-center" style={{ background: '#21262d', border: '1px solid #30363d' }} />)}</div></>
+        )}
+        <label className="block text-xs text-gray-400 mb-1">Note (optional)</label>
+        <input value={form.note} onChange={e => set('note', e.target.value)} placeholder="e.g. After meal" className="w-full rounded-xl px-3 py-3 text-white text-sm mb-4 outline-none" style={{ background: '#21262d', border: '1px solid #30363d' }} />
+        <label className="block text-xs text-gray-400 mb-1">Description (optional)</label>
+        <textarea value={form.description} onChange={e => set('description', e.target.value)} placeholder="What this supplement does, benefits, etc." rows={3} className="w-full rounded-xl px-3 py-3 text-white text-sm mb-4 outline-none resize-none" style={{ background: '#21262d', border: '1px solid #30363d' }} />
+        <label className="block text-xs text-gray-400 mb-1">Dosage instructions (optional)</label>
+        <textarea value={form.dosageText} onChange={e => set('dosageText', e.target.value)} placeholder="Paste dosage instructions from the product page" rows={3} className="w-full rounded-xl px-3 py-3 text-white text-sm mb-6 outline-none resize-none" style={{ background: '#21262d', border: '1px solid #30363d' }} />
+        <button onClick={handleSave} disabled={!form.name.trim()} className="w-full py-3.5 rounded-xl font-bold text-sm" style={{ background: '#22c55e', color: '#0d1117', opacity: form.name.trim() ? 1 : 0.4 }}>{isEdit ? 'Save Changes' : 'Add Supplement'}</button>
+      </div>
+    </div>
+  );
+}
+
+function supplementToForm(supp) {
+  const parts = supp.dose.split(' ');
+  return { name: supp.name, doseAmount: parts[0] || '1', unit: parts.slice(1).join(' ') || 'capsule(s)', timesPerDay: supp.timesPerDay, timeLabels: supp.timeLabels || ['Morning', 'Noon', 'Evening'], note: supp.note || '', emoji: supp.emoji || '💊', color: supp.color || '#22c55e', description: supp.description || '', dosageText: supp.dosageText || '' };
+}
+
+export function ManageSupplements({ supplements, setSupplements }) {
+  const [mode, setMode] = useState(null);
+  const [pendingForm, setPendingForm] = useState(null);
+  const [deleteId, setDeleteId] = useState(null);
+  const [detailSupp, setDetailSupp] = useState(null);
+
+  const handleImportPrefill = (data) => {
+    setPendingForm({ name: data.name || '', doseAmount: data.doseAmount || '1', unit: data.unit || 'capsule(s)', timesPerDay: data.timesPerDay || 1, timeLabels: ['Morning', 'Noon', 'Evening'], note: data.note || '', emoji: '💊', color: '#22c55e', description: data.description || '', dosageText: data.dosageText || '' });
+    setMode('add');
+  };
+
+  const handleAdd = (data) => { setSupplements(prev => [...prev, { id: `supp-${Date.now()}`, ...data }]); setMode(null); setPendingForm(null); };
+  const handleEdit = (data) => { setSupplements(prev => prev.map(s => s.id === mode.editId ? { id: s.id, ...data } : s)); setMode(null); };
+  const handleDelete = (id) => { setSupplements(prev => prev.filter(s => s.id !== id)); setDeleteId(null); };
+
+  return (
+    <div className="p-4 pb-6">
+      <div className="flex items-center justify-between mb-6">
+        <div><h1 className="text-xl font-bold text-white">My Supplements</h1><p className="text-xs text-gray-500 mt-0.5">{supplements.length} supplement{supplements.length !== 1 ? 's' : ''}</p></div>
+        <div className="flex gap-2">
+          <button onClick={() => setMode('import')} className="flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-semibold" style={{ background: '#21262d', color: '#9ca3af', border: '1px solid #30363d' }}>🌐 URL</button>
+          <button onClick={() => { setPendingForm(null); setMode('add'); }} className="flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-semibold" style={{ background: '#22c55e', color: '#0d1117' }}>+ Add</button>
+        </div>
+      </div>
+      {supplements.length === 0 ? (
+        <div className="text-center text-gray-500 mt-16"><div className="text-5xl mb-4">💊</div><p className="font-medium">No supplements yet</p><p className="text-sm mt-2">Tap <span className="text-green-400 font-semibold">+ Add</span> or <span style={{ color: '#9ca3af' }}>🌐 URL</span> to import</p></div>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {supplements.map(supp => {
+            const hasDetail = !!(supp.description || supp.dosageText);
+            return (
+              <div key={supp.id} className="rounded-2xl p-4" style={{ background: '#161b22', border: '1px solid #21262d' }}>
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-xl flex items-center justify-center text-xl flex-shrink-0" style={{ background: supp.color + '20' }}>{supp.emoji}</div>
+                  <button className="flex-1 min-w-0 text-left" onClick={() => setDetailSupp(supp)}>
+                    <div className="flex items-center gap-1.5"><span className="font-semibold text-white truncate">{supp.name}</span>{hasDetail && <span className="text-xs flex-shrink-0" style={{ color: supp.color + '90' }}>ⓘ</span>}</div>
+                    <div className="text-xs text-gray-400 mt-0.5"><span style={{ color: supp.color + 'cc' }}>{supp.dose}</span>{supp.timesPerDay > 1 ? ` × ${supp.timesPerDay}/day` : ' /day'}{supp.note ? ` · ${supp.note}` : ''}</div>
+                    {supp.timesPerDay > 1 && supp.timeLabels && <div className="text-xs text-gray-500 mt-0.5">{supp.timeLabels.slice(0, supp.timesPerDay).join(' · ')}</div>}
+                  </button>
+                  <div className="flex gap-1.5 flex-shrink-0">
+                    <button onClick={() => setMode({ editId: supp.id })} className="w-8 h-8 rounded-xl flex items-center justify-center text-sm" style={{ background: '#21262d', color: '#9ca3af' }}>✏️</button>
+                    <button onClick={() => setDeleteId(supp.id)} className="w-8 h-8 rounded-xl flex items-center justify-center font-bold" style={{ background: '#21262d', color: '#ef4444' }}>×</button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+      {mode === 'import' && <ImportFromUrl onPrefill={handleImportPrefill} onCancel={() => setMode(null)} />}
+      {mode === 'add' && <Form initial={pendingForm || EMPTY_FORM} onSave={handleAdd} onCancel={() => { setMode(null); setPendingForm(null); }} isEdit={false} />}
+      {mode?.editId && (() => { const supp = supplements.find(s => s.id === mode.editId); return supp ? <Form initial={supplementToForm(supp)} onSave={handleEdit} onCancel={() => setMode(null)} isEdit={true} /> : null; })()}
+      {deleteId && (() => {
+        const supp = supplements.find(s => s.id === deleteId);
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center px-6" style={{ background: 'rgba(0,0,0,0.75)' }} onClick={e => e.target === e.currentTarget && setDeleteId(null)}>
+            <div className="w-full rounded-2xl p-5" style={{ background: '#161b22', border: '1px solid #21262d' }}>
+              <h3 className="font-bold text-white mb-2">Remove supplement?</h3>
+              <p className="text-sm text-gray-400 mb-5"><span style={{ color: supp?.color }}>{supp?.emoji} {supp?.name}</span> will be removed. Log history is preserved.</p>
+              <div className="flex gap-3">
+                <button onClick={() => setDeleteId(null)} className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-gray-300" style={{ background: '#21262d' }}>Cancel</button>
+                <button onClick={() => handleDelete(deleteId)} className="flex-1 py-2.5 rounded-xl text-sm font-semibold" style={{ background: '#ef4444', color: '#fff' }}>Remove</button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+      {detailSupp && <SupplementDetail supp={detailSupp} onClose={() => setDetailSupp(null)} />}
+    </div>
+  );
+}
