@@ -10,9 +10,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
       manifest: {
-        name: 'WarFit — Military Calisthenics',
-        short_name: 'WarFit',
-        description: 'Military & calisthenics training app with body weight, bars and rings',
+        name: 'SupTrack — Supplements Tracker',
+        short_name: 'SupTrack',
+        description: 'Track your daily vitamins and supplements intake',
         theme_color: '#0d1117',
         background_color: '#0d1117',
         display: 'standalone',

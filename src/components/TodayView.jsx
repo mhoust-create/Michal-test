@@ -78,10 +78,10 @@ export function TodayView({ supplements, log, today, onToggle }) {
                     >
                       {supp.name}
                     </div>
-                    <div className="text-xs text-gray-400 mt-0.5 flex items-center gap-1">
+                    <div className="text-xs text-gray-400 mt-0.5 truncate">
                       <span style={{ color: supp.color + 'cc' }}>{supp.dose}</span>
-                      {supp.timesPerDay > 1 && <span>× {supp.timesPerDay}/day</span>}
-                      {supp.note ? <span>· {supp.note}</span> : null}
+                      {supp.timesPerDay > 1 && <span className="text-gray-500"> × {supp.timesPerDay}/day</span>}
+                      {supp.note ? <span className="text-gray-500"> · {supp.note}</span> : null}
                     </div>
                   </div>
 
